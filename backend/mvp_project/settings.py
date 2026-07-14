@@ -47,6 +47,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "authentication.middleware.RoleIsolationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -133,6 +134,12 @@ RETENTION_POLICY = {
     "certificate_days": int(os.environ.get("RETENTION_CERT_DAYS", 365 * 5)),
     "audit_days": None,
 }
+
+# ---------------------------------------------------------------------------
+# Employee access token (magic-link/code) — Phase 3 (spec authentication)
+# ---------------------------------------------------------------------------
+# Single-use token TTL in seconds. Default 24h; overridable per environment.
+EMPLOYEE_TOKEN_TTL_SECONDS = int(os.environ.get("EMPLOYEE_TOKEN_TTL_SECONDS", 60 * 60 * 24))
 
 # ---------------------------------------------------------------------------
 # Internationalisation — Spanish default

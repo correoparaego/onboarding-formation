@@ -5,7 +5,7 @@ in later phases (auth, import, courses, reading gate, ...).
 """
 from django.contrib import admin
 from django.http import JsonResponse
-from django.urls import path
+from django.urls import include, path
 
 
 def api_health(request):
@@ -15,4 +15,5 @@ def api_health(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", api_health, name="api-health"),
+    path("", include("authentication.urls")),
 ]

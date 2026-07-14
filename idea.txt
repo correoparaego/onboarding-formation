@@ -1,0 +1,9 @@
+quiero crear una aplciacion web para hacer la formacion inicial a los nuevos empleados de varias empresas, metermos los datos en una hoja exewcl con los datos personales , dni , puesto y correoelectromico y movil que reciba sms o whasapp, para en viar el link de formacion incial segun tipo de puesto y catalogo de cursos , que consite en descargarse en leer online un pdf con la información , la lectura del pdf sera controladoa por el tiempo medio de lectura , y no dejara avanzar hasta cumplido el tiumepo medio , una vez abierto tambien se controlara hasta que pagina ha sido leido , y ademas al finalizar la lecytura se lanzara un test de compresion de cada curso.
+
+el administtrador podra crara cursos subiendo un pdf y unos test , o podra subir el pdf y que los test se genera con una agente , o que todo el curso se genere con una gente que nos sugiera el contenido en base a unas preguntas sobre el tema y docuemntos de referencia.
+
+en caso de fallo del test se le daran 3 intentos a la persona para emezar desde el principiob y finalizadon cada vez en un test diferente ,  leyendo el dcumento, y una vez finalizada la formacion con el test correctamente conetstado ( respuesta solo una valida ) se 
+gyuradar en el expedinete del empleado las respuestas de nlos cursos realizados , con filtros para seleccionar a empleados con diferentes cussos realizados,
+ademas se podra generar un pdf imprimible con el titulo del curso ralizado,
+que aparezca los datos del empleado , fecha realizacion , titulo del curso , y la evaluacion con un indice resumen de la formacion recibida 
+generado a partir de la docuemntacion del curso realizado. , se gamificara la experiencia con insignias, niveles , y puntuaciones por los cursos realizados 
