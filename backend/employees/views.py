@@ -25,6 +25,8 @@ from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
 
 from common.dni import is_valid_dni
+from reading_gate.services import assign_mandatory_courses
+
 from .models import Employee
 
 # Expected (case-insensitive, trimmed) header columns.
@@ -71,6 +73,7 @@ def employee_import(request):
     created = 0
     duplicates = 0
     errors = 0
+    enrollments_created = 0
     seen_in_file = set()
 
     for idx, row in df.iterrows():
@@ -132,7 +135,7 @@ def employee_import(request):
             continue
 
         # Store DNI VERBATIM — do NOT strip/upper/normalise.
-        Employee.objects.create(
+        emp = Employee.objects.create(
             dni=dni,
             name=name,
             position=position,
@@ -141,6 +144,10 @@ def employee_import(request):
         )
         seen_in_file.add(dni)
         created += 1
+        # Phase 7: auto-assign mandatory courses for the employee's position.
+        # Idempotent by DNI+course (Enrollment.unique_together), so re-imports
+        # of an already-enrolled employee create no duplicates.
+        enrollments_created += assign_mandatory_courses(emp)
         report.append({"row": int(idx) + 2, "status": "created", "dni": dni})
 
     return JsonResponse(
@@ -148,6 +155,7 @@ def employee_import(request):
             "created": created,
             "duplicates": duplicates,
             "errors": errors,
+            "enrollments_created": enrollments_created,
             "report": report,
         }
     )
