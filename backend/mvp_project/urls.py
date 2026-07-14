@@ -19,4 +19,5 @@ urlpatterns = [
     path("", include("employees.urls")),
     path("", include("courses.urls")),
     path("", include("ai_generation.urls")),
+    path("", include("reading_gate.urls")),
 ]
