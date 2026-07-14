@@ -52,16 +52,16 @@
 - [ ] 8.4 Delivery logging (recipient/status, no raw token/secrets). [spec notifications §Logging]
 
 ## Phase 9: Timed Reading Gate
-- [ ] 9.1 `POST /api/reading/heartbeat`: validate visibility+interaction, credit delta. [spec timed-reading §Heartbeat; design §Sequence]
-- [ ] 9.2 Server gate: unlock only when accumulated ≥ `section_base/3`. [spec timed-reading §Server-Gated]
-- [ ] 9.3 `ReadingProgress` per enrollment; cross-device resume. [spec timed-reading §Cross-Device]
-- [ ] 9.4 All sections passed → status=complete, test unlocks. [spec timed-reading §Completion]
+- [x] 9.1 `POST /api/reading/heartbeat`: validate visibility+interaction, credit delta. [spec timed-reading §Heartbeat; design §Sequence]
+- [x] 9.2 Server gate: unlock only when accumulated ≥ `section_base/3`. [spec timed-reading §Server-Gated]
+- [x] 9.3 `ReadingProgress` per enrollment; cross-device resume. [spec timed-reading §Cross-Device]
+- [x] 9.4 All sections passed → status=complete, test unlocks. [spec timed-reading §Completion]
 
 ## Phase 10: Comprehension Test
-- [ ] 10.1 `POST /api/test/submit`: grade attempt; ≤3 attempts; 4th blocked→failed_exhausted. [spec comprehension-test §Max Three]
-- [ ] 10.2 Deterministic distinct subset per attempt (`seed=hash(enrollment,attempt)`). [spec comprehension-test §Distinct; design §Test Flow]
-- [ ] 10.3 Fail resets ReadingProgress to section 1/0s, increments attempts_used. [spec comprehension-test §Fail Restart]
-- [ ] 10.4 Pass → status=passed; enable cert + badge evaluation. [spec comprehension-test §Pass]
+- [x] 10.1 `POST /api/test/submit`: grade attempt; ≤3 attempts; 4th blocked→failed_exhausted. [spec comprehension-test §Max Three]
+- [x] 10.2 Deterministic distinct subset per attempt (`seed=hash(enrollment,attempt)`). [spec comprehension-test §Distinct; design §Test Flow]
+- [x] 10.3 Fail resets ReadingProgress to section 1/0s, increments attempts_used. [spec comprehension-test §Fail Restart]
+- [x] 10.4 Pass → status=passed; enable cert + badge evaluation. [spec comprehension-test §Pass]
 
 ## Phase 11: Certificate
 - [ ] 11.1 `GET /api/certificate/{enrollment}`: reportlab PDF (name, DNI verbatim, date, title, evaluation, summary index). [spec certificate]

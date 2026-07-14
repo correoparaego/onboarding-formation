@@ -1,10 +1,12 @@
-# Apply Progress — mvp-formacion-inicial (PR1 + PR2)
+# Apply Progress — mvp-formacion-inicial (PR1 + PR2 + PR3 + PR4)
 
 **Change**: mvp-formacion-inicial
-**Mode**: Standard (strict_tdd: false — greenfield, no test runner; model/API smoke checks were run instead)
+**Mode**: Standard (strict_tdd: false; Django `manage.py test` used for focused unit/integration checks — 15 tests pass for the reading_gate app)
 **Delivered work units**:
 - PR1 — Scaffold + Models/Migrations (stacked-to-main) — branch `mvp/pr1-scaffold-models` (targets `main`)
 - PR2 — Authentication + Employee Import (stacked-to-main) — branch `mvp/pr2-auth-import` (branched off `mvp/pr1-scaffold-models`; targets `main`)
+- PR3 — Course Management + AI Generation + Enrollment (stacked-to-main) — branch `mvp/pr3-courses-enroll-ai` (off `mvp/pr2-auth-import`; targets `main`)
+- PR4 — Timed Reading Gate + Comprehension Test + immediate Audit (stacked-to-main) — branch `mvp/pr4-reading-test` (off `mvp/pr3-courses-enroll-ai`; targets `main`)
 **Date**: 2026-07-14
 
 > **KNOWN TECHNICAL DEBT (MUST FIX BEFORE PRODUCTION / ARCHIVE):** the DNI
@@ -117,6 +119,22 @@
 - [x] 7.1 Auto-create Enrollment(s) per position's mandatory courses on import (status=assigned) via `reading_gate/services.assign_mandatory_courses`, called from `employees.views.employee_import`; `enrollments_created` added to import response. [spec enrollment-assignment §Mandatory]
 - [x] 7.2 Idempotency by DNI+course (`Enrollment.unique_together` + `get_or_create`); re-import of an enrolled employee creates no duplicate. [spec enrollment-assignment §Idempotency]
 
+### PR4 — Timed Reading Gate + Comprehension Test (stacked-to-main)
+> NOTE ON PHASE NUMBERING: the orchestrator relabelled these as "Phase 8: Timed
+> Reading Gate (8.1–8.4)" and "Phase 9: Comprehension Test (9.1–9.4)". They map
+> 1:1 to tasks.md **Phase 9 (Timed Reading Gate, 9.1–9.4)** and **Phase 10
+> (Comprehension Test, 10.1–10.4)** — both marked `[x]` there. The work unit is
+> the "Timed gate + test" PR4 slice from the Review Workload Forecast.
+- [x] 9.1 `POST /api/reading/heartbeat`: validate visibility+interaction, credit delta (server-authoritative; client heartbeats are untrusted input). [spec timed-reading §Heartbeat; design §Sequence]
+- [x] 9.2 Server gate: unlock next section ONLY when accumulated ≥ `section_base / min_time_divisor`; section 1 always open; previous-section-complete enforced. [spec timed-reading §Server-Gated]
+- [x] 9.3 `ReadingProgress` per (enrollment, section); cross-device resume keyed by enrollment; `device_id`/`session_id` captured. [spec timed-reading §Cross-Device]
+- [x] 9.4 All sections pass → `Enrollment.status=complete`, test unlocks. [spec timed-reading §Completion]
+- [x] 10.1 `POST /api/test/submit`: grade attempt; ≤3 attempts; 4th blocked → `failed_exhausted`. [spec comprehension-test §Max Three]
+- [x] 10.2 Deterministic DISTINCT subset per attempt via `seed=sha256(enrollment_id, attempt_no)` shuffle of the QuestionBank (NOT Python's salted `hash`). [spec comprehension-test §Distinct; design §Test Flow]
+- [x] 10.3 Fail resets `ReadingProgress` to section 1 / 0s (rows deleted) and increments `attempts_used`. [spec comprehension-test §Fail Restart]
+- [x] 10.4 Pass → `Enrollment.status=passed` (cert + badge evaluation deferred to later phases). [spec comprehension-test §Pass]
+- [x] Audit (immediate, gate/test-produced events only): `section_complete`, `reading_complete`, `attempt_start`, `attempt_submit`, `attempt_fail`, `attempt_blocked` written to the append-only `AuditEvent` keyed by enrollment — NO DNI/raw token in payloads. (Full audit coverage/wiring remains PR6.)
+
 ## Files Changed (PR3)
 
 | File | Action | What Was Done |
@@ -203,15 +221,86 @@
   modified. `EncryptedDNIField` still returns verbatim DNI; enrollment
   idempotency relies on the deterministic ciphertext unique constraint.
 
-## Remaining Tasks (PR4+)
+## Files Changed (PR4)
+| File | Action | What Was Done |
+|------|--------|---------------|
+| `backend/reading_gate/services.py` | Modified | Added `process_heartbeat` (sequential unlock gate, visibility+interaction credit, delta clamp, all-sections-complete → status=complete), `get_test_subset` (sha256-deterministic distinct subset), `get_test_questions` (attempt view, withholds `correct_index`, emits `attempt_start`), `grade_submission` (≤3 attempts, 4th blocked→`failed_exhausted`, fail resets reading, pass→`passed`), `_audit` helper (append-only, no PII). Kept `assign_mandatory_courses`. Added tunable constants `MAX_HEARTBEAT_DELTA`, `TEST_SUBSET_SIZE`, `TEST_PASS_THRESHOLD`. |
+| `backend/reading_gate/views.py` | Created | `reading_heartbeat` (POST), `test_questions` (GET), `test_submit` (POST). Employee-only via `request.session["employee_id"]`; enrollment ownership enforced (404 if not owned). |
+| `backend/reading_gate/urls.py` | Created | Routes `/api/reading/heartbeat`, `/api/test/questions`, `/api/test/submit`. |
+| `backend/authentication/middleware.py` | Modified | Added `/api/reading/` and `/api/test/` to `EMPLOYEE_PREFIXES` (employee-only; admin→403). |
+| `backend/mvp_project/urls.py` | Modified | Included `reading_gate.urls`. |
+| `backend/reading_gate/tests.py` | Modified | Added `ReadingGateTests` (4), `ComprehensionTestTests` (5), `ReadingGateAuthzTests` (3) — 12 new tests. |
+| `openspec/changes/mvp-formacion-inicial/tasks.md` | Modified | Phase 9 (9.1–9.4) + Phase 10 (10.1–10.4) marked `[x]`. |
+| `openspec/changes/mvp-formacion-inicial/apply-progress.md` | Modified | This merged artifact. |
+
+## Work Unit Evidence (PR4)
+
+### PR4 — Timed reading gate
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test reading_gate` → `Ran 15 tests in 1.0s ... OK` (3 enrollment-assignment + 4 gate + 5 comprehension + 3 authz). Gate tests assert: section 2 locked until section 1 complete; visibility+interaction required to credit; delta clamped to 120s; negative delta ignored; all-sections-complete → status=complete + `section_complete`/`reading_complete` audit events. |
+| Runtime harness | `python manage.py check` → "System check identified no issues (0 silenced)". Django test client POST `/api/reading/heartbeat` (employee session) accumulates 30s and reports `section_complete:true`; wrong-employee session → 404; no session → 403. |
+| Rollback boundary | Revert `reading_gate/views.py`, `reading_gate/urls.py`, the middleware `EMPLOYEE_PREFIXES` addition, and the `mvp_project/urls.py` include. No model/migration change (all fields pre-existed in PR1/2), so nothing to migrate down. |
+
+### PR4 — Comprehension test + audit
+| Evidence | Value |
+|----------|-------|
+| Focused test command | Same `python manage.py test reading_gate` run (above). Comprehension tests assert: subset deterministic per attempt AND distinct across attempts; pass → status=passed (attempts_used=1); fail → ReadingProgress deleted + status=in_progress + `attempt_fail` audit; 4th attempt (attempts_used=3) → 409 + status=`failed_exhausted` + `attempt_blocked` audit; `get_test_questions` withholds `correct_index` and emits `attempt_start`. |
+| Runtime harness | `python manage.py check` clean; Django test client exercised the full gate→unlock→test path against the SQLite test DB. |
+| Rollback boundary | Revert `reading_gate/services.py` gate/test functions + `views.py`/`urls.py` + middleware/urls wiring. The only new persisted rows are `AuditEvent` (append-only, harmless to retain) — no schema change, so `migrate reading_gate zero` is NOT required. |
+
+## Deviations / Design Clarifications (PR4)
+- **Pass threshold = 100% correct** (`TEST_PASS_THRESHOLD = 1.0`): the spec
+  defines single-correct answers and "Pass → status=passed" but does NOT state a
+  passing fraction. For a compliance onboarding gate, requiring every answered
+  question correct is the safe default. It is a single named constant, trivially
+  tunable by the product owner. Documented as an open product decision.
+- **Subset size**: `TEST_SUBSET_SIZE = 5`. The bank is shuffled by a
+  `sha256(enrollment_id, attempt_no)` seed and the first 5 taken; when the bank
+  holds >5 questions, different attempts draw genuinely DISTINCT subsets. With
+  ≤5 questions the whole bank is used (still deterministically ordered per
+  attempt). `seed` uses SHA-256, NOT Python's salted `hash()`, so subsets are
+  stable across processes/restarts (determinism requirement satisfied).
+- **Heartbeat delta clamp**: untrusted client input is clamped to
+  `MAX_HEARTBEAT_DELTA = 120s` per heartbeat to bound time-inflation fraud; a
+  negative/non-int delta credits 0. This is "reasonable control" (RGPD 3), not
+  human-presence proof — as the design explicitly accepts.
+- **`GET /api/test/questions` added** (not in the literal task list, which only
+  names `POST /api/test/submit`): the comprehension flow must SHOW questions
+  before grading, so a deterministic, `correct_index`-withholding fetch endpoint
+  is required. It does NOT consume an attempt (only `submit` increments
+  `attempts_used`) and emits `attempt_start`. This is in-scope for the
+  "Comprehension Test" work unit.
+- **Audit is partial by design**: only the events the gate/test naturally
+  produce (`section_complete`, `reading_complete`, `attempt_start`,
+  `attempt_submit`, `attempt_fail`, `attempt_blocked`) are emitted. The formal
+  append-only API and full coverage (incl. cert issuance) remain PR6. Payloads
+  reference `enrollment_id` + metadata ONLY — NO DNI, token, or PII.
+- **No model changes / no new migration**: `Enrollment` (status/attempts_used),
+  `ReadingProgress` (accumulated_time/reached_section/device_id/session_id), and
+  `AuditEvent` already existed from PR1/2. PR4 is pure API + service logic.
+- **DNI crypto debt**: unchanged. `common/crypto.py`/`fields.py` were NOT
+  touched. Verbatim DNI guarantee preserved; enrollment ownership is checked via
+  `employee_id` from the session, never from request bodies.
+
+## Remaining Tasks (PR5+)
 - Phase 8: Secure access issuance/delivery + notifications (email)
-- Phase 9: Timed reading gate
-- Phase 10: Comprehension test
 - Phase 11: Certificate
 - Phase 12: Badges
 - Phase 13: Expediente & filters
-- Phase 14: Audit log API
+- Phase 14: Audit log API (formal append-only API + full coverage)
 - Phase 15: Verification/QA
+
+## PR / Delivery Status
+- **PR4 branch**: `mvp/pr4-reading-test` (created stacked off `mvp/pr3-courses-enroll-ai`, targeting `main`). [chain strategy: stacked-to-main]
+- **Commits**: work-unit commits (created locally; push/PR left to a user with remote access, no force-push/no merge): (1) `feat(reading)` backend impl — server-authoritative reading gate + comprehension test + audit (services/views/urls/middleware/project-urls); (2) `test(reading)` — gate math, subset determinism, fail→restart, attempt cap, authz (15 tests); (3) `docs(sdd)` — tasks.md `[x]` + merged apply-progress. The gate/test/audit logic shares `services.py`/`views.py`, so they are committed together as one coherent backend unit rather than split via hunk-staging.
+- **Prior branches**: `mvp/pr1-scaffold-models`, `mvp/pr2-auth-import`, `mvp/pr3-courses-enroll-ai` — all still awaiting push + PR by a user with remote access. `gh` CLI is not available; branches + commits are local only.
+- **Known debt gate**: do NOT archive/productionize until the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is resolved.
+
+## Status
+PR1 (9/9) + PR2 (7/7) + PR3 (12/12) + PR4 (8/8) tasks complete. Ready for
+`sdd-verify` of PR4 scope (or proceed to PR5). Awaiting push + PR creation by a
+user with remote access.
 
 ## PR / Delivery Status
 - **PR3 branch**: `mvp/pr3-courses-enroll-ai` (to be created stacked off `mvp/pr2-auth-import`, targeting `main`).
