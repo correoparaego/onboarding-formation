@@ -1,0 +1,16 @@
+{
+  "app": {
+    "title": "Formación Inicial",
+    "admin": "Administración",
+    "employee": "Empleado"
+  },
+  "reader": {
+    "locked": "Sección bloqueada hasta completar el tiempo mínimo de lectura.",
+    "remaining": "Tiempo restante: {{seconds}}s"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  }
+}
