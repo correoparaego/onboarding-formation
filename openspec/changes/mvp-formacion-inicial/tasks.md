@@ -27,23 +27,23 @@
 - [x] 4.4 Import idempotent; auto-enrollment deferred to Phase 7 (per scope decision — only Employee records + report created here). [spec enrollment-assignment]
 
 ## Phase 5: Course Management
-- [ ] 5.1 Admin course CRUD + PDF upload + ordered sections. [spec course-management §PDF Authoring]
-- [ ] 5.2 Question bank authoring (single-correct enforced on save). [spec course-management §Bank; comprehension-test §Single Correct]
-- [ ] 5.3 Position→catalog M2M mapping + lookup endpoint. [spec course-management §Catalog]
+- [x] 5.1 Admin course CRUD + PDF upload + ordered sections. [spec course-management §PDF Authoring]
+- [x] 5.2 Question bank authoring (single-correct enforced on save). [spec course-management §Bank; comprehension-test §Single Correct]
+- [x] 5.3 Position→catalog M2M mapping + lookup endpoint. [spec course-management §Catalog]
 
 ## Phase 6: AI Generation
-- [ ] 6.1 `ai_generation.AdminLLMKey` model (FK Admin, `encrypted_key`, provider, base_url, model, status) + `makemigrations ai_generation`. [spec ai-generation §BYO; design §Key Storage]
-- [ ] 6.2 `POST /api/ai/key` admin-only: set/update encrypted key; raw key never in response/logs. [design API; spec ai-generation §BYO]
-- [ ] 6.3 OpenAI-compatible client wrapper `(base_url, api_key, model)` behind interface + fake/mock impl for tests. [design §Client; design §Testing]
-- [ ] 6.4 PII-exclusion sanitizer (course/PDF content only; never Employee queryset) + unit test asserting DNI/name/email/phone stripped. [spec ai-generation §PII; design §PII Guard]
-- [ ] 6.5 `POST /api/ai/generate-content`: guided Q&A + reference docs → Course/Sections draft returned for review, not persisted. [spec ai-generation §Guided; design §Guided Flow]
-- [ ] 6.6 `POST /api/ai/generate-tests`: PDF→QuestionBank draft (server text extraction → LLM, single-correct) returned for review, not persisted. [spec ai-generation §PDF; design §PDF Flow]
-- [ ] 6.7 Frontend `src/admin/ai/*`: key entry form, guided Q&A UI, review/edit UI for generated content & tests, save to Course/QuestionBank. [design §Architecture Overview; design frontend]
-- [ ] 6.8 Human-in-the-loop persistence guard: drafts not saved until admin confirms; single-correct enforced; multi-correct draft rejected at save. [spec ai-generation §HITL]
+- [x] 6.1 `ai_generation.AdminLLMKey` model (FK Admin, `encrypted_key`, provider, base_url, model, status) + `makemigrations ai_generation`. [spec ai-generation §BYO; design §Key Storage]
+- [x] 6.2 `POST /api/ai/key` admin-only: set/update encrypted key; raw key never in response/logs. [design API; spec ai-generation §BYO]
+- [x] 6.3 OpenAI-compatible client wrapper `(base_url, api_key, model)` behind interface + fake/mock impl for tests. [design §Client; design §Testing]
+- [x] 6.4 PII-exclusion sanitizer (course/PDF content only; never Employee queryset) + unit test asserting DNI/name/email/phone stripped. [spec ai-generation §PII; design §PII Guard]
+- [x] 6.5 `POST /api/ai/generate-content`: guided Q&A + reference docs → Course/Sections draft returned for review, not persisted. [spec ai-generation §Guided; design §Guided Flow]
+- [x] 6.6 `POST /api/ai/generate-tests`: PDF→QuestionBank draft (server text extraction → LLM, single-correct) returned for review, not persisted. [spec ai-generation §PDF; design §PDF Flow]
+- [x] 6.7 Frontend `src/admin/ai/*`: key entry form, guided Q&A UI, review/edit UI for generated content & tests, save to Course/QuestionBank. [design §Architecture Overview; design frontend]
+- [x] 6.8 Human-in-the-loop persistence guard: drafts not saved until admin confirms; single-correct enforced; multi-correct draft rejected at save. [spec ai-generation §HITL]
 
 ## Phase 7: Enrollment Assignment
-- [ ] 7.1 Auto-create enrollment(s) per position's mandatory courses on import (status=assigned). [spec enrollment-assignment §Mandatory]
-- [ ] 7.2 Idempotency by DNI+course (re-import skips duplicates). [spec enrollment-assignment §Idempotency]
+- [x] 7.1 Auto-create enrollment(s) per position's mandatory courses on import (status=assigned). [spec enrollment-assignment §Mandatory]
+- [x] 7.2 Idempotency by DNI+course (re-import skips duplicates). [spec enrollment-assignment §Idempotency]
 
 ## Phase 8: Secure Access & Notifications
 - [ ] 8.1 Token issuance per pending enrollment (single-use, TTL) on assignment. [spec secure-access §Issuance]

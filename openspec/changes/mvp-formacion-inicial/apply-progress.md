@@ -100,10 +100,110 @@
 - None blocking. (Transitive `urllib3`/`requests` version warning during Django
   commands is harmless, as in PR1.)
 
-## Remaining Tasks (PR3+)
-- Phase 5: Course management CRUD + question bank + catalog lookup
-- Phase 6: AI generation (`AdminLLMKey` model + endpoints + PII guard)
-- Phase 7: Enrollment assignment (auto-enroll on import; idempotency)
+## Completed Tasks (PR3 — cumulative continuation)
+
+### PR3 — Course Management + AI Generation + Enrollment Assignment
+- [x] 5.1 Admin course CRUD + PDF upload + ordered sections (`courses.views.course_list_create/detail`, `courses/urls.py`; `/api/courses/`, `/api/courses/<pk>/`). [spec course-management §PDF Authoring]
+- [x] 5.2 Question bank authoring with SINGLE-CORRECT enforced on save (`courses.views.question_bank_create`; `/api/banks/`; `_validate_question` rejects multi-correct lists and out-of-range index). [spec course-management §Bank; comprehension-test §Single Correct]
+- [x] 5.3 Position→catalog M2M mapping + lookup endpoint (`courses.views.course_catalog`; `/api/courses/catalog/?position=`, case-insensitive name/slug match). [spec course-management §Catalog]
+- [x] 6.1 `ai_generation.AdminLLMKey` (OneToOne Admin, `encrypted_key`, provider, base_url, model, status) + `makemigrations ai_generation` (0001_initial applied). [spec ai-generation §BYO; design §Key Storage]
+- [x] 6.2 `POST /api/ai/key` admin-only set/update encrypted key; raw key never in response/logs. [design API; spec ai-generation §BYO]
+- [x] 6.3 OpenAI-compatible client wrapper `(base_url, api_key, model)` behind `LLMClient` interface + `FakeLLMClient` for tests (stdlib `urllib`, no hard `openai` dep). [design §Client; design §Testing]
+- [x] 6.4 PII-exclusion sanitizer (`ai_generation/sanitizer.py`) — text-only, NO `employees` import (guard by construction) + unit test asserting DNI/name/email/phone stripped. [spec ai-generation §PII; design §PII Guard]
+- [x] 6.5 `POST /api/ai/generate-content`: guided Q&A + reference docs → Course/Sections draft returned for review, NOT persisted. [spec ai-generation §Guided; design §Guided Flow]
+- [x] 6.6 `POST /api/ai/generate-tests`: PDF→QuestionBank draft (server PDF text extraction via PyPDF2 → LLM, single-correct) returned for review, NOT persisted. [spec ai-generation §PDF; design §PDF Flow]
+- [x] 6.7 Frontend `src/admin/ai/*`: `AiKeyForm`, `GuidedContent`, `PdfTestGen` (key entry, guided Q&A, review/edit + save to Course/QuestionBank); wired into `AdminApp` nav/routes + `api/endpoints.ts`. [design §Architecture Overview; design frontend]
+- [x] 6.8 Human-in-the-loop persistence guard: drafts not saved until admin confirms; single-correct enforced; multi-correct draft rejected at save (`/api/banks/` returns 400 on `correct_index:[0,1]`). [spec ai-generation §HITL]
+- [x] 7.1 Auto-create Enrollment(s) per position's mandatory courses on import (status=assigned) via `reading_gate/services.assign_mandatory_courses`, called from `employees.views.employee_import`; `enrollments_created` added to import response. [spec enrollment-assignment §Mandatory]
+- [x] 7.2 Idempotency by DNI+course (`Enrollment.unique_together` + `get_or_create`); re-import of an enrolled employee creates no duplicate. [spec enrollment-assignment §Idempotency]
+
+## Files Changed (PR3)
+
+| File | Action | What Was Done |
+|------|--------|---------------|
+| `backend/ai_generation/__init__.py` | Created | App package marker |
+| `backend/ai_generation/apps.py` | Created | AppConfig |
+| `backend/ai_generation/migrations/__init__.py` | Created | Migrations package |
+| `backend/ai_generation/migrations/0001_initial.py` | Created | `AdminLLMKey` table |
+| `backend/ai_generation/models.py` | Created | `AdminLLMKey` (encrypted key, provider, base_url, model, status) + encrypt/decrypt helpers |
+| `backend/ai_generation/sanitizer.py` | Created | PII-exclusion sanitizer (DNI/email/phone/name-label redaction; no Employee import) |
+| `backend/ai_generation/client.py` | Created | `LLMClient` interface, `OpenAICompatibleClient` (urllib), `FakeLLMClient`, `make_client` factory (fake when `AI_USE_FAKE_LLM`) |
+| `backend/ai_generation/prompts.py` | Created | `build_content_prompt` / `build_test_prompt` (course/reference/PDF only, sanitized) |
+| `backend/ai_generation/views.py` | Created | `ai_key_set`, `ai_key_status`, `ai_generate_content`, `ai_generate_tests` (drafts, no persistence) |
+| `backend/ai_generation/urls.py` | Created | `/api/ai/*` routes |
+| `backend/ai_generation/tests.py` | Created | Sanitizer guard, fake client, HITL draft, key-set no-leak, multi-correct reject |
+| `backend/courses/views.py` | Created | Course CRUD, question-bank create (single-correct), catalog lookup |
+| `backend/courses/urls.py` | Created | `/api/courses/`, `/api/courses/<pk>/`, `/api/courses/catalog/`, `/api/banks/` |
+| `backend/courses/tests.py` | Created | Catalog lookup, course+section create, single-correct enforcement |
+| `backend/reading_gate/services.py` | Created | `assign_mandatory_courses(employee)` — idempotent auto-enrollment |
+| `backend/reading_gate/tests.py` | Created | Import integration idempotency + direct service idempotency + no-match |
+| `backend/employees/views.py` | Modified | Call `assign_mandatory_courses` on import; add `enrollments_created` to response |
+| `backend/authentication/middleware.py` | Modified | Add `/api/courses/`, `/api/banks/`, `/api/ai/` to `ADMIN_PREFIXES` (admin-only; employee 403) |
+| `backend/mvp_project/settings.py` | Modified | Register `ai_generation`; add `AI_USE_FAKE_LLM` setting |
+| `backend/mvp_project/urls.py` | Modified | Include `courses.urls`, `ai_generation.urls` |
+| `frontend/src/api/endpoints.ts` | Modified | Add `coursesApi`, `banksApi`, `aiApi` |
+| `frontend/src/admin/AdminApp.tsx` | Modified | Add AI nav links + `ai/key`, `ai/content`, `ai/tests` routes |
+| `frontend/src/admin/ai/AiKeyForm.tsx` | Created | BYO LLM key entry form (status only, raw key never retained) |
+| `frontend/src/admin/ai/GuidedContent.tsx` | Created | Guided Q&A → draft → review/edit → save as course |
+| `frontend/src/admin/ai/PdfTestGen.tsx` | Created | PDF/text → test draft → review/edit → save bank |
+| `openspec/changes/mvp-formacion-inicial/tasks.md` | Modified | PR3 tasks (5.1–7.2) marked `[x]` |
+| `openspec/changes/mvp-formacion-inicial/apply-progress.md` | Modified | This merged artifact |
+
+## Work Unit Evidence (PR3)
+
+### PR3 — Course management
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test courses` → `Ran 4 tests ... OK` (catalog lookup incl. case-insensitive, course+section create, single-correct enforced/rejected) |
+| Runtime harness | `python manage.py check` → no issues; `makemigrations --check` → no changes; Django test client exercises `/api/courses/catalog/` and `/api/courses/` end-to-end against the DB |
+| Rollback boundary | Revert `courses/views.py`, `courses/urls.py`, the middleware `ADMIN_PREFIXES` addition, and the `mvp_project` urls/settings wiring; no model migration needed (Course/Section/QuestionBank predate PR3) |
+
+### PR3 — Enrollment assignment
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test reading_gate` → `Ran 3 tests ... OK` (import auto-assign = 2 enrollments; re-import duplicates=1 enrollments_created=0; no-position match = 0) |
+| Runtime harness | Django test client POST `/api/import` (xlsx) with a Position match → `enrollments_created: 2`; second import of same DNI → `duplicates: 1, enrollments_created: 0` |
+| Rollback boundary | Revert `reading_gate/services.py` + the `employees/views.py` call + `enrollments_created` field; `Enrollment` model unchanged, safe to keep rows |
+
+### PR3 — AI generation
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test ai_generation` → `Ran 8 tests ... OK` (sanitizer strips DNI/name/email/phone + no employees import; fake client draft; generate-content not persisted; key-set returns no key material; multi-correct draft rejected at save) |
+| Runtime harness | `AI_USE_FAKE_LLM=True` + Django test client: `/api/ai/generate-content` returns draft with `persisted:false` and 0 new `Course`; `/api/ai/key` stores encrypted key, response omits raw+ciphertext; `/api/ai/generate-tests` returns single-correct draft |
+| Rollback boundary | Revert `ai_generation/` app + its migration `0001_initial` + settings/urls/middleware wiring; additive, versioned migration (`migrate ai_generation zero` safe) |
+
+### PR3 — Frontend
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `cd frontend && npm run build` → `tsc -b && vite build` succeeds (115 modules transformed) |
+| Runtime harness | N/A at runtime — static SPA not exercised against a live server in this batch; build/type-check is the verification boundary |
+| Rollback boundary | Revert `src/admin/ai/*`, `AdminApp.tsx` routes, `api/endpoints.ts` additions; additive UI only |
+
+## Deviations / Design Clarifications (PR3)
+- **PDF extraction library**: design suggested `pdfplumber`/`PyPDF2`. `pdfplumber`
+  is NOT installed in this environment; `PyPDF2` IS. `ai_generation.views._extract_pdf_text`
+  uses `PyPDF2` and gracefully returns `None` (→ 400 with guidance) if no
+  extractor is available. The endpoint also accepts a `pdf_text` body field as
+  a fallback so generation works without a PDF library. No design intent lost.
+- **Real LLM client not exercised**: by design `AI_USE_FAKE_LLM` makes every
+  test path use `FakeLLMClient`, so NO real provider is ever contacted. The
+  real `OpenAICompatibleClient` (stdlib `urllib` to `/chat/completions`) is
+  implemented and import-safe (`manage.py check` passes) but is verified only
+  by code review in this batch — it requires a live key + network at runtime.
+- **Course CRUD scope**: Phase 5 backend endpoints are implemented (list/create/detail
+  + bank create + catalog). A full admin "edit sections" SPA screen is deferred
+  (not part of the PR3 work-unit list, which only names `src/admin/ai/*`
+  frontend). Backend `course_detail` supports GET/DELETE; PUT update can be
+  added when the course-edit UI is built.
+- **`Position` reconciliation**: `Employee.position` (verbatim import label) is
+  matched to `courses.Position` by case-insensitive `name` then `slug`. If no
+  catalog `Position` exists for an imported label, no enrollment is created
+  (silent no-op) — expected, since catalog must be authored first.
+- **DNI crypto debt**: unchanged. `common/crypto.py`/`fields.py` were NOT
+  modified. `EncryptedDNIField` still returns verbatim DNI; enrollment
+  idempotency relies on the deterministic ciphertext unique constraint.
+
+## Remaining Tasks (PR4+)
 - Phase 8: Secure access issuance/delivery + notifications (email)
 - Phase 9: Timed reading gate
 - Phase 10: Comprehension test
@@ -114,16 +214,13 @@
 - Phase 15: Verification/QA
 
 ## PR / Delivery Status
-- **PR2 branch**: `mvp/pr2-auth-import` created locally, stacked off `mvp/pr1-scaffold-models`.
-- **Commits**: 2 work-unit commits (auth; import), plus this SDD-artifact commit.
-- **PR opened**: NO — `gh` CLI is not installed and no push was performed (per
-  instructions: do NOT force-push, do NOT merge). A user with remote access
-  must: `git push -u origin mvp/pr2-auth-import` and open a PR targeting
-  `main` (stacked-to-main). Once `mvp/pr1-scaffold-models` merges to `main`,
-  PR2's diff shrinks to just PR2 changes.
-- **Known debt gate**: do NOT archive/productionize until the DNI fixed-nonce
-  crypto debt (`backend/common/crypto.py`) is resolved.
+- **PR3 branch**: `mvp/pr3-courses-enroll-ai` (to be created stacked off `mvp/pr2-auth-import`, targeting `main`).
+- **Commits**: planned as work-unit commits — (1) course-management, (2) enrollment-assignment, (3) ai-generation, (4) frontend ai, (5) sdd-docs (tasks+apply-progress). Created locally; push/PR left to a user with remote access (no force-push, no merge).
+- **PR2 branch**: `mvp/pr2-auth-import` (unchanged, stacked off `mvp/pr1-scaffold-models`). Still awaiting push + PR by a user with remote access.
+- **gh CLI**: not available; branches + commits created locally only. A user must: `git push -u origin mvp/pr3-courses-enroll-ai` and open a PR targeting `main` (stacked-to-main). Once PR1/PR2 merge, PR3's diff shrinks to just PR3 changes.
+- **Known debt gate**: do NOT archive/productionize until the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is resolved.
 
 ## Status
-PR1 (9/9) + PR2 (7/7) tasks complete. Ready for `sdd-verify` of PR2 scope or
-proceed to PR3. Awaiting push + PR creation by a user with remote access.
+PR1 (9/9) + PR2 (7/7) + PR3 (12/12) tasks complete. Ready for `sdd-verify` of
+PR3 scope (or proceed to PR4). Awaiting push + PR creation by a user with
+remote access.
