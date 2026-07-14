@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "certificates",
     "notifications",
     "authentication",
+    "ai_generation",
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,17 @@ RETENTION_POLICY = {
 # ---------------------------------------------------------------------------
 # Single-use token TTL in seconds. Default 24h; overridable per environment.
 EMPLOYEE_TOKEN_TTL_SECONDS = int(os.environ.get("EMPLOYEE_TOKEN_TTL_SECONDS", 60 * 60 * 24))
+
+# ---------------------------------------------------------------------------
+# AI generation (BYO LLM key) — Phase 6 (spec ai-generation)
+# ---------------------------------------------------------------------------
+# When True, generation endpoints use the deterministic FakeLLMClient so tests
+# NEVER call a real provider. Production MUST leave this False.
+AI_USE_FAKE_LLM = os.environ.get("AI_USE_FAKE_LLM", "False").lower() in (
+    "1",
+    "true",
+    "yes",
+)
 
 # ---------------------------------------------------------------------------
 # Internationalisation — Spanish default

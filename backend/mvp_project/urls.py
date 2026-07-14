@@ -17,4 +17,6 @@ urlpatterns = [
     path("api/health/", api_health, name="api-health"),
     path("", include("authentication.urls")),
     path("", include("employees.urls")),
+    path("", include("courses.urls")),
+    path("", include("ai_generation.urls")),
 ]
