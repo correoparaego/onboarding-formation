@@ -16,15 +16,15 @@
 - [x] 2.5 Generate + review migrations (`makemigrations`/`migrate`). [proposal §Rollback Plan]
 
 ## Phase 3: Authentication
-- [ ] 3.1 Admin username/password session login/logout (Django session). [spec authentication]
-- [ ] 3.2 Employee single-use magic-link/code token (TTL, consumed invalidated; raw token never in logs). [spec authentication; secure-access]
-- [ ] 3.3 Middleware enforcing admin↔employee route isolation (403). [spec authentication §Session Isolation]
+- [x] 3.1 Admin username/password session login/logout (Django session). [spec authentication]
+- [x] 3.2 Employee single-use magic-link/code token (TTL, consumed invalidated; raw token never in logs). [spec authentication; secure-access]
+- [x] 3.3 Middleware enforcing admin↔employee route isolation (403). [spec authentication §Session Isolation]
 
 ## Phase 4: Employee Import
-- [ ] 4.1 `POST /api/import` Excel parse via openpyxl/pandas → Employee rows. [spec employee-import §Parsing]
-- [ ] 4.2 DNI stored verbatim (no trim/normalize); validation report (missing field, bad email, bad DNI). [spec employee-import §Verbatim/§Report]
-- [ ] 4.3 Dedupe by DNI; reject/flag duplicates. [spec employee-import §Dedupe]
-- [ ] 4.4 Import idempotent; trigger auto-enrollment (Phase 7). [spec enrollment-assignment]
+- [x] 4.1 `POST /api/import` Excel parse via openpyxl/pandas → Employee rows. [spec employee-import §Parsing]
+- [x] 4.2 DNI stored verbatim (no trim/normalize); validation report (missing field, bad email, bad DNI). [spec employee-import §Verbatim/§Report]
+- [x] 4.3 Dedupe by DNI; reject/flag duplicates. [spec employee-import §Dedupe]
+- [x] 4.4 Import idempotent; auto-enrollment deferred to Phase 7 (per scope decision — only Employee records + report created here). [spec enrollment-assignment]
 
 ## Phase 5: Course Management
 - [ ] 5.1 Admin course CRUD + PDF upload + ordered sections. [spec course-management §PDF Authoring]
