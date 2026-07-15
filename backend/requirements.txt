@@ -16,3 +16,7 @@ reportlab>=4.0
 
 # Phase 8 — Optional Resend email transport (only needed when EMAIL_TRANSPORT=resend)
 resend>=0.8.0  ; python_version >= "3.8"
+
+# Phase 15 — QA harness (pytest can also be run via `python manage.py test`)
+pytest>=8.0
+pytest-django>=4.8
