@@ -298,10 +298,65 @@ class ReadingGateAuthzTests(TestCase):
         resp = self.client.post(
             "/api/reading/heartbeat",
             data=json.dumps({"enrollment_id": self.enr.id, "section_order": 1,
-                             "delta": 30, "visibility": True, "interaction": True}),
+                              "delta": 30, "visibility": True, "interaction": True}),
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, 200)
         body = resp.json()
         self.assertEqual(body["accumulated"], 30)
         self.assertTrue(body["section_complete"])
+
+
+# ---------------------------------------------------------------------------
+# PR5 — Expediente persistence + badge award on pass (spec expediente, badges)
+# ---------------------------------------------------------------------------
+from certificates.models import Badge, EmployeeBadge  # noqa: E402
+from reading_gate.models import Expediente  # noqa: E402
+
+
+class ExpedienteAndBadgesTests(TestCase):
+    def setUp(self):
+        self.emp = Employee.objects.create(
+            dni="66666666E", name="Eli", position="Y", email="eli@e.com"
+        )
+        self.course = _make_course_with_bank(num_sections=1, num_questions=8)
+        self.enr = _make_enrollment(self.course, self.emp, status="complete")
+
+    def _correct_answers(self, attempt_no=1):
+        subset = services.get_test_subset(self.enr, attempt_no)
+        return [
+            {"question_id": q.id, "selected_index": q.correct_index} for q in subset
+        ]
+
+    def test_pass_writes_expediente_and_awards_first_badges(self):
+        res = services.grade_submission(self.enr, self._correct_answers(1))
+        self.assertEqual(res["result"], "pass")
+        exp = Expediente.objects.get(enrollment=self.enr)
+        self.assertEqual(exp.status, "passed")
+        self.assertEqual(exp.attempts_used, 1)
+        self.assertEqual(exp.score, res["score"])
+        self.assertEqual(exp.total, res["total"])
+        self.assertIsNotNone(exp.completed_at)
+        # First pass + first attempt -> primer-curso + sin-fallos.
+        slugs = set(
+            EmployeeBadge.objects.filter(employee=self.emp).values_list(
+                "badge__slug", flat=True
+            )
+        )
+        self.assertIn("primer-curso", slugs)
+        self.assertIn("sin-fallos", slugs)
+
+    def test_expediente_admin_filter(self):
+        services.grade_submission(self.enr, self._correct_answers(1))
+        admin = User.objects.create_user("adm", "adm@x.com", "pw", is_staff=True)
+        self.client.force_login(admin)
+        resp = self.client.get(
+            f"/api/expediente?course={self.course.id}&status=passed"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        # A status that does not match -> 0 results.
+        resp2 = self.client.get(
+            f"/api/expediente?course={self.course.id}&status=assigned"
+        )
+        self.assertEqual(resp2.json()["count"], 0)

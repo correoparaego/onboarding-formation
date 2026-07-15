@@ -12,11 +12,16 @@ Two independent concerns live in this module:
    `get_test_subset`, `get_test_questions`, `grade_submission`.
 """
 import hashlib
+import logging
 import math
 import random
 
+from django.utils import timezone
+
 from courses.models import Question
 from reading_gate.models import AuditEvent, Enrollment, ReadingProgress
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Tunable policy (kept explicit so the product owner can adjust without diving
@@ -62,13 +67,22 @@ def assign_mandatory_courses(employee) -> int:
     created_total = 0
     for pos in positions:
         for course in pos.courses.all():
-            _, was_created = Enrollment.objects.get_or_create(
+            enrollment, was_created = Enrollment.objects.get_or_create(
                 employee=employee,
                 course=course,
                 defaults={"status": "assigned"},
             )
             if was_created:
                 created_total += 1
+                # Issue a single-use access token + email the employee (PR5,
+                # Phase 8). Best-effort: a delivery failure MUST NOT block
+                # assignment. Raw token/code are delivered, never logged.
+                try:
+                    from notifications import services as notify
+
+                    notify.issue_access_token(enrollment)
+                except Exception as exc:  # never block assignment on delivery
+                    logger.warning("access token issuance failed: %s", exc)
     return created_total
 
 
@@ -282,6 +296,7 @@ def grade_submission(enrollment, answers, device_id="", session_id=""):
         if enrollment.status != "failed_exhausted":
             enrollment.status = "failed_exhausted"
             enrollment.save(update_fields=["status"])
+        _write_expediente(enrollment, None, None, passed=False)
         _audit(enrollment, "attempt_blocked", device_id, session_id,
                {"reason": "4th attempt blocked", "attempts_used": enrollment.attempts_used})
         return {
@@ -309,6 +324,7 @@ def grade_submission(enrollment, answers, device_id="", session_id=""):
     if passed:
         enrollment.status = "passed"
         enrollment.save(update_fields=["status", "attempts_used"])
+        _on_pass(enrollment, score, total)
         _audit(enrollment, "attempt_submit", device_id, session_id,
                {"attempt_no": attempt_no, "score": score, "total": total, "passed": True})
         return {
@@ -353,3 +369,47 @@ def _audit(enrollment, event_type, device_id, session_id, payload):
         session_id=session_id or "",
         payload=payload,
     )
+
+
+# ---------------------------------------------------------------------------
+# Post-result side effects (PR5): expediente persistence + badges + completion.
+# ---------------------------------------------------------------------------
+def _write_expediente(enrollment, score, total, passed):
+    """Persist/update the per-enrollment result (spec expediente §Result Storage)."""
+    from reading_gate.models import Expediente
+
+    exp, _ = Expediente.objects.get_or_create(
+        enrollment=enrollment,
+        defaults={
+            "employee": enrollment.employee,
+            "course": enrollment.course,
+            "status": enrollment.status,
+            "attempts_used": enrollment.attempts_used,
+        },
+    )
+    exp.employee = enrollment.employee
+    exp.course = enrollment.course
+    exp.status = enrollment.status
+    exp.attempts_used = enrollment.attempts_used
+    if passed:
+        exp.score = score
+        exp.total = total
+        exp.completed_at = timezone.now()
+    exp.save()
+
+
+def _on_pass(enrollment, score, total):
+    """Record expediente + award badges + notify completion on a passing result."""
+    _write_expediente(enrollment, score, total, passed=True)
+    try:
+        from certificates import services as cert_services
+
+        cert_services.award_badges_on_pass(enrollment)
+    except Exception as exc:  # badges must never break the pass result
+        logger.warning("badge award failed: %s", exc)
+    try:
+        from notifications import services as notify
+
+        notify.send_completion(enrollment)
+    except Exception as exc:  # completion email is best-effort
+        logger.warning("completion email failed: %s", exc)

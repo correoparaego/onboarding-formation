@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from reading_gate import services
-from reading_gate.models import Enrollment
+from reading_gate.models import Enrollment, Expediente
 
 
 def _json_body(request):
@@ -108,3 +108,43 @@ def test_submit(request):
         {k: v for k, v in result.items() if k != "status_code"},
         status=result.get("status_code", 200),
     )
+
+
+@csrf_exempt
+def expediente_list(request):
+    """Admin filter of expediente records (spec expediente §Admin Filter).
+
+    Query params: ``course`` (Course id or title) and ``status`` (enrollment
+    status). Admin-only via RoleIsolationMiddleware.
+    """
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    qs = Expediente.objects.select_related("employee", "course", "enrollment").all()
+
+    course = request.GET.get("course")
+    if course:
+        if course.isdigit():
+            qs = qs.filter(course_id=int(course))
+        else:
+            qs = qs.filter(course__title__iexact=course)
+
+    status = request.GET.get("status")
+    if status:
+        qs = qs.filter(status=status)
+
+    rows = [
+        {
+            "employee_id": e.employee_id,
+            "employee_name": e.employee.name,
+            "dni": e.employee.dni,  # admin compliance view; never logged
+            "course_id": e.course_id,
+            "course_title": e.course.title,
+            "status": e.status,
+            "attempts_used": e.attempts_used,
+            "score": e.score,
+            "total": e.total,
+            "completed_at": e.completed_at.isoformat() if e.completed_at else None,
+        }
+        for e in qs
+    ]
+    return JsonResponse({"count": len(rows), "results": rows})
