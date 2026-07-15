@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/admin/adminapp.tsx","./src/admin/ai/aikeyform.tsx","./src/admin/ai/guidedcontent.tsx","./src/admin/ai/pdftestgen.tsx","./src/api/client.ts","./src/api/endpoints.ts","./src/components/pdfreader/index.ts","./src/employee/employeeapp.tsx","./src/i18n/index.ts"],"version":"5.9.3"}
