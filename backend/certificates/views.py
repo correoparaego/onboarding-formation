@@ -1,10 +1,14 @@
 """Certificate PDF endpoint (admin-only via RoleIsolationMiddleware)."""
+import logging
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from certificates import services
 from certificates.models import Certificate
 from reading_gate.models import Enrollment
+
+logger = logging.getLogger(__name__)
 
 
 def certificate_pdf(request, pk):
@@ -23,6 +27,22 @@ def certificate_pdf(request, pk):
     )
     cert.core_fields_hash = core_hash
     cert.save(update_fields=["core_fields_hash"])
+    # Audit: record certificate issuance (append-only; metadata only — no DNI).
+    try:
+        from reading_gate import services as rg_services
+
+        rg_services.audit_event(
+            enrollment,
+            "certificate_issued",
+            "",
+            "",
+            {
+                "course_title": enrollment.course.title,
+                "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
+            },
+        )
+    except Exception as exc:  # audit must never break cert delivery
+        logger.warning("certificate audit failed: %s", exc)
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = (
         f'inline; filename="certificado_{enrollment.id}.pdf"'

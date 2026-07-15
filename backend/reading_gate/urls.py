@@ -7,4 +7,5 @@ urlpatterns = [
     path("api/test/questions", views.test_questions, name="test-questions"),
     path("api/test/submit", views.test_submit, name="test-submit"),
     path("api/expediente", views.expediente_list, name="expediente-list"),
+    path("api/audit", views.audit_list, name="audit-list"),
 ]

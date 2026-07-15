@@ -74,6 +74,10 @@ def assign_mandatory_courses(employee) -> int:
             )
             if was_created:
                 created_total += 1
+                # Audit: record the mandatory-course assignment (append-only;
+                # metadata only — no DNI / token / PII).
+                _audit(enrollment, "enrollment_assigned", "", "",
+                       {"course_id": course.id, "position": employee.position})
                 # Issue a single-use access token + email the employee (PR5,
                 # Phase 8). Best-effort: a delivery failure MUST NOT block
                 # assignment. Raw token/code are delivered, never logged.
@@ -189,6 +193,15 @@ def process_heartbeat(enrollment, section_order, delta, visibility, interaction,
         _audit(enrollment, "section_complete", device_id, session_id,
                {"section_order": section.order, "accumulated": progress.accumulated_time,
                 "min_time": min_time})
+        # Record the sequential unlock so the audit trail captures
+        # "section unlock/complete" (spec audit-log §Coverage).
+        next_section = next(
+            (s for s in sections if s.order == section.order + 1), None
+        )
+        if next_section is not None:
+            _audit(enrollment, "section_unlock", device_id, session_id,
+                   {"from_section_order": section.order,
+                    "unlocked_section_order": next_section.order})
 
     # All-sections-complete → unlock the comprehension test.
     all_complete = _all_sections_complete(enrollment, divisor)
@@ -361,7 +374,14 @@ def grade_submission(enrollment, answers, device_id="", session_id=""):
 # ---------------------------------------------------------------------------
 # Audit helper — append-only, NO DNI / raw token / PII in payloads.
 # ---------------------------------------------------------------------------
-def _audit(enrollment, event_type, device_id, session_id, payload):
+def audit_event(enrollment, event_type, device_id, session_id, payload):
+    """Public append-only audit helper (spec audit-log §Append-Only).
+
+    Emits an immutable ``AuditEvent``. Callers MUST NOT place DNI, raw tokens,
+    or any PII in ``payload`` — reference the enrollment id + metadata only.
+    The API layer never exposes create/update/delete, and the Django admin
+    registers ``AuditEvent`` as read-only, so immutability holds end-to-end.
+    """
     AuditEvent.objects.create(
         enrollment=enrollment,
         event_type=event_type,
@@ -369,6 +389,12 @@ def _audit(enrollment, event_type, device_id, session_id, payload):
         session_id=session_id or "",
         payload=payload,
     )
+
+
+# Internal alias — kept so in-module callers (process_heartbeat, grade_submission,
+# assign_mandatory_courses) keep working without churn.
+def _audit(enrollment, event_type, device_id, session_id, payload):
+    return audit_event(enrollment, event_type, device_id, session_id, payload)
 
 
 # ---------------------------------------------------------------------------

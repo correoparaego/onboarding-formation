@@ -16,6 +16,7 @@ Auto-enrollment (Phase 7) is intentionally NOT performed here; this endpoint
 only creates Employee records + report.
 """
 import io
+import logging
 
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -28,6 +29,8 @@ from common.dni import is_valid_dni
 from reading_gate.services import assign_mandatory_courses
 
 from .models import Employee
+
+logger = logging.getLogger(__name__)
 
 # Expected (case-insensitive, trimmed) header columns.
 REQUIRED_FIELDS = ["dni", "name", "position", "email"]
@@ -144,6 +147,19 @@ def employee_import(request):
         )
         seen_in_file.add(dni)
         created += 1
+        # Audit: record the employee import (append-only; metadata only — NO DNI).
+        try:
+            from reading_gate import services as rg_services
+
+            rg_services.audit_event(
+                None,
+                "import",
+                "",
+                "",
+                {"employee_id": emp.id, "position": position, "status": "created"},
+            )
+        except Exception as exc:  # audit must never break import
+            logger.warning("import audit failed: %s", exc)
         # Phase 7: auto-assign mandatory courses for the employee's position.
         # Idempotent by DNI+course (Enrollment.unique_together), so re-imports
         # of an already-enrolled employee create no duplicates.

@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from reading_gate import services
-from reading_gate.models import Enrollment, Expediente
+from reading_gate.models import AuditEvent, Enrollment, Expediente
 
 
 def _json_body(request):
@@ -146,5 +146,52 @@ def expediente_list(request):
             "completed_at": e.completed_at.isoformat() if e.completed_at else None,
         }
         for e in qs
+    ]
+    return JsonResponse({"count": len(rows), "results": rows})
+
+
+@csrf_exempt
+def audit_list(request):
+    """Admin-only, read-only audit log (spec audit-log §Append-Only / §No Mutation).
+
+    GET /api/audit?enrollment=<id>&employee=<id>&event_type=<str>&date=<YYYY-MM-DD>
+
+    The audit log is the compliance artifact: it is append-only. NO create,
+    update, or delete endpoint is exposed — any non-GET method is rejected with
+    405 so mutation is impossible through the API. Records are also read-only in
+    the Django admin (see reading_gate/admin.py).
+    """
+    if request.method != "GET":
+        return JsonResponse(
+            {"error": "audit log is append-only; create/update/delete not allowed"},
+            status=405,
+        )
+    qs = AuditEvent.objects.select_related("enrollment").all()
+
+    enrollment = request.GET.get("enrollment")
+    if enrollment and enrollment.isdigit():
+        qs = qs.filter(enrollment_id=int(enrollment))
+    employee = request.GET.get("employee")
+    if employee and employee.isdigit():
+        qs = qs.filter(enrollment__employee_id=int(employee))
+    event_type = request.GET.get("event_type")
+    if event_type:
+        qs = qs.filter(event_type=event_type)
+    date = request.GET.get("date")
+    if date:
+        qs = qs.filter(timestamp__date=date)
+
+    rows = [
+        {
+            "id": e.id,
+            "event_type": e.event_type,
+            "enrollment_id": e.enrollment_id,
+            "device_id": e.device_id,
+            "session_id": e.session_id,
+            "timestamp": e.timestamp.isoformat() if e.timestamp else None,
+            # Payload is metadata only — DNI / tokens / PII are never stored here.
+            "payload": e.payload,
+        }
+        for e in qs[:500]
     ]
     return JsonResponse({"count": len(rows), "results": rows})
