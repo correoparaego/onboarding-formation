@@ -1,9 +1,84 @@
-quiero crear una aplciacion web para hacer la formacion inicial a los nuevos empleados de varias empresas, metermos los datos en una hoja exewcl con los datos personales , dni , puesto y correoelectromico y movil que reciba sms o whasapp, para en viar el link de formacion incial segun tipo de puesto y catalogo de cursos , que consite en descargarse en leer online un pdf con la información , la lectura del pdf sera controladoa por el tiempo medio de lectura , y no dejara avanzar hasta cumplido el tiumepo medio , una vez abierto tambien se controlara hasta que pagina ha sido leido , y ademas al finalizar la lecytura se lanzara un test de compresion de cada curso.
+# Plataforma de Formación Inicial para Empleados (Onboarding multi-empresa)
 
-el administtrador podra crara cursos subiendo un pdf y unos test , o podra subir el pdf y que los test se genera con una agente , o que todo el curso se genere con una gente que nos sugiera el contenido en base a unas preguntas sobre el tema y docuemntos de referencia.
+> Documento de idea en evolución. Objetivo: convertir el borrador inicial en un concepto estructurado y accionable.
 
-en caso de fallo del test se le daran 3 intentos a la persona para emezar desde el principiob y finalizadon cada vez en un test diferente ,  leyendo el dcumento, y una vez finalizada la formacion con el test correctamente conetstado ( respuesta solo una valida ) se 
-gyuradar en el expedinete del empleado las respuestas de nlos cursos realizados , con filtros para seleccionar a empleados con diferentes cussos realizados,
-ademas se podra generar un pdf imprimible con el titulo del curso ralizado,
-que aparezca los datos del empleado , fecha realizacion , titulo del curso , y la evaluacion con un indice resumen de la formacion recibida 
-generado a partir de la docuemntacion del curso realizado. , se gamificara la experiencia con insignias, niveles , y puntuaciones por los cursos realizados 
+## 1. Visión
+Aplicación web multi-empresa para gestionar la formación inicial obligatoria de nuevos empleados. La empresa carga sus empleados, el sistema les envía el acceso por SMS/WhatsApp según su puesto, realizan cursos basados en PDF con control de lectura, superan un test de comprensión y obtienen un expediente y un certificado imprimible. La experiencia se gamifica.
+
+## 2. Actores
+- **Administrador (por empresa):** carga empleados, define el catálogo de cursos por puesto, crea/edita cursos, consulta expedientes y genera certificados.
+- **Empleado:** recibe el enlace, lee el PDF en el visor, realiza los tests y acumula insignias/niveles.
+- **Superadministrador de la plataforma (opcional):** da de alta empresas/clientes y garantiza el aislamiento de datos entre ellas.
+
+## 3. Flujo principal
+1. El admin carga un Excel con los empleados (datos personales, DNI, puesto, correo, móvil).
+2. El sistema asigna los cursos obligatorios según el catálogo del puesto.
+3. El empleado recibe un SMS/WhatsApp con el enlace de formación.
+4. El empleado lee el PDF en el visor online: el tiempo medio de lectura por página/sección bloquea el avance hasta cumplirlo; se registra la página alcanzada.
+5. Al terminar la lectura se lanza el test de comprensión (una sola respuesta válida por pregunta).
+6. Si falla: hasta 3 intentos, reiniciando la lectura desde el principio y con un test distinto en cada intento.
+7. Al aprobar: se guarda el resultado en el expediente, se habilita el certificado PDF y se suman puntos/insignias.
+
+## 4. Funcionalidades detalladas
+### 4.1 Carga de empleados (Excel)
+- Columnas mínimas: nombre, DNI, puesto, correo electrónico, móvil.
+- Validación de formato, detección de duplicados y verificación básica de DNI.
+- Valorar alta masiva (Excel) y alta individual en el MVP.
+
+### 4.2 Notificaciones (SMS / WhatsApp)
+- Necesita integración con un proveedor (p. ej. Twilio, Meta WhatsApp Business API).
+- Requiere consentimiento explícito (opt-in) y tiene coste por envío.
+- Fallback por email si no hay móvil disponible.
+
+### 4.3 Catálogo de cursos por puesto
+- Relación puesto -> lista de cursos obligatorios.
+- Permite asignar automáticamente al cargar el empleado.
+
+### 4.4 Lector PDF con control anti-salto
+- Tiempo medio de lectura estimado por documento (o por página).
+- El visor no permite avanzar antes de cumplir el tiempo.
+- Registro de progreso: página actual y tiempo invertido.
+- **Pregunta abierta:** ¿reanudación tras cerrar sesión? ¿qué ocurre si el empleado cambia de dispositivo?
+
+### 4.5 Test de comprensión
+- Formato tipo test, una única respuesta válida.
+- Origen del test: manual, generado por agente IA, o curso completo generado por IA.
+- 3 intentos máximo; cada intento usa un test distinto (banco de preguntas).
+
+### 4.6 Expediente del empleado y filtros
+- Almacena respuestas y resultado por curso.
+- Filtros para seleccionar empleados según cursos realizados (p. ej. "todos los que hicieron el curso X").
+
+### 4.7 Certificado PDF imprimible
+- Contenido: datos del empleado, fecha, título del curso, evaluación e índice resumen de la formación recibida.
+- Generado a partir de la documentación del curso realizado.
+
+### 4.8 Gamificación
+- Insignias, niveles y puntuaciones por cursos realizados/aprobados.
+
+## 5. Generación de cursos asistida por IA (3 modos)
+1. **Manual:** el admin sube PDF y tests.
+2. **Semi-automático:** el admin sube el PDF y un agente genera los tests.
+3. **Automático:** un agente genera el curso completo (contenido sugerido + test) a partir de preguntas sobre el tema y documentos de referencia.
+
+## 6. Consideraciones y riesgos (a decidir)
+- **Privacidad:** el DNI es dato sensible bajo RGPD/LOPDGDD; requiere consentimiento, cifrado en reposo y en tránsito, y aislamiento por empresa.
+- **Integridad del control de lectura:** ¿mide tiempo real de actividad o solo presencia? ¿cómo evitar que se deje abierto y se salte el control?
+- **Identidad del empleado:** ¿cómo garantizar que quien lee y examina es el propio empleado? (código único, DNI, quizá firma).
+- **Canal de notificación:** costes y límites de SMS/WhatsApp; necesidad de opt-in.
+- **Multi-empresa:** separación estricta de datos (tenancy).
+- **Validez legal del certificado:** ¿requiere firma electrónica?
+
+## 7. Alcance MVP (primera versión recomendada)
+- Una sola empresa (sin multi-tenant complejo al inicio).
+- Carga de empleados por Excel.
+- 1-2 cursos PDF con lector de tiempo y test manual.
+- Notificación inicial por email; SMS/WhatsApp en fase 2.
+- Certificado PDF básico.
+- Gamificación mínima (insignias iniciales).
+
+## 8. Preguntas abiertas para el producto
+- ¿Modelo de negocio / quién paga?
+- ¿Idiomas soportados?
+- ¿Nivel de validez legal requerido para los certificados?
+- ¿Auditoría/registros de trazas de lectura y examen (cumplimiento)?
