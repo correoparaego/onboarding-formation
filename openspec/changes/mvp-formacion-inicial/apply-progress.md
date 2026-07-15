@@ -298,9 +298,138 @@
 - **Known debt gate**: do NOT archive/productionize until the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is resolved.
 
 ## Status
-PR1 (9/9) + PR2 (7/7) + PR3 (12/12) + PR4 (8/8) tasks complete. Ready for
-`sdd-verify` of PR4 scope (or proceed to PR5). Awaiting push + PR creation by a
+PR1 (9/9) + PR2 (7/7) + PR3 (12/12) tasks complete. Ready for `sdd-verify` of
+PR3 scope (or proceed to PR4). Awaiting push + PR creation by a
 user with remote access.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PR5 — Secure Access + Certificate + Badges + Expediente (stacked-to-main)
+# ─────────────────────────────────────────────────────────────────────────────
+**Change**: mvp-formacion-inicial
+**Mode**: Standard (strict_tdd: false; Django `manage.py test` used for focused unit/integration checks — 13 new PR5 tests pass)
+**Branch**: `mvp/pr5-secure-cert-badges-expediente` (created stacked off `mvp/pr4-reading-test`, targeting `main`) — [chain strategy: stacked-to-main]
+**Date**: 2026-07-15
+
+> **KNOWN TECHNICAL DEBT (STILL OPEN / MUST FIX BEFORE PRODUCTION OR ARCHIVE):**
+> the DNI encryption in `backend/common/crypto.py` uses a FIXED zero nonce
+> (AES-GCM nonce reuse) — insecure. It is ACCEPTED DEBT, deferred by the product
+> owner. `EncryptedDNIField` is used AS-IS (returns the verbatim DNI on read and
+> satisfies the dedupe unique constraint). PR5 did NOT modify `crypto.py`/
+> `fields.py`. The verbatim guarantee is preserved (certificate prints DNI
+> verbatim, verified via PyPDF2 text extraction). Do NOT modify crypto until the
+> debt is fixed.
+
+## Completed Tasks (PR5 — cumulative continuation)
+
+### PR5 — Secure Access & Notifications (Phase 8, tasks 8.1–8.4)
+- [x] 8.1 Token issuance per pending enrollment (single-use, TTL) on assignment — reuses `EmployeeAccessToken.issue()` from PR2; issued inside `assign_mandatory_courses` for each NEW enrollment and via the admin resend endpoint. [spec secure-access §Issuance]
+- [x] 8.2 Token consumption invalidation + reuse block — satisfied by PR2's `EmployeeAccessToken.redeem()` (sets `consumed_at`; reused token → "consumed"). No new code in PR5; verified by PR2 tests + this PR's issuance/resend tests. [spec secure-access §Consumption]
+- [x] 8.3 Configurable email transport (Resend/SMTP/console) + Spanish templates (access/reminder/completion). [spec notifications]
+- [x] 8.4 Delivery logging (recipient/status, no raw token/secrets) via `NotificationLog`. [spec notifications §Logging]
+
+### PR5 — Certificate (Phase 11, tasks 11.1–11.2)
+- [x] 11.1 `GET /api/certificate/<enrollment>` (admin-only): reportlab PDF with name, DNI verbatim, date, course title, evaluation, summary index. [spec certificate]
+- [x] 11.2 One active `Certificate` per passed enrollment (`OneToOne`); regeneration deterministic — `core_fields_hash` identical across regenerations. [spec certificate §One Per]
+
+### PR5 — Badges (Phase 12, tasks 12.1–12.2)
+- [x] 12.1 Seed initial badges ("Primer curso", "Catálogo completo", "Sin fallos") via data migration `0003_seed_badges` (+ defensive `ensure_badges()`). [spec badges §Initial Set]
+- [x] 12.2 Award logic on pass: `award_badges_on_pass` → first course, clean first attempt, all-position mandatory courses passed (idempotent via `EmployeeBadge` unique_together). [spec badges §Award*]
+
+### PR5 — Expediente & Filters (Phase 13, tasks 13.1–13.3)
+- [x] 13.1 Persist per-enrollment result (`Expediente`: status, attempts, score, dates) on pass and on exhaustion. [spec expediente §Storage]
+- [x] 13.2 Admin filter `GET /api/expediente?course=&status=`. [spec expediente §Filter]
+- [x] 13.3 Retention policy hook (`get_retention_policy`); records are never purged by app rollback (no delete code). [spec expediente §Retention]
+
+## Files Changed (PR5)
+| File | Action | What Was Done |
+|------|--------|---------------|
+| `backend/notifications/models.py` | Rewritten | `NotificationLog` (recipient, template, channel, status, detail — NO token/secret) |
+| `backend/notifications/transports.py` | Created | `ConsoleEmailTransport` (default), `SMTPEmailTransport` (Django send_mail), `ResendEmailTransport` (lazy `resend` import); `get_transport()` from `EMAIL_TRANSPORT` |
+| `backend/notifications/templates.py` | Created | Spanish `access_email` / `reminder_email` / `completion_email` (magic-link built from `FRONTEND_BASE_URL`) |
+| `backend/notifications/services.py` | Created | `issue_access_token`, `resend_access_token` (idempotent single-active-token), `send_reminder`, `send_completion` — best-effort, never logs raw secret |
+| `backend/notifications/views.py` | Created | `admin_resend_access` (admin-only; does NOT echo raw token/code) |
+| `backend/notifications/urls.py` | Created | `POST /api/admin/enrollment/<pk>/resend-access` |
+| `backend/notifications/migrations/0001_initial.py` | Created | `NotificationLog` table |
+| `backend/certificates/models.py` | Modified | Added `Certificate` model (`OneToOne` enrollment, `core_fields_hash`) |
+| `backend/certificates/services.py` | Created | `generate_certificate_pdf` (reportlab, lazy import), `award_badges_on_pass`, `ensure_badges`, `_core_fields`/`_core_hash` |
+| `backend/certificates/views.py` | Created | `certificate_pdf` (admin-only; 409 if not passed) |
+| `backend/certificates/urls.py` | Created | `GET /api/certificate/<pk>` |
+| `backend/certificates/migrations/0002_certificate.py` | Created | `Certificate` table |
+| `backend/certificates/migrations/0003_seed_badges.py` | Created | Data migration seeding the 3 initial badges |
+| `backend/reading_gate/models.py` | Modified | Added `Expediente` model (status, attempts, score, total, completed_at, retention hook) |
+| `backend/reading_gate/services.py` | Modified | Issuance on assignment in `assign_mandatory_courses`; `_write_expediente` + `_on_pass` (expediente + badges + completion) on pass/exhaustion |
+| `backend/reading_gate/views.py` | Modified | `expediente_list` admin filter |
+| `backend/reading_gate/urls.py` | Modified | `GET /api/expediente` route |
+| `backend/reading_gate/migrations/0002_expediente.py` | Created | `Expediente` table |
+| `backend/authentication/middleware.py` | Modified | `ADMIN_PREFIXES` += `/api/certificate/`, `/api/expediente/` (admin-only) |
+| `backend/mvp_project/urls.py` | Modified | Include `notifications.urls`, `certificates.urls` |
+| `backend/mvp_project/settings.py` | Modified | `EMAIL_TRANSPORT` (default `console`), `DEFAULT_FROM_EMAIL`, `RESEND_API_KEY` |
+| `backend/requirements.txt` | Modified | Add `reportlab>=4.0`, optional `resend` |
+| `backend/notifications/tests.py` | Created | 5 tests: transport config, issuance+log-no-secret, idempotent resend, no-email skip, resend endpoint |
+| `backend/certificates/tests.py` | Created | 4 tests: badge seed, PDF verbatim DNI/title, one-cert+idempotent hash, cert view requires passed |
+| `backend/reading_gate/tests.py` | Modified | + `ExpedienteAndBadgesTests` (pass writes expediente + awards primer-curso/sin-fallos; admin filter) |
+| `openspec/changes/mvp-formacion-inicial/tasks.md` | Modified | PR5 tasks (8.1–8.4, 11.1–11.2, 12.1–12.2, 13.1–13.3) marked `[x]`; chain strategy resolved |
+| `openspec/changes/mvp-formacion-inicial/apply-progress.md` | Modified | This merged artifact |
+
+## Work Unit Evidence (PR5)
+
+### PR5 — Secure Access & Notifications
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test notifications` → `Ran 5 tests ... OK` (console transport default; issuance creates `EmployeeAccessToken` with only hashes; `NotificationLog` recipient+status present; raw token/code absent from log; resend leaves exactly ONE unconsumed token; resend endpoint returns ok without token/code in body) |
+| Runtime harness | `python manage.py check` clean; Django test client `POST /api/admin/enrollment/<pk>/resend-access` (admin session) → 200 `{"ok":true,"employee":...}`; console transport prints the Spanish magic-link email to stdout; `NotificationLog` row shows recipient+status, never the raw token |
+| Rollback boundary | Revert `notifications/` (models/services/views/urls/transports/templates) + middleware `ADMIN_PREFIXES` additions + `mvp_project` urls/settings; `migrate notifications zero` drops `NotificationLog` (additive migration) |
+
+### PR5 — Certificate
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test certificates` → `Ran 4 tests ... OK` (badge seed; PDF contains verbatim `12345678Z` + `Curso A` + evaluation via PyPDF2 text extraction; one `Certificate` per enrollment; regeneration `core_fields_hash` identical; view returns `application/pdf` and 409 for non-passed) |
+| Runtime harness | Django test client `GET /api/certificate/<pk>` (admin session) → 200 `application/pdf`; content extracted via PyPDF2 contains the verbatim DNI; `GET` on a non-`passed` enrollment → 409 |
+| Rollback boundary | Revert `certificates/services.py`, `views.py`, `urls.py` + middleware `ADMIN_PREFIXES` + project urls include + settings email block; `migrate certificates zero` drops `Certificate` (and reverts `0003_seed_badges` deleting seeded badges — keep `0003` if badges must survive a cert-only revert) |
+
+### PR5 — Badges
+| Evidence | Value |
+|----------|-------|
+| Focused test command | Same `certificates` run (badge seed) + `reading_gate` `ExpedienteAndBadgesTests` → first pass awards `primer-curso` + `sin-fallos`; `award_badges_on_pass` idempotent via `EmployeeBadge` unique_together |
+| Runtime harness | `migrate` applies `0003_seed_badges` → 3 badges present; `award_badges_on_pass` on a 1st-attempt pass yields primer-curso + sin-fallos; all-position pass yields catalogo-completo (verified by logic; position-catalog M2M reconciliation) |
+| Rollback boundary | Revert `certificates/services.py` `award_badges_on_pass` (and its call in `reading_gate/services._on_pass`); `0003_seed_badges` optional to keep |
+
+### PR5 — Expediente
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test reading_gate` → `Ran 17 tests ... OK` (includes `ExpedienteAndBadgesTests`: pass writes `Expediente` with status/attempts/score/completed_at; admin filter `?course=&status=passed` → 1, `?status=assigned` → 0) |
+| Runtime harness | `python manage.py check` clean; Django test client `GET /api/expediente?course=<id>&status=passed` (admin session) → `{"count":1,...}`; full suite `python manage.py test` → 37 tests OK (no regressions in PR1–PR4 apps) |
+| Rollback boundary | Revert `reading_gate/models.py` `Expediente` + `services._write_expediente` + `views.expediente_list` + `urls` route + middleware `ADMIN_PREFIXES`; `migrate reading_gate zero` drops `Expediente` (additive). Existing expediente rows are retained data (retention policy) and harmless if code is reverted |
+
+## Deviations / Design Clarifications (PR5)
+- **8.2 reused, not re-implemented**: token consumption invalidation + reuse block were delivered in PR2 (`EmployeeAccessToken.redeem` sets `consumed_at`; a presented-but-consumed token returns "consumed"). Marked complete; no new code.
+- **Resend idempotency = single active token**: because only token HASHES are stored (raw secret unrecoverable), `resend_access_token` invalidates any prior unconsumed token (marks `consumed_at`) and issues a fresh one, so exactly ONE active token ever exists. This keeps the single-use invariant rather than re-delivering an unrecoverable secret.
+- **Cert + Expediente are admin-only** (added `/api/certificate/`, `/api/expediente/` to `ADMIN_PREFIXES`) to honor role isolation while keeping the spec path shapes; employees cannot print certs or read expedientes via the API at MVP.
+- **Badge award wired into the pass path** of `grade_submission` (PR4's deferred "badge evaluation"), called via `_on_pass` with lazy import + try/except so a badge/notification failure can NEVER break the pass result. Completion email is auto-sent on pass (best-effort, console transport).
+- **Issuance on assignment** is best-effort: a delivery failure is logged (`logger.warning`) but does NOT block enrollment assignment (defensive try/except in `assign_mandatory_courses`).
+- **DNI verbatim on certificate**: `employee.dni` returns the exact stored value via `EncryptedDNIField`; the PDF includes it unformatted and the rendered text was verified verbatim via PyPDF2 extraction. `crypto.py`/`fields.py` were NOT modified (debt preserved).
+- **No raw token/DNI in logs/audit**: `NotificationLog` stores only recipient+status+detail; `AuditEvent` payloads (from PR4) reference `enrollment_id` + metadata only. A `certificate-issued` audit event was NOT added (optional; formal audit API is PR6).
+- **Email transport not exercised with real creds**: default `console` transport is verified (prints link). `smtp`/`resend` are config-gated and require real credentials/network, so their real delivery is NOT verified here (documented).
+- **Real PDF visual not verified**: only programmatic text extraction (PyPDF2) confirms fields; pixel-level layout was not visually inspected.
+
+## Remaining Tasks (PR6)
+- Phase 14: Audit Log — formal append-only `AuditEvent` API (reject update/delete), full coverage incl. cert issuance event.
+- Phase 15: Verification/QA — pytest unit/integration coverage, Playwright E2E (import→read→test→cert), README/run + EU PaaS deploy notes.
+
+## PR / Delivery Status
+- **PR5 branch**: `mvp/pr5-secure-cert-badges-expediente` (created stacked off `mvp/pr4-reading-test`, targeting `main`). [chain strategy: stacked-to-main]
+- **Commits**: planned as work-unit commits (created locally; push/PR left to a user with remote access, no force-push/no merge):
+  (1) `feat(secure-access)` — notifications app: issuance, configurable transport, Spanish templates, delivery log, resend endpoint;
+  (2) `feat(certificate)` — certificates: reportlab PDF + admin endpoint + Certificate model + seed migration;
+  (3) `feat(badges)` — badge seed + award logic on pass;
+  (4) `feat(expediente)` — Expediente model + admin filter + wire into pass/exhaustion;
+  (5) `docs(sdd)` — tasks.md `[x]` + merged apply-progress.
+- **Prior branches**: `mvp/pr1-scaffold-models` … `mvp/pr4-reading-test` — still awaiting push + PR by a user with remote access. `gh` CLI not available; branches + commits are local only.
+- **Known debt gate**: do NOT archive/productionize until the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is resolved.
+
+## Status
+PR1 (9/9) + PR2 (7/7) + PR3 (12/12) + PR4 (8/8) + PR5 (11/11) tasks complete.
+Ready for `sdd-verify` of PR5 scope (or proceed to PR6). Awaiting push + PR creation by a user with remote access.
 
 ## PR / Delivery Status
 - **PR3 branch**: `mvp/pr3-courses-enroll-ai` (to be created stacked off `mvp/pr2-auth-import`, targeting `main`).

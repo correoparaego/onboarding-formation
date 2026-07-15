@@ -46,10 +46,10 @@
 - [x] 7.2 Idempotency by DNI+course (re-import skips duplicates). [spec enrollment-assignment §Idempotency]
 
 ## Phase 8: Secure Access & Notifications
-- [ ] 8.1 Token issuance per pending enrollment (single-use, TTL) on assignment. [spec secure-access §Issuance]
-- [ ] 8.2 Token consumption invalidation + reuse block. [spec secure-access §Consumption]
-- [ ] 8.3 Configurable email transport (Resend/SMTP) + Spanish templates (access/reminder/completion). [spec notifications]
-- [ ] 8.4 Delivery logging (recipient/status, no raw token/secrets). [spec notifications §Logging]
+- [x] 8.1 Token issuance per pending enrollment (single-use, TTL) on assignment. [spec secure-access §Issuance]
+- [x] 8.2 Token consumption invalidation + reuse block. [spec secure-access §Consumption]
+- [x] 8.3 Configurable email transport (Resend/SMTP) + Spanish templates (access/reminder/completion). [spec notifications]
+- [x] 8.4 Delivery logging (recipient/status, no raw token/secrets). [spec notifications §Logging]
 
 ## Phase 9: Timed Reading Gate
 - [x] 9.1 `POST /api/reading/heartbeat`: validate visibility+interaction, credit delta. [spec timed-reading §Heartbeat; design §Sequence]
@@ -64,17 +64,17 @@
 - [x] 10.4 Pass → status=passed; enable cert + badge evaluation. [spec comprehension-test §Pass]
 
 ## Phase 11: Certificate
-- [ ] 11.1 `GET /api/certificate/{enrollment}`: reportlab PDF (name, DNI verbatim, date, title, evaluation, summary index). [spec certificate]
-- [ ] 11.2 One active cert per passed enrollment; idempotent regeneration. [spec certificate §One Per]
+- [x] 11.1 `GET /api/certificate/{enrollment}`: reportlab PDF (name, DNI verbatim, date, title, evaluation, summary index). [spec certificate]
+- [x] 11.2 One active cert per passed enrollment; idempotent regeneration. [spec certificate §One Per]
 
 ## Phase 12: Badges
-- [ ] 12.1 Seed initial badges ("Primer curso", "Catálogo completo", "Sin fallos"). [spec badges §Initial Set]
-- [ ] 12.2 Award logic on pass: first, all-position, clean-first-attempt. [spec badges §Award*]
+- [x] 12.1 Seed initial badges ("Primer curso", "Catálogo completo", "Sin fallos"). [spec badges §Initial Set]
+- [x] 12.2 Award logic on pass: first, all-position, clean-first-attempt. [spec badges §Award*]
 
 ## Phase 13: Expediente & Filters
-- [ ] 13.1 Persist per-enrollment result (status, attempts, score, dates). [spec expediente §Storage]
-- [ ] 13.2 Admin filter `GET /api/expediente?course=&status=`. [spec expediente §Filter]
-- [ ] 13.3 Retention policy; records survive rollback. [spec expediente §Retention]
+- [x] 13.1 Persist per-enrollment result (status, attempts, score, dates). [spec expediente §Storage]
+- [x] 13.2 Admin filter `GET /api/expediente?course=&status=`. [spec expediente §Filter]
+- [x] 13.3 Retention policy; records survive rollback. [spec expediente §Retention]
 
 ## Phase 14: Audit Log
 - [ ] 14.1 `AuditEvent` append-only model + API; reject update/delete. [spec audit-log §Append/§No Mutation]
@@ -100,7 +100,7 @@
 
 Decision needed before apply: No
 Chained PRs recommended: Yes
-Chain strategy: pending
+Chain strategy: stacked-to-main (resolved for PR5)
 400-line budget risk: High
 
 ### Suggested Work Units (PR slices)
