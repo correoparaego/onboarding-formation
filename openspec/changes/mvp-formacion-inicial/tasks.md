@@ -77,15 +77,15 @@
 - [x] 13.3 Retention policy; records survive rollback. [spec expediente §Retention]
 
 ## Phase 14: Audit Log
-- [ ] 14.1 `AuditEvent` append-only model + API; reject update/delete. [spec audit-log §Append/§No Mutation]
-- [ ] 14.2 Capture device/session/enrollment/timestamp context. [spec audit-log §Context]
-- [ ] 14.3 Wire coverage: section unlock/complete, attempt start/submit/result, cert issuance. [spec audit-log §Coverage]
+- [x] 14.1 `AuditEvent` append-only model + API; reject update/delete. [spec audit-log §Append/§No Mutation]
+- [x] 14.2 Capture device/session/enrollment/timestamp context. [spec audit-log §Context]
+- [x] 14.3 Wire coverage: section unlock/complete, attempt start/submit/result, cert issuance. [spec audit-log §Coverage]
 
 ## Phase 15: Verification / QA
-- [ ] 15.1 Unit: gate math, subset determinism, DNI verbatim, sanitizer (pytest). [design §Testing]
-- [ ] 15.2 Integration: heartbeat→unlock, fail→restart, cert gen, AI fake-LLM flows (APIClient+Postgres). [design §Testing]
-- [ ] 15.3 E2E Playwright: import→read→test→cert on SPA. [design §Testing]
-- [ ] 15.4 README/run docs + deployment env notes (EU PaaS). [proposal §Dependencies]
+- [x] 15.1 Unit: gate math, subset determinism, DNI verbatim, sanitizer (pytest). [design §Testing]
+- [x] 15.2 Integration: heartbeat→unlock, fail→restart, cert gen, AI fake-LLM flows (APIClient+Postgres). [design §Testing]
+- [x] 15.3 E2E Playwright: import→read→test→cert on SPA. [design §Testing]
+- [x] 15.4 README/run docs + deployment env notes (EU PaaS). [proposal §Dependencies]
 
 ## Review Workload Forecast
 

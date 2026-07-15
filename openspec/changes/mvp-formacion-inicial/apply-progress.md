@@ -1,4 +1,4 @@
-# Apply Progress — mvp-formacion-inicial (PR1 + PR2 + PR3 + PR4)
+# Apply Progress — mvp-formacion-inicial (PR1 + PR2 + PR3 + PR4 + PR5 + PR6)
 
 **Change**: mvp-formacion-inicial
 **Mode**: Standard (strict_tdd: false; Django `manage.py test` used for focused unit/integration checks — 15 tests pass for the reading_gate app)
@@ -7,9 +7,11 @@
 - PR2 — Authentication + Employee Import (stacked-to-main) — branch `mvp/pr2-auth-import` (branched off `mvp/pr1-scaffold-models`; targets `main`)
 - PR3 — Course Management + AI Generation + Enrollment (stacked-to-main) — branch `mvp/pr3-courses-enroll-ai` (off `mvp/pr2-auth-import`; targets `main`)
 - PR4 — Timed Reading Gate + Comprehension Test + immediate Audit (stacked-to-main) — branch `mvp/pr4-reading-test` (off `mvp/pr3-courses-enroll-ai`; targets `main`)
+- PR5 — Secure Access + Certificate + Badges + Expediente (stacked-to-main) — branch `mvp/pr5-secure-cert-badges-expediente` (off `mvp/pr4-reading-test`; targets `main`)
+- PR6 — Audit Log + Verification/QA (stacked-to-main) — branch `mvp/pr6-audit-qa` (off `mvp/pr5-secure-cert-badges-expediente`; targets `main`)
 **Date**: 2026-07-14
 
-> **KNOWN TECHNICAL DEBT (MUST FIX BEFORE PRODUCTION / ARCHIVE):** the DNI
+> **KNOWN TECHNICAL DEBT (MUST FIX BEFORE PRODUCTION / ARCHIVE — **BLOCKING for archive/production**):** the DNI
 > encryption in `backend/common/crypto.py` uses a FIXED zero nonce (AES-GCM
 > nonce reuse) — insecure. It is ACCEPTED DEBT, deferred by the product owner.
 > `EncryptedDNIField` is used AS-IS (returns the verbatim DNI on read and
@@ -310,7 +312,7 @@ user with remote access.
 **Branch**: `mvp/pr5-secure-cert-badges-expediente` (created stacked off `mvp/pr4-reading-test`, targeting `main`) — [chain strategy: stacked-to-main]
 **Date**: 2026-07-15
 
-> **KNOWN TECHNICAL DEBT (STILL OPEN / MUST FIX BEFORE PRODUCTION OR ARCHIVE):**
+> **KNOWN TECHNICAL DEBT (STILL OPEN / MUST FIX BEFORE PRODUCTION OR ARCHIVE — **BLOCKING for archive/production**):**
 > the DNI encryption in `backend/common/crypto.py` uses a FIXED zero nonce
 > (AES-GCM nonce reuse) — insecure. It is ACCEPTED DEBT, deferred by the product
 > owner. `EncryptedDNIField` is used AS-IS (returns the verbatim DNI on read and
@@ -442,3 +444,135 @@ Ready for `sdd-verify` of PR5 scope (or proceed to PR6). Awaiting push + PR crea
 PR1 (9/9) + PR2 (7/7) + PR3 (12/12) tasks complete. Ready for `sdd-verify` of
 PR3 scope (or proceed to PR4). Awaiting push + PR creation by a user with
 remote access.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PR6 — Audit Log + Verification / QA (stacked-to-main)
+# ─────────────────────────────────────────────────────────────────────────────
+**Change**: mvp-formacion-inicial
+**Mode**: Standard (strict_tdd: false; Django `manage.py test` + `pytest` used — 50 tests pass, incl. 13 new audit/integration tests)
+**Branch**: `mvp/pr6-audit-qa` (created stacked off `mvp/pr5-secure-cert-badges-expediente`, targeting `main`) — [chain strategy: stacked-to-main]
+**Date**: 2026-07-15
+
+> **KNOWN TECHNICAL DEBT (STILL OPEN / MUST FIX BEFORE PRODUCTION OR ARCHIVE — BLOCKING):**
+> the DNI encryption in `backend/common/crypto.py` uses a FIXED zero nonce
+> (AES-GCM nonce reuse) — insecure. It is ACCEPTED DEBT, deferred by the product
+> owner. `EncryptedDNIField` is used AS-IS (returns the verbatim DNI on read and
+> satisfies the dedupe unique constraint). PR6 did NOT modify `crypto.py`/
+> `fields.py`. The verbatim guarantee is preserved. This debt is **BLOCKING** for
+> archive and for any production deployment — resolve it (unique random nonce per
+> encryption, or move to a vetted envelope) before shipping.
+
+## Completed Tasks (PR6 — cumulative continuation)
+
+### PR6 — Audit Log (Phase 14, tasks 14.1–14.3)
+- [x] 14.1 `AuditEvent` append-only API: `GET /api/audit` (admin-only) with read/filter by `enrollment`/`employee`/`event_type`/`date`; ANY non-GET (POST/PUT/DELETE/PATCH) returns **405** (mutation rejected by design). Django admin registers `AuditEvent` as **read-only** (no add/change/delete), so append-only holds end-to-end. [spec audit-log §Append/§No Mutation]
+- [x] 14.2 Capture `device_id`/`session_id`/`enrollment`/`timestamp` context on every event (model fields + `_audit`/`audit_event` helper). [spec audit-log §Context]
+- [x] 14.3 Full coverage wiring — emit the previously-missing events via the existing services/views: `section_unlock` (on sequential unlock), `enrollment_assigned` (on auto-enroll), `import` (on employee import), `certificate_issued` (on cert PDF). Prior events (`section_complete`, `reading_complete`, `attempt_start`/`submit`/`fail`/`blocked`) already emitted in PR4. All payloads reference `enrollment_id` + metadata ONLY — **NO DNI / raw token / PII**. [spec audit-log §Coverage]
+
+### PR6 — Verification / QA (Phase 15, tasks 15.1–15.4)
+- [x] 15.1 Unit coverage runs under pytest: gate math, subset determinism, DNI verbatim, PII-exclusion sanitizer (existing tests collected via `test*.py`). Added `backend/pytest.ini` harness (`DJANGO_SETTINGS_MODULE=mvp_project.settings`). [design §Testing]
+- [x] 15.2 Integration happy path `backend/tests_integration.py`: `import → read (heartbeat) → test submit → certificate → audit` exercised through the real HTTP APIClient (SQLite test DB), asserting the append-only trail (certificate_issued, import, enrollment_assigned, section_complete/unlock, attempt_submit). [design §Testing]
+- [x] 15.3 E2E Playwright spec `frontend/e2e/import-read-test-cert.spec.ts` + `frontend/playwright.config.ts`: drives the SPA through import→read→test→cert and asserts the audit trail. Opt-in (`RUN_E2E=1`); **skips gracefully** when Playwright/browser is absent, so local builds stay green. `npm run test:e2e` added. [design §Testing]
+- [x] 15.4 `README.md` (root): how to run backend/frontend, tests (pytest + manage.py test), migrations, EU PaaS deployment env notes (Django EU host + static EU host for React, Postgres EU, email provider, `DNI_ENCRYPTION_KEY`/`SECRET_KEY`, per-admin AI key), and the **DNI crypto debt documented prominently as a known security limitation (BLOCKING)**. [proposal §Dependencies]
+
+## Files Changed (PR6)
+
+| File | Action | What Was Done |
+|------|--------|---------------|
+| `backend/reading_gate/views.py` | Modified | `audit_list` (admin-only GET; rejects POST/PUT/DELETE/PATCH → 405; filters enrollment/employee/event_type/date; payload is metadata only — no DNI) |
+| `backend/reading_gate/urls.py` | Modified | Add `api/audit` route |
+| `backend/reading_gate/admin.py` | Created | Read-only `AuditEvent` admin (has_add/change/delete_permission → False) |
+| `backend/reading_gate/services.py` | Modified | Public `audit_event` helper (+ `_audit` alias); emit `section_unlock` on sequential unlock; emit `enrollment_assigned` on auto-enroll |
+| `backend/authentication/middleware.py` | Modified | Add `/api/audit` to `ADMIN_PREFIXES` |
+| `backend/certificates/views.py` | Modified | Emit `certificate_issued` (metadata only, no DNI); best-effort, never breaks cert delivery |
+| `backend/employees/views.py` | Modified | Emit `import` event per created employee (metadata only, NO DNI) |
+| `backend/reading_gate/tests_audit.py` | Created | `AuditApiTests` (reject mutation 405, filters, no DNI, pagination cap) + `AuditCoverageTests` (import/enrollment_assigned/section_unlock/certificate_issued) — 11 tests |
+| `backend/tests_integration.py` | Created | `HappyPathIntegrationTests`: full import→read→test→cert→audit via HTTP APIClient — 1 test |
+| `backend/pytest.ini` | Created | pytest harness config (`DJANGO_SETTINGS_MODULE`) |
+| `backend/requirements.txt` | Modified | Add `pytest>=8.0`, `pytest-django>=4.8` |
+| `frontend/playwright.config.ts` | Created | Playwright config (opt-in, skips gracefully without browser) |
+| `frontend/e2e/import-read-test-cert.spec.ts` | Created | E2E spec import→read→test→cert + audit assertion |
+| `frontend/package.json` | Modified | Add `test:e2e` script + `@playwright/test` devDependency |
+| `README.md` | Created | Run/test/migration docs, EU PaaS deploy env, prominent DNI crypto debt (BLOCKING) |
+| `openspec/changes/mvp-formacion-inicial/tasks.md` | Modified | Phase 14 + 15 tasks marked `[x]` |
+| `openspec/changes/mvp-formacion-inicial/apply-progress.md` | Modified | This merged artifact |
+
+## Work Unit Evidence (PR6)
+
+### PR6 — Audit API (append-only)
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test reading_gate.tests_audit` → `Ran 11 tests ... OK` (POST→405, PUT→405, DELETE→405, filter by event_type/enrollment/employee/date, no DNI in payload, 500-row pagination cap) |
+| Runtime harness | `python manage.py check` clean; Django test client `GET /api/audit?event_type=certificate_issued` (admin session) → counts issuances; `POST /api/audit` → 405; Django `/admin` shows AuditEvent with add/change/delete disabled |
+| Rollback boundary | Revert `reading_gate/views.py` `audit_list` + `urls.py` route + `admin.py` + `middleware.py` `ADMIN_PREFIXES` addition; no model/migration change (AuditEvent predates PR6, so nothing to migrate down) |
+
+### PR6 — Audit coverage wiring
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `AuditCoverageTests` (in `tests_audit.py`) → `import` + `enrollment_assigned` emitted on import; `section_unlock` emitted on heartbeat; `certificate_issued` emitted on cert PDF (all 11 tests pass) |
+| Runtime harness | `python manage.py check` clean; end-to-end import→cert path writes the four new event types; asserted via direct `AuditEvent.objects.filter(...)` queries |
+| Rollback boundary | Revert the `audit_event` calls in `certificates/views.py` + `employees/views.py` + the `section_unlock`/`enrollment_assigned` emits in `reading_gate/services.py`; additive (only new rows), safe to keep data |
+
+### PR6 — QA harness (pytest + integration + E2E)
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test` → `Ran 50 tests ... OK` (37 prior + 13 new). `python -m pytest` → `50 passed` (harness verified after `pip install pytest-django`) |
+| Runtime harness | `tests_integration.py` drives the FULL flow through the real HTTP API on the SQLite test DB and asserts the append-only audit trail (certificate_issued/import/enrollment_assigned/section_complete/section_unlock/attempt_submit) with NO DNI in any payload |
+| E2E | `frontend/e2e/import-read-test-cert.spec.ts` skips gracefully (`RUN_E2E` unset / no browser) — NOT executed in this environment (no Playwright browser installed); documented run steps in README + spec header |
+| Rollback boundary | Revert `tests_audit.py` + `tests_integration.py` + `pytest.ini` + `requirements.txt` entries (test-only, no production behavior); revert `playwright.config.ts` + `e2e/` + `package.json` script (SPA build unaffected — e2e dir is outside `src`) |
+
+### PR6 — Docs
+| Evidence | Value |
+|----------|-------|
+| Focused test command | N/A (documentation); `python manage.py check` + `makemigrations --check --dry-run` still clean after all PR6 changes |
+| Runtime harness | N/A (docs); README documents backend/frontend run, both test harnesses, migrations, and EU PaaS env; DNI crypto debt called out prominently as BLOCKING |
+| Rollback boundary | Revert `README.md` only (no code impact) |
+
+## Deviations / Design Clarifications (PR6)
+- **`section_unlock` added** beyond the PR4 events to satisfy the spec's
+  "section unlock/complete" wording: emitted when a completed section unlocks
+  the next one (last section, having no successor, emits only `section_complete`).
+- **`import` event has no enrollment**: at import time the `Employee` exists but
+  the `Enrollment` may not yet (auto-enroll happens in the same loop). The
+  event is emitted with `enrollment=None` and `payload={employee_id,
+  position, status}` — `employee_id` is an internal PK, NOT PII; DNI is
+  deliberately excluded.
+- **Audit payloads carry metadata only**: `import` → employee_id/position;
+  `enrollment_assigned` → course_id/position; `certificate_issued` →
+  course_title/issued_at. No DNI, token, or employee PII anywhere.
+- **Read-only admin**: registering `AuditEvent` with add/change/delete
+  disabled enforces append-only even for superusers via `/admin`, closing the
+  gap a plain "no API endpoint" rule would leave.
+- **`audit_event` is the public helper**; the prior internal `_audit` is kept as
+  an alias so PR4's in-module callers need no churn.
+- **E2E not executed here**: no Playwright browser in this environment. The spec
+  skips gracefully and the run steps are documented; it is a verification
+  artifact, not a gating build step.
+- **DNI crypto debt unchanged**: `common/crypto.py`/`fields.py` were NOT
+  modified; the verbatim-DNI guarantee and dedupe constraint are intact. The
+  debt is surfaced as BLOCKING in the README and below.
+
+## Issues Found
+- None blocking. E2E could not be executed (no browser); mitigated by opt-in
+  skip + documented run steps. The PyPDF2 `DeprecationWarning` (present in
+  PR5) is unchanged — cosmetic, not an error.
+
+## Remaining Tasks
+- None. After PR6 the change is **feature-complete** (Phases 1–15 all done).
+- Blocking pre-archive/production item: **resolve the DNI fixed-nonce crypto
+  debt** (product owner decision). This is NOT a task in this PR; it is a
+  standing security gate.
+
+## PR / Delivery Status
+- **PR6 branch**: `mvp/pr6-audit-qa` (created stacked off `mvp/pr5-secure-cert-badges-expediente`, targeting `main`). [chain strategy: stacked-to-main]
+- **Commits**: planned as work-unit commits (created locally; push/PR left to a user with remote access, no force-push/no merge):
+  (1) `feat(audit)` — append-only AuditEvent API + read-only admin + coverage wiring (section_unlock/enrollment_assigned/import/certificate_issued);
+  (2) `test(qa)` — pytest harness + audit API/coverage tests + integration happy path;
+  (3) `test(e2e)` — Playwright config + spec + package.json script;
+  (4) `docs(readme)` — README run/test/deploy + DNI debt (BLOCKING);
+  (5) `docs(sdd)` — tasks.md `[x]` + merged apply-progress.
+- **Prior branches**: `mvp/pr1-scaffold-models` … `mvp/pr5-secure-cert-badges-expediente` — still awaiting push + PR by a user with remote access. `gh` CLI not available; branches + commits are local only.
+- **Known debt gate (BLOCKING)**: do NOT archive or deploy to production until the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is resolved.
+
+## Status
+PR1 (9/9) + PR2 (7/7) + PR3 (12/12) + PR4 (8/8) + PR5 (11/11) + PR6 (7/7) tasks complete. **Feature-complete.** Ready for `sdd-verify` (full-suite green: 50 tests) and then `sdd-archive` — **BLOCKED on the DNI crypto debt resolution before archive/production.** Awaiting push + PR creation by a user with remote access.
