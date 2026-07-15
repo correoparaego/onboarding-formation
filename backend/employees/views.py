@@ -9,7 +9,9 @@ Key invariants (spec employee-import):
 - A per-row validation report lists accepted/rejected rows with reasons
   (missing field, malformed email, invalid DNI format).
 - Dedupe by DNI: a DNI already in the DB, or duplicated within the file, is
-  flagged and never produces a second ``Employee`` (unique constraint holds).
+  flagged and never produces a second ``Employee`` (the ``dni_lookup`` unique
+  constraint holds — see HashedDNILookupField; the encrypted ``dni`` column is
+  intentionally non-deterministic).
 - Idempotent: re-importing the same DNI creates nothing new.
 
 Auto-enrollment (Phase 7) is intentionally NOT performed here; this endpoint
@@ -25,6 +27,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import pandas as pd
 
+from common.crypto import dni_lookup_hash
 from common.dni import is_valid_dni
 from reading_gate.services import assign_mandatory_courses
 
@@ -113,8 +116,9 @@ def employee_import(request):
             )
             continue
 
-        # Dedupe by DNI (verbatim, exact match).
-        if dni in seen_in_file:
+        # Dedupe by DNI. Use the deterministic lookup hash (dni_lookup), NOT the
+        # encrypted dni column — the ciphertext is now non-deterministic.
+        if dni_lookup_hash(dni) in seen_in_file:
             duplicates += 1
             report.append(
                 {
@@ -125,7 +129,7 @@ def employee_import(request):
                 }
             )
             continue
-        if Employee.objects.filter(dni=dni).exists():
+        if Employee.objects.filter(dni_lookup=dni_lookup_hash(dni)).exists():
             duplicates += 1
             report.append(
                 {
@@ -145,7 +149,7 @@ def employee_import(request):
             email=email,
             phone=phone,
         )
-        seen_in_file.add(dni)
+        seen_in_file.add(dni_lookup_hash(dni))
         created += 1
         # Audit: record the employee import (append-only; metadata only — NO DNI).
         try:
