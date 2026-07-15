@@ -10,28 +10,26 @@ reader, comprehension tests, printable certificates, minimal badges, and a
 - **Database:** PostgreSQL (Django ORM); SQLite auto-fallback for local boot.
 - **Tenancy:** single-tenant MVP (one company).
 
-> ### ⚠️ KNOWN SECURITY LIMITATION — DNI ENCRYPTION DEBT (BLOCKING)
+> ### ✅ DNI ENCRYPTION — SECURITY FIX APPLIED (W1 RESOLVED)
 >
-> The DNI field is encrypted at rest by `backend/common/crypto.py`, but that
-> module uses a **FIXED zero nonce** for AES-GCM. Reusing a nonce with the
-> same key breaks AES-GCM's security guarantees — this is **insecure** and
-> MUST be fixed before this app is deployed to **production** or **archived** as
-> done.
+> The DNI field is encrypted at rest by `backend/common/crypto.py` using
+> **AES-GCM with a fresh, cryptographically-random 12-byte nonce per
+> encryption** (nonce prepended to the ciphertext: `nonce || ciphertext ||
+> tag`). This eliminates the earlier **fixed-zero-nonce reuse** weakness — a
+> real cryptographic break — that was previously tracked as BLOCKING debt.
 >
-> - Status: **ACCEPTED / DEFERRED** debt (product owner decision). It is
->   intentionally left as-is so the verbatim-DNI + dedupe unique constraint
->   keeps working during development.
-> - What to do before production: replace the fixed zero nonce with a
->   unique, randomly generated nonce per encryption (store the nonce alongside
->   the ciphertext, e.g. `nonce || ciphertext || tag`), or move to a
->   vetted envelope (e.g. `django-fernet-fields` / `cryptography`'s
->   `Fernet`). Do **NOT** modify `crypto.py`/`fields.py` until you are
->   ready to re-encrypt existing values.
-> - `EncryptedDNIField` currently returns the **verbatim DNI** on read, which
->   the dedupe unique constraint relies on. The verbatim guarantee must be
->   preserved by any replacement.
-> - The audit log and all API responses never include raw DNI in payloads
->   (they reference `enrollment_id` + metadata only).
+> - Status: **RESOLVED** in the security-fix PR on branch
+>   `mvp/fix-w1-dni-crypto` (stacked off `mvp/pr6-audit-qa`, targeting
+>   `main`). The change is now clear for archive / production.
+> - Dedupe / uniqueness is now enforced by a **separate deterministic HMAC-SHA256**
+>   (`dni_lookup_hash`, stored in `HashedDNILookupField.dni_lookup`,
+>   `unique=True`). This keeps the DNI **verbatim** on read AND rejects
+>   duplicate DNI imports, without a deterministic ciphertext.
+> - Existing rows were re-encrypted in place by the `employees` data migration
+>   (`0002_w1_dni_crypto`); no manual re-keying is required.
+> - `EncryptedDNIField` returns the **verbatim DNI** on read (verbatim
+>   guarantee preserved). The audit log and all API responses never include
+>   raw DNI in payloads (they reference `enrollment_id` + metadata only).
 
 ---
 

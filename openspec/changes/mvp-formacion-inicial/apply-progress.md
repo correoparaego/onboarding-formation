@@ -11,12 +11,16 @@
 - PR6 — Audit Log + Verification/QA (stacked-to-main) — branch `mvp/pr6-audit-qa` (off `mvp/pr5-secure-cert-badges-expediente`; targets `main`)
 **Date**: 2026-07-14
 
-> **KNOWN TECHNICAL DEBT (MUST FIX BEFORE PRODUCTION / ARCHIVE — **BLOCKING for archive/production**):** the DNI
-> encryption in `backend/common/crypto.py` uses a FIXED zero nonce (AES-GCM
-> nonce reuse) — insecure. It is ACCEPTED DEBT, deferred by the product owner.
-> `EncryptedDNIField` is used AS-IS (returns the verbatim DNI on read and
-> satisfies the dedupe unique constraint). Do NOT modify `crypto.py`/`fields.py`.
-> The verbatim guarantee MUST be preserved.
+> **KNOWN TECHNICAL DEBT — ✅ RESOLVED (W1):** the DNI encryption in
+> `backend/common/crypto.py` previously used a FIXED zero nonce (AES-GCM nonce
+> reuse) — an insecure scheme. It has been FIXED in PR7 (`mvp/fix-w1-dni-crypto`,
+> stacked off `mvp/pr6-audit-qa`, targeting `main`): AES-GCM now uses a fresh
+> random 12-byte nonce per encryption (nonce prepended to the ciphertext), and
+> dedupe/uniqueness moved to a deterministic HMAC (`dni_lookup_hash` /
+> `HashedDNILookupField.dni_lookup`, `unique=True`). The DNI is still stored
+> VERBATIM on read and duplicate DNI imports are still rejected. Existing rows
+> were re-encrypted in place by the `employees` data migration `0002_w1_dni_crypto`.
+> The change is now **clear for archive / production**.
 
 ## Completed Tasks (cumulative)
 
@@ -572,7 +576,80 @@ remote access.
   (4) `docs(readme)` — README run/test/deploy + DNI debt (BLOCKING);
   (5) `docs(sdd)` — tasks.md `[x]` + merged apply-progress.
 - **Prior branches**: `mvp/pr1-scaffold-models` … `mvp/pr5-secure-cert-badges-expediente` — still awaiting push + PR by a user with remote access. `gh` CLI not available; branches + commits are local only.
-- **Known debt gate (BLOCKING)**: do NOT archive or deploy to production until the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is resolved.
+- **Known debt gate (RESOLVED in PR7)**: the DNI fixed-nonce crypto debt (`backend/common/crypto.py`) is FIXED — random nonce + HMAC lookup. Change is clear for archive / production.
 
 ## Status
-PR1 (9/9) + PR2 (7/7) + PR3 (12/12) + PR4 (8/8) + PR5 (11/11) + PR6 (7/7) tasks complete. **Feature-complete.** Ready for `sdd-verify` (full-suite green: 50 tests) and then `sdd-archive` — **BLOCKED on the DNI crypto debt resolution before archive/production.** Awaiting push + PR creation by a user with remote access.
+PR1 (9/9) + PR2 (7/7) + PR3 (12/12) + PR4 (8/8) + PR5 (11/11) + PR6 (7/7) tasks complete. **Feature-complete.** W1 security debt RESOLVED in PR7 (`mvp/fix-w1-dni-crypto`). Ready for `sdd-verify` (full-suite green: 56 tests) and then `sdd-archive`. Awaiting push + PR creation by a user with remote access.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PR7 — W1 DNI Crypto Security Fix (stacked-to-main)
+# ─────────────────────────────────────────────────────────────────────────────
+**Change**: mvp-formacion-inicial
+**Mode**: Standard (strict_tdd: false; Django `manage.py test` + `pytest` used — 6 new crypto tests pass; full suite 56 tests green)
+**Branch**: `mvp/fix-w1-dni-crypto` (created stacked off `mvp/pr6-audit-qa`, targeting `main`) — [chain strategy: stacked-to-main]
+**Date**: 2026-07-15
+**Authorized by**: product owner (user) — prior "do not modify" deferral explicitly overridden for this fix.
+
+> **W1 — RESOLVED.** The AES-GCM fixed-zero-nonce reuse (a real cryptographic
+> break) is eliminated. `backend/common/crypto.py` now generates a FRESH random
+> 12-byte nonce per encryption and prepends it to the ciphertext
+> (`nonce || ciphertext || tag`); decryption recovers the nonce. Dedupe /
+> uniqueness moved to a deterministic HMAC-SHA256 (`dni_lookup_hash` /
+> `HashedDNILookupField.dni_lookup`, `unique=True`). BOTH spec requirements are
+> preserved: DNI stored VERBATIM on read, AND duplicate DNI imports rejected.
+
+## Completed Tasks (W1 — cumulative continuation)
+- [x] W1.1 `common/crypto.py`: `encrypt_value` uses `os.urandom(12)` nonce, prepends it to the ciphertext; `decrypt_value` splits `nonce=raw[:12]`; removed `_FIXED_NONCE`. Added `dni_lookup_hash` (HMAC-SHA256, deterministic) + back-compat `decrypt_legacy_value`. [security fix]
+- [x] W1.2 `common/fields.py`: `EncryptedDNIField` keeps verbatim round-trip (non-deterministic storage, no longer unique); added `HashedDNILookupField(models.CharField, max_length=64, unique=True)` storing `dni_lookup_hash(value)` (idempotent). [security fix]
+- [x] W1.3 `employees/models.py`: `dni` no longer `unique=True`; added `dni_lookup = HashedDNILookupField(unique=True, blank=False)`; `save()` override keeps `dni_lookup = dni_lookup_hash(self.dni)` in lockstep. [security fix]
+- [x] W1.4 `employees/views.py`: import dedupe now checks `Employee.objects.filter(dni_lookup=dni_lookup_hash(dni))` (+ in-file `seen_in_file` uses the same hash) instead of the (random) encrypted `dni` column. Verbatim DNI still stored. [security fix]
+- [x] W1.5 Migration `employees/0002_w1_dni_crypto`: adds `dni_lookup` (nullable), re-encrypts existing legacy rows in the NEW format + computes the lookup hash via raw SQL, then enforces `unique=True`/`NOT NULL`; removes `unique` from `dni`. [security fix + data safety]
+- [x] W1.6 Tests `employees/tests_crypto.py`: (a) DNI round-trips verbatim (incl. spaces + lowercase control letter); (b) equal DNIs -> different ciphertext, same `dni_lookup`; (c) duplicate DNI rejected via `dni_lookup` (model + end-to-end import); (d) old fixed-nonce scheme gone (`_FIXED_NONCE` absent, random nonce verified); plus legacy-ciphertext recoverability. [security fix]
+- [x] W1.7 `README.md`: W1/DNI crypto note updated from BLOCKING debt to RESOLVED (random nonce + HMAC lookup; verbatim + dedupe preserved). [docs]
+
+## Files Changed (W1)
+| File | Action | What Was Done |
+|------|--------|---------------|
+| `backend/common/crypto.py` | Rewritten | Random-nonce AES-GCM; `dni_lookup_hash` (HMAC); `decrypt_legacy_value`; removed `_FIXED_NONCE` |
+| `backend/common/fields.py` | Modified | `EncryptedDNIField` verbatim (non-unique); added `HashedDNILookupField` |
+| `backend/employees/models.py` | Modified | `dni` non-unique; added `dni_lookup` (unique HMAC); `save()` keeps lookup in sync |
+| `backend/employees/views.py` | Modified | Dedupe by `dni_lookup_hash(dni)` (DB + in-file) |
+| `backend/employees/migrations/0002_w1_dni_crypto.py` | Created | Add `dni_lookup`, re-encrypt legacy rows + populate hash, enforce unique, drop `dni` unique |
+| `backend/employees/tests_crypto.py` | Created | 6 crypto/verbatim/dedupe/legacy tests |
+| `README.md` | Modified | W1 DNI crypto note → RESOLVED |
+| `openspec/changes/mvp-formacion-inicial/apply-progress.md` | Modified | W1 resolved; PR7 section added; debt gates flipped to RESOLVED |
+
+## Work Unit Evidence (W1)
+
+### W1 — Crypto + field + model + view + migration
+| Evidence | Value |
+|----------|-------|
+| Focused test command | `python manage.py test employees` → `Ran 6 tests ... OK`; `python -m pytest employees/tests_crypto.py` → `6 passed`. Asserts verbatim round-trip, diff-ciphertext/same-lookup, duplicate rejected via `dni_lookup`, and `_FIXED_NONCE` absent |
+| Runtime harness | `python manage.py check` clean; `python manage.py migrate employees` applies `0002_w1_dni_crypto` OK; dev DB re-encryption verified: both legacy rows (`12345678Z`, `  Spaced DNI `) decrypt verbatim and `dni_lookup == dni_lookup_hash(plaintext)`; `makemigrations --check --dry-run` → "No changes detected" |
+| Full suite | `python manage.py test` → `Ran 56 tests in 15.7s ... OK`; `python -m pytest` → `56 passed` (both harnesses green, 0 failures) |
+| Rollback boundary | Revert branch `mvp/fix-w1-dni-crypto` OR `migrate employees zero`? — NOTE: `0002` must stay (it re-encrypted data); to roll back code only, revert `crypto.py`/`fields.py`/`models.py`/`views.py` + the migration file, then `makemigrations`/`migrate` back. Data rows keep new-format ciphertext (decryptable by prior scheme's legacy helper only if needed) |
+
+## Deviations / Design Clarifications (W1)
+- **No spec deviation**: the employee-import spec requirements (DNI verbatim; dedupe by DNI) are BOTH preserved — verbatim via `EncryptedDNIField.from_db_value`, dedupe via the new unique `dni_lookup` HMAC. The prior "do not modify crypto/fields" instruction was an explicit deferral that the user has now authorized overriding.
+- **Distinct key for the lookup HMAC**: `dni_lookup_hash` derives its HMAC key from `_derive_key()` with a domain separator (`b"dni-lookup-v1"`), so the lookup key is not the same bytes used for AES-GCM. The HMAC is NOT reversible and does not leak the DNI beyond equality.
+- **Idempotent `HashedDNILookupField.get_prep_value`**: detects an already-64-hex hash (emitted by `Employee.save()`) and stores it as-is, so re-saves stay stable and the model/database always store exactly one hash. No double-hashing.
+- **Data-safe migration**: because the old format stored only the ciphertext (no prepended nonce), `decrypt_value` (new format) fails on legacy rows; the migration falls back to `decrypt_legacy_value` (fixed zero nonce), re-encrypts in the new format, and writes the lookup hash via raw SQL (avoids field-conversion during migration). Unrecoverable legacy values get a unique stable token so the unique constraint still holds.
+- **No logging of DNI/plaintext/keys**: crypto functions never log; the import `import` audit event (from PR6) still carries metadata only (no DNI).
+
+## Issues Found
+- None blocking. The `RequestsDependencyWarning` (urllib3/chardet version mismatch) is pre-existing and cosmetic, unrelated to this fix.
+
+## PR / Delivery Status
+- **PR7 branch**: `mvp/fix-w1-dni-crypto` (created stacked off `mvp/pr6-audit-qa`, targeting `main`). [chain strategy: stacked-to-main]
+- **Commits**: planned as work-unit commits (created locally; push/PR left to a user with remote access, no force-push/no merge):
+  (1) `fix(security)` — `common/crypto.py` random-nonce AES-GCM + `dni_lookup_hash` + legacy helper;
+  (2) `fix(security)` — `common/fields.py` + `employees/models.py` (HashedDNILookupField, non-unique dni, save() sync);
+  (3) `fix(security)` — `employees/views.py` dedupe via `dni_lookup`;
+  (4) `fix(security)` — `employees/migrations/0002_w1_dni_crypto.py` (re-encrypt + lookup);
+  (5) `test(security)` — `employees/tests_crypto.py` (6 tests);
+  (6) `docs(security)` — `README.md` W1 RESOLVED + merged `apply-progress.md`.
+- **Prior branches**: `mvp/pr1-scaffold-models` … `mvp/pr6-audit-qa` — still awaiting push + PR by a user with remote access. `gh` CLI not available; branches + commits are local only.
+- **Debt gate**: **RESOLVED** — W1 fixed; change is now clear for archive / production.
+
+## Status
+W1 (7/7 tasks) complete. Full suite green (56 tests). Ready for `sdd-verify` of the W1 scope, then `sdd-archive`. Awaiting push + PR creation by a user with remote access.
