@@ -10,3 +10,9 @@ psycopg2-binary>=2.9   ; for production PostgreSQL (not required for local sqlit
 # Phase 4 — Excel employee import
 pandas>=2.0
 openpyxl>=3.1
+
+# Phase 11 — Certificate PDF generation
+reportlab>=4.0
+
+# Phase 8 — Optional Resend email transport (only needed when EMAIL_TRANSPORT=resend)
+resend>=0.8.0  ; python_version >= "3.8"

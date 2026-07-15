@@ -143,6 +143,19 @@ RETENTION_POLICY = {
 EMPLOYEE_TOKEN_TTL_SECONDS = int(os.environ.get("EMPLOYEE_TOKEN_TTL_SECONDS", 60 * 60 * 24))
 
 # ---------------------------------------------------------------------------
+# Email transport (Phase 8 — spec notifications §Configurable Email Transport)
+# ---------------------------------------------------------------------------
+# Selects the delivery backend with NO code change required to switch provider:
+#   "console" (default, local) -> prints to stdout, no network
+#   "smtp"                      -> Django's configured SMTP backend
+#   "resend"                    -> Resend API (needs the `resend` package + key)
+EMAIL_TRANSPORT = os.environ.get("EMAIL_TRANSPORT", "console")
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL", "no-reply@formacion.local"
+)
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+
+# ---------------------------------------------------------------------------
 # AI generation (BYO LLM key) — Phase 6 (spec ai-generation)
 # ---------------------------------------------------------------------------
 # When True, generation endpoints use the deterministic FakeLLMClient so tests

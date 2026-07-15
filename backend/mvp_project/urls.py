@@ -20,4 +20,6 @@ urlpatterns = [
     path("", include("courses.urls")),
     path("", include("ai_generation.urls")),
     path("", include("reading_gate.urls")),
+    path("", include("notifications.urls")),
+    path("", include("certificates.urls")),
 ]

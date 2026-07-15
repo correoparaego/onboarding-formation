@@ -14,7 +14,7 @@ governs the JSON API surface introduced in Phase 3+.
 """
 from django.http import JsonResponse
 
-ADMIN_PREFIXES = ("/api/admin/", "/api/import", "/api/courses/", "/api/banks/", "/api/ai/")
+ADMIN_PREFIXES = ("/api/admin/", "/api/import", "/api/courses/", "/api/banks/", "/api/ai/", "/api/certificate/", "/api/expediente/")
 EMPLOYEE_PREFIXES = ("/api/employee/", "/api/reading/", "/api/test/")
 PUBLIC_PREFIXES = ("/api/auth/", "/api/health/")
 
