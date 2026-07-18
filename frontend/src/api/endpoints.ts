@@ -1,5 +1,4 @@
-// Typed API surface. Endpoints are filled in by later phases; this scaffold
-// defines the shape so admin/employee components can be wired incrementally.
+// Typed API surface. Endpoints are filled in by later phases.
 import client from "./client";
 
 export const healthApi = {
@@ -15,4 +14,47 @@ export const importApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+};
+
+export const coursesApi = {
+  // GET /api/courses/  (Phase 5)
+  list: () => client.get<{ courses: Array<{ id: number; title: string }> }>("/courses/"),
+  // POST /api/courses/  (Phase 5) — JSON or multipart
+  create: (payload: { title: string; sections?: Array<{ order: number; section_base: number }> }) =>
+    client.post("/courses/", payload),
+  // GET /api/courses/catalog/?position=  (Phase 5)
+  catalog: (position: string) =>
+    client.get("/courses/catalog/", { params: { position } }),
+};
+
+export const banksApi = {
+  // POST /api/banks/  (Phase 5) — single-correct enforced server-side
+  create: (payload: {
+    course_id: number;
+    questions: Array<{ text: string; options: string[]; correct_index: number }>;
+  }) => client.post("/banks/", payload),
+};
+
+export const aiApi = {
+  // POST /api/ai/key  (Phase 6) — set/update encrypted BYO key (raw never returned)
+  setKey: (payload: { provider: string; base_url: string; model: string; api_key: string }) =>
+    client.post("/ai/key", payload),
+  // GET /api/ai/key/status  (Phase 6)
+  keyStatus: () =>
+    client.get<{ has_key: boolean; status: string | null; provider?: string; model?: string }>(
+      "/ai/key/status"
+    ),
+  // POST /api/ai/generate-content  (Phase 6) — guided draft, NOT persisted
+  generateContent: (payload: {
+    course_title: string;
+    answers: Record<string, string>;
+    reference_docs?: string[];
+  }) => client.post("/ai/generate-content", payload),
+  // POST /api/ai/generate-tests  (Phase 6) — PDF -> test draft, NOT persisted
+  generateTests: (form: FormData) =>
+    client.post("/ai/generate-tests", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  generateTestsText: (payload: { pdf_text: string }) =>
+    client.post("/ai/generate-tests", payload),
 };

@@ -87,3 +87,39 @@ class AuditEvent(models.Model):
 
     def __str__(self):
         return f"{self.event_type} @ {self.timestamp}"
+
+
+class Expediente(models.Model):
+    """Per-enrollment training result (spec expediente §Result Storage).
+
+    Linked to the employee + course. Created/updated on pass or exhaustion.
+    Retained per RETENTION_POLICY; application rollback never deletes it
+    (spec expediente §Retention — records survive rollback).
+    """
+
+    enrollment = models.OneToOneField(
+        Enrollment, on_delete=models.CASCADE, related_name="expediente"
+    )
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name="expediente"
+    )
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="expediente"
+    )
+    status = models.CharField(max_length=20, choices=Enrollment.STATUS_CHOICES)
+    attempts_used = models.PositiveIntegerField(default=0)
+    score = models.PositiveIntegerField(null=True, blank=True)
+    total = models.PositiveIntegerField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def retention_days(self):
+        from common.retention import get_retention_policy
+
+        return get_retention_policy("employee_record_days")
+
+    def __str__(self):
+        return f"expediente {self.employee_id} / {self.course_id} [{self.status}]"

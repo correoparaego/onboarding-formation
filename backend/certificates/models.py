@@ -1,6 +1,7 @@
 from django.db import models
 
 from employees.models import Employee
+from reading_gate.models import Enrollment
 
 
 class Badge(models.Model):
@@ -28,3 +29,25 @@ class EmployeeBadge(models.Model):
 
     def __str__(self):
         return f"{self.employee_id} <- {self.badge.slug}"
+
+
+class Certificate(models.Model):
+    """One active certificate per passed enrollment (spec certificate §One Per).
+
+    The PDF is rendered on demand (deterministic) when an admin requests it, so
+    this row mainly records issuance and a hash of the core fields to prove
+    idempotent regeneration (spec certificate §Regeneration).
+    """
+
+    enrollment = models.OneToOneField(
+        Enrollment, on_delete=models.CASCADE, related_name="certificate"
+    )
+    issued_at = models.DateTimeField(auto_now_add=True)
+    core_fields_hash = models.CharField(max_length=64, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-issued_at"]
+
+    def __str__(self):
+        return f"cert for enrollment {self.enrollment_id}"
