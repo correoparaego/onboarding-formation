@@ -1,0 +1,9 @@
+# Project root — runtime artifacts and editor junk
+*.log
+frontend_server*.log
+idea.txt
+.env
+.env.local
+.venv/
+venv/
+.DS_Store
