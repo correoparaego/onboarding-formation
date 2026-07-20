@@ -1,0 +1,22 @@
+# MVP Formación Inicial — backend dependencies
+# Later phases will extend this list (reportlab, pdfplumber, ...).
+
+django>=5.0,<7.0
+djangorestframework>=3.15
+django-cors-headers>=4.3
+cryptography>=42.0
+psycopg2-binary>=2.9   ; for production PostgreSQL (not required for local sqlite verification)
+
+# Phase 4 — Excel employee import
+pandas>=2.0
+openpyxl>=3.1
+
+# Phase 11 — Certificate PDF generation
+reportlab>=4.0
+
+# Phase 8 — Optional Resend email transport (only needed when EMAIL_TRANSPORT=resend)
+resend>=0.8.0  ; python_version >= "3.8"
+
+# Phase 15 — QA harness (pytest can also be run via `python manage.py test`)
+pytest>=8.0
+pytest-django>=4.8
