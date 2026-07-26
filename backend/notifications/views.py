@@ -8,7 +8,6 @@ from notifications import services as notify
 from reading_gate.models import Enrollment
 
 
-@csrf_exempt
 def admin_resend_access(request, pk):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)

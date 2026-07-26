@@ -1,8 +1,22 @@
-// Typed API surface. Endpoints are filled in by later phases.
 import client from "./client";
 
 export const healthApi = {
   check: () => client.get<{ status: string; service: string }>("/health/"),
+};
+
+export const authApi = {
+  login: (payload: { username: string; password: string }) =>
+    client.post<{ ok: boolean; user: { username: string } }>("/auth/admin/login", payload),
+  logout: () => client.post("/auth/admin/logout"),
+  redeem: (payload: { token: string }) =>
+    client.post<{ ok: boolean; employee: { id: number; name: string } }>(
+      "/auth/employee/redeem",
+      payload
+    ),
+  status: () =>
+    client.get<{ admin: { username: string } | null; employee: { id: number; name: string } | null }>(
+      "/auth/status"
+    ),
 };
 
 export const importApi = {
@@ -17,12 +31,22 @@ export const importApi = {
 };
 
 export const coursesApi = {
-  // GET /api/courses/  (Phase 5)
   list: () => client.get<{ courses: Array<{ id: number; title: string }> }>("/courses/"),
-  // POST /api/courses/  (Phase 5) — JSON or multipart
   create: (payload: { title: string; sections?: Array<{ order: number; section_base: number }> }) =>
     client.post("/courses/", payload),
-  // GET /api/courses/catalog/?position=  (Phase 5)
+  detail: (id: number) =>
+    client.get<{
+      id: number;
+      title: string;
+      min_time_divisor: number;
+      positions: string[];
+      sections: Array<{ order: number; section_base: number }>;
+      banks: Array<{
+        id: number;
+        questions: Array<{ text: string; options: string[]; correct_index: number }>;
+      }>;
+    }>(`/courses/${id}/`),
+  delete: (id: number) => client.delete(`/courses/${id}/`),
   catalog: (position: string) =>
     client.get("/courses/catalog/", { params: { position } }),
 };

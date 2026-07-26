@@ -7,26 +7,21 @@ them via the normal course/bank endpoints (human-in-the-loop, spec §HITL).
 """
 import json
 
+from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from common.parsing import json_body
 from .client import make_client
+from .fake_llm import fake_generate_course_content, fake_generate_test_questions
 from .models import AdminLLMKey
 from .prompts import build_content_prompt, build_test_prompt
 
 
-def _json_body(request):
-    try:
-        return json.loads(request.body or b"{}")
-    except json.JSONDecodeError:
-        return {}
-
-
-@csrf_exempt
 def ai_key_set(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
-    data = _json_body(request)
+    data = json_body(request)
     provider = (data.get("provider") or "").strip()
     base_url = (data.get("base_url") or "").strip()
     model = (data.get("model") or "").strip()
@@ -54,7 +49,6 @@ def ai_key_set(request):
     )
 
 
-@csrf_exempt
 def ai_key_status(request):
     if request.method != "GET":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -71,16 +65,23 @@ def ai_key_status(request):
     )
 
 
-@csrf_exempt
 def ai_generate_content(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
-    data = _json_body(request)
+    data = json_body(request)
     course_title = (data.get("course_title") or "").strip()
     answers = data.get("answers") or {}
     reference_docs = data.get("reference_docs") or []
     if not course_title:
         return JsonResponse({"error": "course_title is required"}, status=400)
+
+    use_fake = settings.DEBUG and (
+        data.get("use_fake_llm") == "true" or getattr(settings, "AI_USE_FAKE_LLM", False)
+    )
+    if use_fake:
+        draft = fake_generate_course_content(course_title, answers, reference_docs)
+        return JsonResponse({"draft": draft, "persisted": False})
+
     messages = build_content_prompt(course_title, answers, reference_docs)
     try:
         client = make_client("content", admin_user=request.user)
@@ -93,16 +94,39 @@ def ai_generate_content(request):
         return JsonResponse(
             {"error": "LLM did not return valid JSON", "raw": raw[:500]}, status=502
         )
-    # DRAFT ONLY — never persisted. The admin saves it via POST /api/courses/.
     return JsonResponse({"draft": draft, "persisted": False})
 
 
-@csrf_exempt
 def ai_generate_tests(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
-    pdf_text = ""
+
+    use_fake = settings.DEBUG and getattr(settings, "AI_USE_FAKE_LLM", False)
+    if not use_fake:
+        body_data = None
+        try:
+            body_data = json_body(request)
+        except Exception:
+            pass
+        if body_data and body_data.get("use_fake_llm") == "true":
+            use_fake = True
+
     upload = request.FILES.get("file")
+    pdf_text = ""
+    course_title = ""
+
+    if use_fake:
+        if upload:
+            pdf_text = _extract_pdf_text(upload) or ""
+        else:
+            body = json_body(request)
+            pdf_text = (body.get("pdf_text") or "").strip()
+            course_title = (body.get("course_title") or "").strip()
+        if not pdf_text:
+            pdf_text = "Fake PDF text"
+        draft = fake_generate_test_questions(pdf_text, course_title or "Test Course")
+        return JsonResponse({"draft": draft, "persisted": False})
+
     if upload:
         pdf_text = _extract_pdf_text(upload)
         if pdf_text is None:
@@ -111,7 +135,7 @@ def ai_generate_tests(request):
                 status=400,
             )
     else:
-        body = _json_body(request)
+        body = json_body(request)
         pdf_text = (body.get("pdf_text") or "").strip()
     if not pdf_text:
         return JsonResponse(
@@ -129,7 +153,6 @@ def ai_generate_tests(request):
         return JsonResponse(
             {"error": "LLM did not return valid JSON", "raw": raw[:500]}, status=502
         )
-    # DRAFT ONLY — never persisted. The admin saves it via POST /api/banks/.
     return JsonResponse({"draft": draft, "persisted": False})
 
 

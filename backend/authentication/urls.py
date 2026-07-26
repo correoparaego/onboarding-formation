@@ -10,4 +10,5 @@ urlpatterns = [
         views.employee_redeem,
         name="employee-redeem",
     ),
+    path("api/auth/status", views.auth_status, name="auth-status"),
 ]

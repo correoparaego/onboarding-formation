@@ -10,13 +10,19 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY", "dev-insecure-key-change-me-in-production-0123456789"
-)
+DEFAULT_SECRET_KEY = "dev-insecure-key-change-me-in-production-0123456789"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", DEFAULT_SECRET_KEY)
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+if not DEBUG and SECRET_KEY == DEFAULT_SECRET_KEY:
+    raise ValueError(
+        "DJANGO_SECRET_KEY must be set in production (DEBUG=False). "
+        "Generate one with: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'"
+    )
+
+_default_allowed_hosts = "localhost,127.0.0.1,testserver" if DEBUG else ""
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", _default_allowed_hosts).split(",")
 
 # ---------------------------------------------------------------------------
 # Applications
@@ -160,7 +166,7 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 # ---------------------------------------------------------------------------
 # When True, generation endpoints use the deterministic FakeLLMClient so tests
 # NEVER call a real provider. Production MUST leave this False.
-AI_USE_FAKE_LLM = os.environ.get("AI_USE_FAKE_LLM", "False").lower() in (
+AI_USE_FAKE_LLM = os.environ.get("AI_USE_FAKE_LLM", "true").lower() in (
     "1",
     "true",
     "yes",

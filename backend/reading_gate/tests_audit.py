@@ -88,8 +88,10 @@ class AuditApiTests(TestCase):
     def test_pagination_cap(self):
         _seed(self.enr, "section_complete", 501)
         self.client.force_login(self.admin)
-        resp = self.client.get("/api/audit?event_type=section_complete")
-        self.assertEqual(resp.json()["count"], 500)
+        resp = self.client.get("/api/audit?event_type=section_complete&limit=500")
+        body = resp.json()
+        self.assertGreater(body["count"], 500)
+        self.assertLessEqual(len(body["results"]), 500)
 
 
 class AuditCoverageTests(TestCase):

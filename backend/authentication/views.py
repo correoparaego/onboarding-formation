@@ -9,27 +9,21 @@ CSRF is exempted here so the SPA can call these without a token dance; a
 proper CSRF token flow belongs with the SPA security wiring (later phase).
 This is a deliberate, documented MVP trade-off.
 """
-import json
-
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from common.parsing import json_body
+from common.rate_limit import login_rate_limit, redeem_rate_limit
 from .models import EmployeeAccessToken
 
 
-def _json_body(request):
-    try:
-        return json.loads(request.body or b"{}")
-    except json.JSONDecodeError:
-        return {}
-
-
 @csrf_exempt
+@login_rate_limit
 def admin_login(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
-    data = _json_body(request)
+    data = json_body(request)
     username = data.get("username", "")
     password = data.get("password", "")
     user = authenticate(request, username=username, password=password)
@@ -50,10 +44,11 @@ def admin_logout(request):
 
 
 @csrf_exempt
+@redeem_rate_limit
 def employee_redeem(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
-    data = _json_body(request)
+    data = json_body(request)
     value = data.get("token") or data.get("code") or ""
     employee, status = EmployeeAccessToken.redeem(value)
     if employee is None:
@@ -65,3 +60,17 @@ def employee_redeem(request):
     return JsonResponse(
         {"ok": True, "employee": {"id": employee.id, "name": employee.name}}
     )
+
+
+def auth_status(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    admin = None
+    employee = None
+    if request.user.is_authenticated and request.user.is_staff:
+        admin = {"username": request.user.username}
+    emp_id = request.session.get("employee_id")
+    emp_name = request.session.get("employee_name")
+    if emp_id and emp_name:
+        employee = {"id": emp_id, "name": emp_name}
+    return JsonResponse({"admin": admin, "employee": employee})

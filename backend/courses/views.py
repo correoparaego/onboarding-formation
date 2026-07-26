@@ -12,17 +12,12 @@ and ai-generation §HITL "multiple-correct test rejected at save").
 import json
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from common.parsing import json_body
 from .models import Course, Position, Question, QuestionBank, Section
-
-
-def _json_body(request):
-    try:
-        return json.loads(request.body or b"{}")
-    except json.JSONDecodeError:
-        return {}
 
 
 def _validate_question(q) -> int:
@@ -41,7 +36,6 @@ def _validate_question(q) -> int:
     return ci
 
 
-@csrf_exempt
 def course_list_create(request):
     if request.method == "GET":
         courses = []
@@ -62,7 +56,7 @@ def course_list_create(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
 
-    title = (request.POST.get("title") or _json_body(request).get("title") or "").strip()
+    title = (request.POST.get("title") or json_body(request).get("title") or "").strip()
     if not title:
         return JsonResponse({"error": "title is required"}, status=400)
 
@@ -73,7 +67,7 @@ def course_list_create(request):
         course.save(update_fields=["pdf_file"])
 
     # Sections passed as JSON (multipart or JSON body).
-    sections_raw = request.POST.get("sections") or _json_body(request).get("sections")
+    sections_raw = request.POST.get("sections") or json_body(request).get("sections")
     if isinstance(sections_raw, str):
         try:
             sections_raw = json.loads(sections_raw)
@@ -87,7 +81,7 @@ def course_list_create(request):
         )
 
     # Position catalog mapping.
-    position_ids = request.POST.getlist("position_ids") or _json_body(request).get(
+    position_ids = request.POST.getlist("position_ids") or json_body(request).get(
         "position_ids", []
     )
     if position_ids:
@@ -96,7 +90,6 @@ def course_list_create(request):
     return JsonResponse({"id": course.id, "title": course.title}, status=201)
 
 
-@csrf_exempt
 def course_detail(request, pk):
     try:
         course = Course.objects.prefetch_related(
@@ -141,11 +134,10 @@ def course_detail(request, pk):
     )
 
 
-@csrf_exempt
 def question_bank_create(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
-    data = _json_body(request)
+    data = json_body(request)
     course_id = data.get("course_id")
     questions = data.get("questions") or []
     if not course_id or not questions:
@@ -166,13 +158,13 @@ def question_bank_create(request):
     except ValidationError as exc:
         return JsonResponse({"error": str(exc)}, status=400)
 
-    bank = QuestionBank.objects.create(course=course)
-    for text, options, ci in normalized:
-        Question.objects.create(bank=bank, text=text, options=options, correct_index=ci)
+    with transaction.atomic():
+        bank = QuestionBank.objects.create(course=course)
+        for text, options, ci in normalized:
+            Question.objects.create(bank=bank, text=text, options=options, correct_index=ci)
     return JsonResponse({"id": bank.id, "course_id": course.id}, status=201)
 
 
-@csrf_exempt
 def course_catalog(request):
     """GET /api/courses/catalog?position=Operario -> mandatory courses."""
     if request.method != "GET":

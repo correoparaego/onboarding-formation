@@ -1,0 +1,10 @@
+export { BasePage } from './BasePage';
+export { LandingPage } from './LandingPage';
+export { AdminLoginPage } from './AdminLoginPage';
+export { ImportPage } from './ImportPage';
+export { CoursesPage } from './CoursesPage';
+export { ExpedientePage } from './ExpedientePage';
+export { AiContentPage } from './AiContentPage';
+export { EmployeeRedeemPage } from './EmployeeRedeemPage';
+export { EmployeeDashboardPage } from './EmployeeDashboardPage';
+export { PdfReaderPage } from './PdfReaderPage';

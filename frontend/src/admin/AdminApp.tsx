@@ -1,31 +1,65 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import ProtectedRoute from "../auth/ProtectedRoute";
+import EmployeeImport from "./EmployeeImport";
+import CourseManagement from "./CourseManagement";
+import ExpedienteList from "./ExpedienteList";
+import Dashboard from "./Dashboard";
+import AdminLayout from "../components/layout/AdminLayout";
+import { SkeletonCard } from "../components/ui";
 
-import AiKeyForm from "./ai/AiKeyForm";
-import GuidedContent from "./ai/GuidedContent";
-import PdfTestGen from "./ai/PdfTestGen";
+const AiKeyForm = lazy(() => import("./ai/AiKeyForm"));
+const GuidedContent = lazy(() => import("./ai/GuidedContent"));
+const PdfTestGen = lazy(() => import("./ai/PdfTestGen"));
 
-// Admin shell — import, course CRUD, catalog, expediente, AI authoring live here.
 export default function AdminApp() {
+  const { admin, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/admin/login");
+  };
+
   return (
-    <div>
-      <h1>Administración</h1>
-      <nav>
-        <Link to="/admin/import">Importar empleados</Link> ·{" "}
-        <Link to="/admin/courses">Cursos</Link> ·{" "}
-        <Link to="/admin/ai/key">IA: clave</Link> ·{" "}
-        <Link to="/admin/ai/content">IA: contenido</Link> ·{" "}
-        <Link to="/admin/ai/tests">IA: test PDF</Link> ·{" "}
-        <Link to="/admin/expediente">Expediente</Link>
-      </nav>
-      <Routes>
-        <Route path="import" element={<p>Importación (fase 4)</p>} />
-        <Route path="courses" element={<p>Cursos (fase 5)</p>} />
-        <Route path="ai/key" element={<AiKeyForm />} />
-        <Route path="ai/content" element={<GuidedContent />} />
-        <Route path="ai/tests" element={<PdfTestGen />} />
-        <Route path="expediente" element={<p>Expediente (fase 13)</p>} />
-        <Route path="*" element={<p>Selecciona una sección.</p>} />
-      </Routes>
-    </div>
+    <ProtectedRoute role="admin">
+      <div data-testid="admin-app-container">
+      <AdminLayout adminName={admin?.username} onLogout={handleLogout}>
+        <Routes>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="import" element={<EmployeeImport />} />
+          <Route path="courses" element={<CourseManagement />} />
+          <Route
+            path="ai/key"
+            element={
+              <Suspense fallback={<SkeletonCard count={1} />}>
+                <AiKeyForm />
+              </Suspense>
+            }
+          />
+          <Route
+            path="ai/content"
+            element={
+              <Suspense fallback={<SkeletonCard count={1} />}>
+                <GuidedContent />
+              </Suspense>
+            }
+          />
+          <Route
+            path="ai/tests"
+            element={
+              <Suspense fallback={<SkeletonCard count={1} />}>
+                <PdfTestGen />
+              </Suspense>
+            }
+          />
+          <Route path="expediente" element={<ExpedienteList />} />
+          <Route path="*" element={<p style={{ color: "var(--color-text-muted)" }}>Selecciona una sección.</p>} />
+        </Routes>
+      </AdminLayout>
+      </div>
+    </ProtectedRoute>
   );
 }

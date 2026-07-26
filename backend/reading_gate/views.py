@@ -5,20 +5,12 @@ Both route groups are employee-only (RoleIsolationMiddleware enforces
 is taken from the session established by `employee_redeem` — never from the
 request body, so one employee cannot act on another's enrollment.
 """
-import json
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from common.parsing import json_body
 from reading_gate import services
 from reading_gate.models import AuditEvent, Enrollment, Expediente
-
-
-def _json_body(request):
-    try:
-        return json.loads(request.body or b"{}")
-    except json.JSONDecodeError:
-        return {}
 
 
 def _employee_id(request):
@@ -45,7 +37,7 @@ def reading_heartbeat(request):
     if not employee_id:
         return JsonResponse({"error": "employee authentication required"}, status=403)
 
-    body = _json_body(request)
+    body = json_body(request)
     enrollment, err = _owned_enrollment(body.get("enrollment_id"), employee_id)
     if err:
         return JsonResponse({"error": err["error"]}, status=err["status_code"])
@@ -93,7 +85,7 @@ def test_submit(request):
     if not employee_id:
         return JsonResponse({"error": "employee authentication required"}, status=403)
 
-    body = _json_body(request)
+    body = json_body(request)
     enrollment, err = _owned_enrollment(body.get("enrollment_id"), employee_id)
     if err:
         return JsonResponse({"error": err["error"]}, status=err["status_code"])
@@ -110,7 +102,6 @@ def test_submit(request):
     )
 
 
-@csrf_exempt
 def expediente_list(request):
     """Admin filter of expediente records (spec expediente §Admin Filter).
 
@@ -132,11 +123,16 @@ def expediente_list(request):
     if status:
         qs = qs.filter(status=status)
 
+    total = qs.count()
+    limit = min(int(request.GET.get("limit", 50)), 200)
+    offset = int(request.GET.get("offset", 0))
+    page = qs[offset : offset + limit]
+
     rows = [
         {
             "employee_id": e.employee_id,
             "employee_name": e.employee.name,
-            "dni": e.employee.dni,  # admin compliance view; never logged
+            "dni": e.employee.dni,
             "course_id": e.course_id,
             "course_title": e.course.title,
             "status": e.status,
@@ -145,12 +141,11 @@ def expediente_list(request):
             "total": e.total,
             "completed_at": e.completed_at.isoformat() if e.completed_at else None,
         }
-        for e in qs
+        for e in page
     ]
-    return JsonResponse({"count": len(rows), "results": rows})
+    return JsonResponse({"count": total, "limit": limit, "offset": offset, "results": rows})
 
 
-@csrf_exempt
 def audit_list(request):
     """Admin-only, read-only audit log (spec audit-log §Append-Only / §No Mutation).
 
@@ -181,6 +176,11 @@ def audit_list(request):
     if date:
         qs = qs.filter(timestamp__date=date)
 
+    total = qs.count()
+    limit = min(int(request.GET.get("limit", 100)), 500)
+    offset = int(request.GET.get("offset", 0))
+    page = qs[offset : offset + limit]
+
     rows = [
         {
             "id": e.id,
@@ -189,9 +189,32 @@ def audit_list(request):
             "device_id": e.device_id,
             "session_id": e.session_id,
             "timestamp": e.timestamp.isoformat() if e.timestamp else None,
-            # Payload is metadata only — DNI / tokens / PII are never stored here.
             "payload": e.payload,
         }
-        for e in qs[:500]
+        for e in page
     ]
-    return JsonResponse({"count": len(rows), "results": rows})
+    return JsonResponse({"count": total, "limit": limit, "offset": offset, "results": rows})
+
+
+def employee_enrollments(request):
+    """Employee-only endpoint to list their enrollments."""
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    employee_id = _employee_id(request)
+    if not employee_id:
+        return JsonResponse({"error": "employee authentication required"}, status=403)
+
+    enrollments = Enrollment.objects.filter(employee_id=employee_id).select_related("course")
+    rows = [
+        {
+            "id": e.id,
+            "course_id": e.course_id,
+            "course_title": e.course.title,
+            "status": e.status,
+            "attempts_used": e.attempts_used,
+            "score": e.score,
+            "total": e.total,
+        }
+        for e in enrollments
+    ]
+    return JsonResponse({"enrollments": rows})

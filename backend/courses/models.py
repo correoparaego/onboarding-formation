@@ -96,4 +96,4 @@ class Question(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Q{bank_id}: {self.text[:40]}"
+        return f"Q{self.bank_id}: {self.text[:40]}"
