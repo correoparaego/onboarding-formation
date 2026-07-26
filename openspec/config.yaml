@@ -1,0 +1,52 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Project: onboarding-formation — multi-company employee onboarding/training web app
+  Status: GREENFIELD — no source code, build manifest, or tooling config present
+  Idea doc: idea.txt (Spanish) — MVP scoped: single company, Excel employee import, timed
+    PDF reader + comprehension test, email notify, basic PDF certificate, minimal gamification
+  Stack: Django (Python) backend + React (Vite) SPA frontend + PostgreSQL (Django ORM), EU-region hosting — greenfield, no manifest yet but stack locked via proposal decision
+  Architecture: NOT DETECTED — multi-tenant considered for later phases; MVP single-tenant
+  Style: NOT DETECTED — no linter/formatter/type-checker config present
+
+strict_tdd: false   # No test runner detected (greenfield); revisit once stack is chosen
+
+testing:
+  strict_tdd: false
+  detected: 2026-07-14
+  runner: null
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage: null
+  quality:
+    linter: false
+    type_checker: false
+    formatter: false
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Record open product/legal questions (RGPD/LOPDGDD, certificate validity) as explicit assumptions
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document architecture decisions with rationale
+    - Capture tenancy model decision (single vs multi-tenant) explicitly
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow selected stack conventions once chosen
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
