@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "=== Starting deployment ==="
+echo "PORT: ${PORT:-10000}"
+
 echo "Applying database migrations..."
 python manage.py migrate --noinput
 
@@ -15,11 +18,22 @@ else:
     print('Superuser already exists')
 "
 
-echo "Starting Gunicorn on port ${PORT:-10000}..."
-exec gunicorn mvp_project.wsgi:application \
-    --bind 0.0.0.0:${PORT:-10000} \
+echo "Configuring Nginx..."
+export PORT=${PORT:-10000}
+envsubst '${PORT}' < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf.tmp
+mv /etc/nginx/nginx.conf.tmp /etc/nginx/nginx.conf
+
+echo "Starting Gunicorn on internal port 8001..."
+gunicorn mvp_project.wsgi:application \
+    --bind 127.0.0.1:8001 \
     --workers 2 \
     --threads 2 \
     --timeout 120 \
     --access-logfile - \
-    --error-logfile -
+    --error-logfile - &
+
+echo "Waiting for Gunicorn to start..."
+sleep 3
+
+echo "Starting Nginx on port ${PORT}..."
+nginx -g 'daemon off;'

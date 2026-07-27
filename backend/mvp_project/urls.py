@@ -5,8 +5,7 @@ in later phases (auth, import, courses, reading gate, ...).
 """
 from django.contrib import admin
 from django.http import JsonResponse
-from django.urls import include, path, re_path
-from django.views.generic import TemplateView
+from django.urls import include, path
 
 
 def api_health(request):
@@ -23,7 +22,4 @@ urlpatterns = [
     path("", include("reading_gate.urls")),
     path("", include("notifications.urls")),
     path("", include("certificates.urls")),
-    # Catch-all para servir frontend SPA (debe estar al final)
-    re_path(r'^(?!api/|admin/|static/|media/).*$', 
-            TemplateView.as_view(template_name='index.html')),
 ]

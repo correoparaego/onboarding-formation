@@ -47,6 +47,11 @@ yarn-error.log*
 /frontend/dist/
 /backend/staticfiles/
 
+# Playwright
+frontend/test-results/
+frontend/playwright-report/
+frontend/screenshots/
+
 # Graphify
 graphify-out/
 okf-bundle/
