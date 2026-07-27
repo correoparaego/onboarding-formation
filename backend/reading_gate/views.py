@@ -205,16 +205,22 @@ def employee_enrollments(request):
         return JsonResponse({"error": "employee authentication required"}, status=403)
 
     enrollments = Enrollment.objects.filter(employee_id=employee_id).select_related("course")
-    rows = [
-        {
+    rows = []
+    for e in enrollments:
+        row = {
             "id": e.id,
             "course_id": e.course_id,
             "course_title": e.course.title,
             "status": e.status,
             "attempts_used": e.attempts_used,
-            "score": e.score,
-            "total": e.total,
+            "score": None,
+            "total": None,
         }
-        for e in enrollments
-    ]
+        try:
+            expediente = e.expediente
+            row["score"] = expediente.score
+            row["total"] = expediente.total
+        except Expediente.DoesNotExist:
+            pass
+        rows.append(row)
     return JsonResponse({"enrollments": rows})
