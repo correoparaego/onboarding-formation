@@ -28,6 +28,12 @@ export default function AiKeyForm() {
     formState: { errors },
   } = useForm<KeyFormData>({
     resolver: zodResolver(keySchema),
+    defaultValues: {
+      provider: "Gemini API Key",
+      base_url: "https://generativelanguage.googleapis.com/v1beta/openai/",
+      model: "gemini-3.6-flash",
+      api_key: "",
+    },
   });
 
   useEffect(() => {
