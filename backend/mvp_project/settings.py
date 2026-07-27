@@ -50,7 +50,15 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+]
+
+try:
+    import whitenoise  # noqa: F401
+    MIDDLEWARE.append("whitenoise.middleware.WhiteNoiseMiddleware")
+except ImportError:
+    pass
+
+MIDDLEWARE.extend([
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -58,7 +66,7 @@ MIDDLEWARE = [
     "authentication.middleware.RoleIsolationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
+])
 
 ROOT_URLCONF = "mvp_project.urls"
 
@@ -105,12 +113,47 @@ else:
     }
 
 # ---------------------------------------------------------------------------
-# CORS (env-configured frontend base URL) — task 1.3
+# CORS & CSRF Trusted Origins — task 1.3
 # ---------------------------------------------------------------------------
-# FRONTEND_BASE_URL may be a comma-separated list of allowed origins.
-_frontend_origins = os.environ.get("FRONTEND_BASE_URL", "http://localhost:5173")
-CORS_ALLOWED_ORIGINS = [o.strip() for o in _frontend_origins.split(",") if o.strip()]
+_frontend_origins_raw = os.environ.get("FRONTEND_BASE_URL", "http://localhost:5173")
+_csrf_origins_raw = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+
+cors_origins = []
+csrf_origins = []
+
+for item in _frontend_origins_raw.split(","):
+    url = item.strip()
+    if not url:
+        continue
+    if not url.startswith("http://") and not url.startswith("https://"):
+        cors_origins.extend([f"https://{url}", f"http://{url}"])
+        csrf_origins.extend([f"https://{url}", f"http://{url}"])
+    else:
+        cors_origins.append(url)
+        csrf_origins.append(url)
+
+for item in _csrf_origins_raw.split(","):
+    url = item.strip()
+    if not url:
+        continue
+    if not url.startswith("http://") and not url.startswith("https://"):
+        csrf_origins.extend([f"https://{url}", f"http://{url}"])
+    else:
+        csrf_origins.append(url)
+
+for host in ALLOWED_HOSTS:
+    host = host.strip()
+    if host and host != "*":
+        if not host.startswith("http://") and not host.startswith("https://"):
+            csrf_origins.extend([f"https://{host}", f"http://{host}"])
+            cors_origins.extend([f"https://{host}", f"http://{host}"])
+        else:
+            csrf_origins.append(host)
+            cors_origins.append(host)
+
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(cors_origins))
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(csrf_origins))
 
 # ---------------------------------------------------------------------------
 # DRF JSON API — task 1.3
@@ -206,13 +249,6 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     USE_X_FORWARDED_HOST = True
     SECURE_SSL_REDIRECT = False  # Render handles SSL redirect
-
-    # CSRF trusted origins
-    _frontend_url = os.environ.get("FRONTEND_BASE_URL", "")
-    if _frontend_url:
-        CSRF_TRUSTED_ORIGINS = [_frontend_url]
-        if not _frontend_url.startswith("http"):
-            CSRF_TRUSTED_ORIGINS = [f"https://{_frontend_url}"]
 
     # Session and CSRF cookies
     SESSION_COOKIE_SECURE = True
