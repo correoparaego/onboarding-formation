@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from common.parsing import json_body
-from .client import make_client
+from .client import OpenAICompatibleClient, make_client
 from .fake_llm import fake_generate_course_content, fake_generate_test_questions
 from .models import AdminLLMKey
 from .prompts import build_content_prompt, build_test_prompt
@@ -31,6 +31,10 @@ def ai_key_set(request):
             {"error": "provider, base_url, model and api_key are required"},
             status=400,
         )
+    try:
+        OpenAICompatibleClient(base_url, api_key, model).validate_configuration()
+    except RuntimeError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
     row, _ = AdminLLMKey.objects.update_or_create(
         admin=request.user,
         defaults={

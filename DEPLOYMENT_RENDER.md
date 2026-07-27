@@ -54,7 +54,7 @@ Render te pedirá que configures las siguientes variables:
 **Importante sobre Gemini API**:
 - Gemini es el LLM por defecto para generar contenido de cursos
 - Obtén tu API key gratis en https://aistudio.google.com/app/apikey
-- El modelo por defecto es `gemini-1.5-flash` (rápido y económico)
+- El modelo por defecto es `gemini-3.6-flash`; comprueba los modelos disponibles para tu clave en el endpoint `/v1beta/openai/models`
 - Si un admin configura su propia API key en la interfaz, se usará esa en lugar de Gemini
 
 ### 4. Deploy

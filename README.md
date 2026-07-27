@@ -74,7 +74,7 @@ admin at `http://localhost:8000/admin/`.
 | `EMPLOYEE_TOKEN_TTL_SECONDS` | Magic-link/code single-use TTL | `86400` (24h) |
 | `AI_USE_FAKE_LLM` | When `True`, AI generation uses a deterministic fake LLM (tests/CI). Leave `False` in prod. | `False` |
 | `GEMINI_API_KEY` | Google Gemini API key for default LLM (course generation). Get free at https://aistudio.google.com/app/apikey | — |
-| `GEMINI_MODEL` | Gemini model to use | `gemini-1.5-flash` |
+| `GEMINI_MODEL` | Gemini model to use | `gemini-3.6-flash` |
 
 ### AI Generation — LLM Priority
 
@@ -85,6 +85,11 @@ The system uses the following priority for LLM selection:
 3. **Fake LLM** — If `AI_USE_FAKE_LLM=True`, the deterministic fake LLM is used (for tests/CI).
 
 This allows the platform to work out-of-the-box with Gemini (free tier available) while still allowing admins to bring their own keys if they prefer.
+
+For Gemini BYO configuration, use the OpenAI-compatible base URL
+`https://generativelanguage.googleapis.com/v1beta/openai/`. Saving the key
+validates both the credential and model against the provider's `/models`
+endpoint before encrypting it.
 
 ## Frontend — run locally
 

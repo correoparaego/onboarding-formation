@@ -220,7 +220,7 @@ AI_USE_FAKE_LLM = os.environ.get("AI_USE_FAKE_LLM", "true").lower() in (
 # Gemini API key for default LLM (used when admin hasn't configured their own key)
 # Get your free API key at: https://aistudio.google.com/app/apikey
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
 # ---------------------------------------------------------------------------
 # Internationalisation — Spanish default

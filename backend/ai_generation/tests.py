@@ -6,15 +6,20 @@ Coverage:
 - FakeLLMClient returns a parseable draft.
 - generate-content returns a draft that is NOT persisted.
 - BYO key set returns no key material and stores it encrypted.
+- BYO configuration is validated before replacing the stored key.
+- Provider HTTP error details are preserved without exposing credentials.
 - multi-correct test draft is rejected at save (human-in-the-loop guard).
 """
 import inspect
-import os
+import io
+import json
+import urllib.error
+from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .client import FakeLLMClient, make_client
+from .client import FakeLLMClient, OpenAICompatibleClient, make_client
 from .models import AdminLLMKey
 from .sanitizer import sanitize_text
 from courses.models import Course, Position
@@ -94,7 +99,12 @@ class GenerationFlowTests(TestCase):
         self.assertFalse(body["persisted"])
         self.assertEqual(Course.objects.count(), before)  # NOT persisted
 
-    def test_key_set_returns_no_key_material(self):
+    @patch("ai_generation.client.urllib.request.urlopen")
+    def test_key_set_validates_model_and_returns_no_key_material(self, urlopen):
+        response = urlopen.return_value.__enter__.return_value
+        response.read.return_value = json.dumps(
+            {"data": [{"id": "gpt-4o-mini"}]}
+        ).encode("utf-8")
         c = self.client
         self._login(c)
         resp = c.post(
@@ -116,6 +126,65 @@ class GenerationFlowTests(TestCase):
         # Stored encrypted; raw key retrievable server-side only.
         self.assertNotEqual(row.encrypted_key, "sk-SUPERSECRET")
         self.assertEqual(row.get_raw_key(), "sk-SUPERSECRET")
+        request = urlopen.call_args.args[0]
+        self.assertEqual(request.full_url, "https://api.openai.com/v1/models")
+        self.assertEqual(request.headers["Authorization"], "Bearer sk-SUPERSECRET")
+
+    @patch("ai_generation.client.urllib.request.urlopen")
+    def test_key_set_rejects_unavailable_model_without_replacing_key(self, urlopen):
+        existing = AdminLLMKey(
+            admin=self.admin,
+            provider="openai",
+            base_url="https://api.openai.com/v1",
+            model="existing-model",
+        )
+        existing.set_raw_key("existing-key")
+        existing.save()
+        response = urlopen.return_value.__enter__.return_value
+        response.read.return_value = json.dumps(
+            {"data": [{"id": "available-model"}]}
+        ).encode("utf-8")
+
+        c = self.client
+        self._login(c)
+        resp = c.post(
+            "/api/ai/key",
+            data={
+                "provider": "Gemini API Key",
+                "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+                "model": "retired-model",
+                "api_key": "new-key",
+            },
+            content_type="application/json",
+        )
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("not available", resp.json()["error"])
+        existing.refresh_from_db()
+        self.assertEqual(existing.model, "existing-model")
+        self.assertEqual(existing.get_raw_key(), "existing-key")
+
+    @patch("ai_generation.client.urllib.request.urlopen")
+    def test_provider_http_error_message_is_preserved(self, urlopen):
+        urlopen.side_effect = urllib.error.HTTPError(
+            url="https://example.test/v1/chat/completions",
+            code=404,
+            msg="Not Found",
+            hdrs=None,
+            fp=io.BytesIO(
+                json.dumps({"error": {"message": "model is not found"}}).encode(
+                    "utf-8"
+                )
+            ),
+        )
+        client = OpenAICompatibleClient(
+            "https://example.test/v1", "secret", "missing-model"
+        )
+
+        with self.assertRaisesRegex(
+            RuntimeError, r"LLM request failed \(404\): model is not found"
+        ):
+            client.chat([{"role": "user", "content": "hello"}])
 
 
 @override_settings(AI_USE_FAKE_LLM=True)
