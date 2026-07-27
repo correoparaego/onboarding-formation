@@ -7,6 +7,7 @@ contract over HTTP (stdlib only, no hard dependency on the `openai` package).
 A `FakeLLMClient` is provided so tests NEVER call a real provider.
 """
 import json
+import urllib.error
 import urllib.request
 
 from django.conf import settings
@@ -27,6 +28,26 @@ class OpenAICompatibleClient(LLMClient):
         self.api_key = api_key
         self.model = model
 
+    def validate_configuration(self) -> None:
+        """Verify the API key and model without generating billable content."""
+        req = urllib.request.Request(
+            f"{self.base_url}/models",
+            headers={"Authorization": f"Bearer {self.api_key}"},
+            method="GET",
+        )
+        body = _request_json(req, "LLM", timeout=30)
+        if not isinstance(body, dict) or not isinstance(body.get("data"), list):
+            raise RuntimeError("LLM returned an unexpected models response format")
+        model_ids = {
+            item.get("id")
+            for item in body["data"]
+            if isinstance(item, dict) and item.get("id")
+        }
+        if self.model not in model_ids:
+            raise RuntimeError(
+                f"LLM model '{self.model}' is not available for this API key"
+            )
+
     def chat(self, messages, **kwargs) -> str:
         url = f"{self.base_url}/chat/completions"
         payload = {
@@ -44,18 +65,17 @@ class OpenAICompatibleClient(LLMClient):
             },
             method="POST",
         )
+        body = _request_json(req, "LLM")
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
             return body["choices"][0]["message"]["content"]
-        except Exception as exc:  # noqa: BLE001 - surface as generation error
-            raise RuntimeError(f"LLM request failed: {exc}") from exc
+        except (KeyError, IndexError, TypeError) as exc:
+            raise RuntimeError("LLM returned an unexpected response format") from exc
 
 
 class GeminiClient(LLMClient):
     """Google Gemini API client (default fallback when admin has no BYO key)."""
 
-    def __init__(self, api_key: str, model: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str, model: str = "gemini-3.6-flash"):
         self.api_key = api_key
         self.model = model
 
@@ -81,12 +101,40 @@ class GeminiClient(LLMClient):
             headers={"Content-Type": "application/json"},
             method="POST",
         )
+        body = _request_json(req, "Gemini")
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
             return body["candidates"][0]["content"]["parts"][0]["text"]
-        except Exception as exc:
-            raise RuntimeError(f"Gemini API request failed: {exc}") from exc
+        except (KeyError, IndexError, TypeError) as exc:
+            raise RuntimeError("Gemini returned an unexpected response format") from exc
+
+
+def _request_json(req, provider: str, timeout: int = 60) -> dict:
+    """Send a provider request while preserving its useful error message."""
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        message = _provider_error_message(exc)
+        raise RuntimeError(
+            f"{provider} request failed ({exc.code}): {message}"
+        ) from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"{provider} connection failed: {exc.reason}") from exc
+    except TimeoutError as exc:
+        raise RuntimeError(f"{provider} connection timed out") from exc
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"{provider} returned an invalid JSON response") from exc
+
+
+def _provider_error_message(exc: urllib.error.HTTPError) -> str:
+    try:
+        body = json.loads(exc.read().decode("utf-8"))
+        error = body.get("error", body)
+        if isinstance(error, dict):
+            return str(error.get("message") or error.get("status") or "provider error")
+        return str(error)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return "provider error"
 
 
 class FakeLLMClient(LLMClient):
@@ -156,7 +204,7 @@ def make_client(mode: str, admin_user=None) -> LLMClient:
     # Fall back to Gemini default
     gemini_key = getattr(settings, "GEMINI_API_KEY", None)
     if gemini_key:
-        gemini_model = getattr(settings, "GEMINI_MODEL", "gemini-1.5-flash")
+        gemini_model = getattr(settings, "GEMINI_MODEL", "gemini-3.6-flash")
         return GeminiClient(gemini_key, gemini_model)
     
     raise RuntimeError(

@@ -64,7 +64,7 @@ export default function AiKeyForm() {
             <span style={{ color: "var(--color-text-secondary)" }}>Clave activa:</span>
             <Badge variant="success">{status.provider}</Badge>
             <span>/ {status.model}</span>
-            <Badge variant={status.status === "ok" ? "success" : "warning"} size="sm">
+            <Badge variant={status.status === "active" ? "success" : "warning"} size="sm">
               {status.status}
             </Badge>
           </div>
@@ -79,19 +79,19 @@ export default function AiKeyForm() {
           <Input
             label="Proveedor"
             {...register("provider")}
-            placeholder="openai, groq, ollama"
+            placeholder="Gemini API Key"
             error={errors.provider?.message}
           />
           <Input
             label="Base URL"
             {...register("base_url")}
-            placeholder="https://.../v1"
+            placeholder="https://generativelanguage.googleapis.com/v1beta/openai/"
             error={errors.base_url?.message}
           />
           <Input
             label="Modelo"
             {...register("model")}
-            placeholder="gpt-4o-mini"
+            placeholder="gemini-3.6-flash"
             error={errors.model?.message}
           />
           <Input

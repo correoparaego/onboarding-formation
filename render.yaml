@@ -32,13 +32,13 @@ projects:
       - key: POSTGRES_USER
         value: onboarding_user
       - key: POSTGRES_PASSWORD
-        value: eucgW3RUBmuZblipGETMPhch8EbCL9LP
+        sync: false
       - key: DNI_ENCRYPTION_KEY
         sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: "gemini-1.5-flash"
+        value: "gemini-3.6-flash"
       - key: AI_USE_FAKE_LLM
         value: "false"
       - key: EMAIL_TRANSPORT
