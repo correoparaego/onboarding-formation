@@ -28,8 +28,12 @@ services:
         value: eucgW3RUBmuZblipGETMPhch8EbCL9LP
       - key: DNI_ENCRYPTION_KEY
         generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: "gemini-1.5-flash"
       - key: AI_USE_FAKE_LLM
-        value: "true"
+        value: "false"
       - key: EMAIL_TRANSPORT
         value: "console"
 

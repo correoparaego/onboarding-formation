@@ -73,6 +73,18 @@ admin at `http://localhost:8000/admin/`.
 | `RESEND_API_KEY` | Resend API key (only when `EMAIL_TRANSPORT=resend`) | `""` |
 | `EMPLOYEE_TOKEN_TTL_SECONDS` | Magic-link/code single-use TTL | `86400` (24h) |
 | `AI_USE_FAKE_LLM` | When `True`, AI generation uses a deterministic fake LLM (tests/CI). Leave `False` in prod. | `False` |
+| `GEMINI_API_KEY` | Google Gemini API key for default LLM (course generation). Get free at https://aistudio.google.com/app/apikey | — |
+| `GEMINI_MODEL` | Gemini model to use | `gemini-1.5-flash` |
+
+### AI Generation — LLM Priority
+
+The system uses the following priority for LLM selection:
+
+1. **Admin BYO key** — If the admin has configured their own OpenAI-compatible key via `POST /api/ai/key`, that key is used.
+2. **Gemini default** — If `GEMINI_API_KEY` is set in environment, Gemini is used as the default LLM.
+3. **Fake LLM** — If `AI_USE_FAKE_LLM=True`, the deterministic fake LLM is used (for tests/CI).
+
+This allows the platform to work out-of-the-box with Gemini (free tier available) while still allowing admins to bring their own keys if they prefer.
 
 ## Frontend — run locally
 

@@ -52,6 +52,43 @@ class OpenAICompatibleClient(LLMClient):
             raise RuntimeError(f"LLM request failed: {exc}") from exc
 
 
+class GeminiClient(LLMClient):
+    """Google Gemini API client (default fallback when admin has no BYO key)."""
+
+    def __init__(self, api_key: str, model: str = "gemini-1.5-flash"):
+        self.api_key = api_key
+        self.model = model
+
+    def chat(self, messages, **kwargs) -> str:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+        
+        # Convert OpenAI-style messages to Gemini format
+        contents = []
+        for msg in messages:
+            role = "user" if msg["role"] == "user" else "model"
+            contents.append({"role": role, "parts": [{"text": msg["content"]}]})
+        
+        payload = {
+            "contents": contents,
+            "generationConfig": {
+                "temperature": kwargs.get("temperature", 0.2),
+            },
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+            return body["candidates"][0]["content"]["parts"][0]["text"]
+        except Exception as exc:
+            raise RuntimeError(f"Gemini API request failed: {exc}") from exc
+
+
 class FakeLLMClient(LLMClient):
     """Deterministic stand-in for tests. Never performs network I/O."""
 
@@ -104,14 +141,25 @@ class FakeLLMClient(LLMClient):
 
 
 def make_client(mode: str, admin_user=None) -> LLMClient:
-    """Factory: returns a fake client (tests) or a real OpenAI-compatible one."""
+    """Factory: returns a fake client (tests), admin BYO key, or Gemini default."""
     if getattr(settings, "AI_USE_FAKE_LLM", False):
         return FakeLLMClient(mode=mode)
+    
+    # Try admin's BYO key first
     from .models import AdminLLMKey
-
     key_row = AdminLLMKey.objects.filter(admin=admin_user, status="active").first()
-    if key_row is None:
-        raise RuntimeError("no active LLM key configured for this admin")
-    return OpenAICompatibleClient(
-        key_row.base_url, key_row.get_raw_key(), key_row.model
+    if key_row is not None:
+        return OpenAICompatibleClient(
+            key_row.base_url, key_row.get_raw_key(), key_row.model
+        )
+    
+    # Fall back to Gemini default
+    gemini_key = getattr(settings, "GEMINI_API_KEY", None)
+    if gemini_key:
+        gemini_model = getattr(settings, "GEMINI_MODEL", "gemini-1.5-flash")
+        return GeminiClient(gemini_key, gemini_model)
+    
+    raise RuntimeError(
+        "no LLM key configured. Either set GEMINI_API_KEY environment variable "
+        "or configure your own LLM key via the admin interface."
     )

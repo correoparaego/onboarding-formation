@@ -38,6 +38,7 @@ Render te pedirá que configures las siguientes variables:
 |----------|-------|-------|
 | `DJANGO_ALLOWED_HOSTS` | `<backend-url>.onrender.com` | Reemplaza con la URL de tu backend |
 | `FRONTEND_BASE_URL` | `https://<frontend-url>.onrender.com` | Reemplaza con la URL de tu frontend |
+| `GEMINI_API_KEY` | Tu API key de Gemini | Obtén una gratis en https://aistudio.google.com/app/apikey |
 
 #### Frontend (onboarding-frontend)
 
@@ -49,6 +50,12 @@ Render te pedirá que configures las siguientes variables:
 - `DJANGO_SECRET_KEY`
 - `DNI_ENCRYPTION_KEY`
 - Credenciales de PostgreSQL (`POSTGRES_DB`, `POSTGRES_USER`, etc.)
+
+**Importante sobre Gemini API**:
+- Gemini es el LLM por defecto para generar contenido de cursos
+- Obtén tu API key gratis en https://aistudio.google.com/app/apikey
+- El modelo por defecto es `gemini-1.5-flash` (rápido y económico)
+- Si un admin configura su propia API key en la interfaz, se usará esa en lugar de Gemini
 
 ### 4. Deploy
 
