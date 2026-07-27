@@ -1,0 +1,66 @@
+services:
+  # Backend Django API
+  - type: web
+    name: onboarding-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/health/
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false
+      - key: FRONTEND_BASE_URL
+        sync: false
+      - key: POSTGRES_DB
+        database:
+          name: onboarding-db
+          property: database
+      - key: POSTGRES_USER
+        database:
+          name: onboarding-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        database:
+          name: onboarding-db
+          property: password
+      - key: POSTGRES_HOST
+        database:
+          name: onboarding-db
+          property: host
+      - key: POSTGRES_PORT
+        database:
+          name: onboarding-db
+          property: port
+      - key: DNI_ENCRYPTION_KEY
+        generateValue: true
+      - key: AI_USE_FAKE_LLM
+        value: "true"
+      - key: EMAIL_TRANSPORT
+        value: "console"
+
+  # Frontend React Static Site
+  - type: web
+    name: onboarding-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    plan: free
+    routes:
+      - type: Rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+
+  # PostgreSQL Database
+  - type: pserv
+    name: onboarding-db
+    plan: free
+    databaseName: onboarding
+    user: onboarding_user
