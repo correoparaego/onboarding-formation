@@ -17,6 +17,19 @@ import { Card } from "../components/ui";
 import { useTheme } from "../contexts/ThemeContext";
 import Breadcrumb from "../components/layout/Breadcrumb";
 
+interface EmployeeRow {
+  id: number;
+  name: string;
+  position: string;
+  email: string;
+  phone: string;
+}
+
+interface EmployeeResponse {
+  count: number;
+  results: EmployeeRow[];
+}
+
 interface ExpedienteRow {
   employee_id: number;
   employee_name: string;
@@ -80,12 +93,15 @@ export default function Dashboard() {
     setLoading(true);
     setError("");
     try {
+      // Fetch employee count from /api/employees (source of truth for total employees)
+      const empResponse = await client.get<EmployeeResponse>("/employees", { params: { limit: 1, offset: 0 } });
+      setTotalEmployees(empResponse.data.count);
+
+      // Fetch expediente data for course statistics
       const r = await client.get<ExpedienteResponse>("/expediente", { params: { limit: 1000, offset: 0 } });
       const data = r.data.results;
 
-      const uniqueEmployees = new Set(data.map((d) => d.employee_id));
       const uniqueCourses = new Set(data.map((d) => d.course_id));
-      setTotalEmployees(uniqueEmployees.size);
       setTotalCourses(uniqueCourses.size);
 
       const completed = data.filter((d) => d.status === "completed").length;

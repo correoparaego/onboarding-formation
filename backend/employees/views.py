@@ -176,3 +176,33 @@ def employee_import(request):
             "report": report,
         }
     )
+
+
+def employee_list(request):
+    """Admin-only list of all employees.
+
+    GET /api/employees?limit=50&offset=0
+
+    Returns paginated employee records for dashboard statistics.
+    Admin-only via RoleIsolationMiddleware.
+    """
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+
+    qs = Employee.objects.all()
+    total = qs.count()
+    limit = min(int(request.GET.get("limit", 50)), 200)
+    offset = int(request.GET.get("offset", 0))
+    page = qs[offset : offset + limit]
+
+    rows = [
+        {
+            "id": emp.id,
+            "name": emp.name,
+            "position": emp.position,
+            "email": emp.email,
+            "phone": emp.phone,
+        }
+        for emp in page
+    ]
+    return JsonResponse({"count": total, "limit": limit, "offset": offset, "results": rows})
