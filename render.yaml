@@ -17,25 +17,15 @@ services:
       - key: FRONTEND_BASE_URL
         sync: false
       - key: POSTGRES_DB
-        database:
-          name: onboarding-db
-          property: database
+        value: ${onboarding-db.POSTGRES_DB}
       - key: POSTGRES_USER
-        database:
-          name: onboarding-db
-          property: user
+        value: ${onboarding-db.POSTGRES_USER}
       - key: POSTGRES_PASSWORD
-        database:
-          name: onboarding-db
-          property: password
+        value: ${onboarding-db.POSTGRES_PASSWORD}
       - key: POSTGRES_HOST
-        database:
-          name: onboarding-db
-          property: host
+        value: ${onboarding-db.POSTGRES_HOST}
       - key: POSTGRES_PORT
-        database:
-          name: onboarding-db
-          property: port
+        value: ${onboarding-db.POSTGRES_PORT}
       - key: DNI_ENCRYPTION_KEY
         generateValue: true
       - key: AI_USE_FAKE_LLM
@@ -51,14 +41,9 @@ services:
     staticPublishPath: ./frontend/dist
     plan: free
     routes:
-      - type: Rewrite
+      - type: rewrite
         source: /*
         destination: /index.html
     envVars:
       - key: VITE_API_URL
         sync: false
-
-  # PostgreSQL Database
-  - type: pserv
-    name: onboarding-db
-    plan: free
