@@ -43,5 +43,3 @@ projects:
         value: "false"
       - key: EMAIL_TRANSPORT
         value: "console"
-      - key: PORT
-        value: "10000"

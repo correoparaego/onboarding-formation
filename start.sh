@@ -4,11 +4,27 @@ set -e
 echo "Applying database migrations..."
 python manage.py migrate --noinput
 
+echo "Creating superuser if not exists..."
+python manage.py shell << EOF
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin1234')
+    print("Superuser created: admin / admin1234")
+else:
+    print("Superuser already exists")
+EOF
+
+echo "Configuring Nginx with PORT=${PORT:-10000}..."
+export PORT=${PORT:-10000}
+envsubst '${PORT}' < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf.tmp
+mv /etc/nginx/nginx.conf.tmp /etc/nginx/nginx.conf
+
 echo "Starting Gunicorn and Nginx..."
 
-# Start Gunicorn in background
+# Start Gunicorn in background on internal port 8001
 gunicorn mvp_project.wsgi:application \
-    --bind 127.0.0.1:8000 \
+    --bind 127.0.0.1:8001 \
     --workers 3 \
     --threads 2 \
     --timeout 120 \
