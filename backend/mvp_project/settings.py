@@ -65,7 +65,7 @@ ROOT_URLCONF = "mvp_project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "staticfiles" / "frontend"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

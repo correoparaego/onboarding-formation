@@ -25,8 +25,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
-    nginx \
-    gettext-base \
     && rm -rf /var/lib/apt/lists/*
 
 # Set work directory
@@ -45,15 +43,12 @@ COPY --from=frontend-build /app/frontend/dist /app/staticfiles/frontend
 # Collect Django static files
 RUN python manage.py collectstatic --noinput || true
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Copy startup script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Expose port
-EXPOSE 8000
+# Expose port (Render asigna PORT dinámicamente)
+EXPOSE 10000
 
-# Start services
+# Start Gunicorn
 CMD ["/start.sh"]
