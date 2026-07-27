@@ -16,16 +16,16 @@ services:
         sync: false
       - key: FRONTEND_BASE_URL
         sync: false
-      - key: POSTGRES_DB
-        value: ${onboarding-db.POSTGRES_DB}
-      - key: POSTGRES_USER
-        value: ${onboarding-db.POSTGRES_USER}
-      - key: POSTGRES_PASSWORD
-        value: ${onboarding-db.POSTGRES_PASSWORD}
       - key: POSTGRES_HOST
-        value: ${onboarding-db.POSTGRES_HOST}
+        value: dpg-d9jpgkjeo5us73bsb5eg-a
       - key: POSTGRES_PORT
-        value: ${onboarding-db.POSTGRES_PORT}
+        value: "5432"
+      - key: POSTGRES_DB
+        value: onboarding_lkk7
+      - key: POSTGRES_USER
+        value: onboarding_user
+      - key: POSTGRES_PASSWORD
+        value: eucgW3RUBmuZblipGETMPhch8EbCL9LP
       - key: DNI_ENCRYPTION_KEY
         generateValue: true
       - key: AI_USE_FAKE_LLM
