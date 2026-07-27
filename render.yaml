@@ -62,5 +62,3 @@ services:
   - type: pserv
     name: onboarding-db
     plan: free
-    databaseName: onboarding
-    user: onboarding_user
