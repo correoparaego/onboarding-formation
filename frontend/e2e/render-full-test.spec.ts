@@ -7,7 +7,7 @@ import { test, expect, devices } from '@playwright/test';
  * Total: 46 capturas (23 desktop + 23 mobile)
  */
 
-const BASE_URL = 'https://onboarding-formation.onrender.com';
+const BASE_URL = process.env.FRONTEND_BASE_URL || process.env.BASE_URL || 'https://onboarding-formation.onrender.com';
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin1234';
 
@@ -32,7 +32,25 @@ async function waitForElement(page: any, selector: string) {
 
 // Helper para esperar carga completa
 async function waitForLoad(page: any) {
-  await page.waitForLoadState('networkidle', { timeout: TIMEOUT });
+  await page.waitForLoadState('networkidle', { timeout: TIMEOUT }).catch(() => {});
+}
+
+// Helper para navegación SPA (intenta clic en enlace SPA primero para no forzar reload Nginx)
+async function goToPath(page: any, urlPath: string, clickSelector?: string) {
+  if (clickSelector) {
+    try {
+      const loc = page.locator(clickSelector);
+      if (await loc.isVisible()) {
+        await loc.click();
+        await waitForLoad(page);
+        return;
+      }
+    } catch (e) {
+      // Ignorar y caer en goto
+    }
+  }
+  await page.goto(`${BASE_URL}${urlPath}`);
+  await waitForLoad(page);
 }
 
 test.describe('Render Deployment - Full Test Suite', () => {
@@ -56,8 +74,7 @@ test.describe('Render Deployment - Full Test Suite', () => {
 
       // 2. Admin login page
       console.log('📍 Navegando a admin login...');
-      await page.goto(`${BASE_URL}/admin/login`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/login', '[data-testid="admin-access-link"]');
       await waitForElement(page, '[data-testid="admin-login-form"]');
       await takeScreenshot(page, 'admin/02-admin-login', viewport);
 
@@ -80,8 +97,7 @@ test.describe('Render Deployment - Full Test Suite', () => {
 
       // 5. Import page (vacía)
       console.log('📍 Navegando a import page...');
-      await page.goto(`${BASE_URL}/admin/import`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/import', '[data-testid="sidebar-link-importar-empleados"]');
       await waitForElement(page, '[data-testid="import-page"]');
       await takeScreenshot(page, 'admin/05-admin-import', viewport);
 
@@ -91,8 +107,7 @@ test.describe('Render Deployment - Full Test Suite', () => {
 
       // 7. Courses page
       console.log('📍 Navegando a courses page...');
-      await page.goto(`${BASE_URL}/admin/courses`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/courses', '[data-testid="sidebar-link-cursos"]');
       await waitForElement(page, '[data-testid="courses-page"]');
       await takeScreenshot(page, 'admin/07-admin-courses', viewport);
 
@@ -110,29 +125,25 @@ test.describe('Render Deployment - Full Test Suite', () => {
 
       // 9. AI Key page
       console.log('📍 Navegando a AI key page...');
-      await page.goto(`${BASE_URL}/admin/ai/key`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/ai/key', '[data-testid="sidebar-link-ia:-clave"]');
       await waitForElement(page, '[data-testid="ai-key-form"]');
       await takeScreenshot(page, 'admin/09-admin-ai-key', viewport);
 
       // 10. AI Content page
       console.log('📍 Navegando a AI content page...');
-      await page.goto(`${BASE_URL}/admin/ai/content`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/ai/content', '[data-testid="sidebar-link-ia:-contenido"]');
       await waitForElement(page, '[data-testid="guided-content-page"]');
       await takeScreenshot(page, 'admin/10-admin-ai-content', viewport);
 
       // 11. AI Tests page
       console.log('📍 Navegando a AI tests page...');
-      await page.goto(`${BASE_URL}/admin/ai/tests`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/ai/tests', '[data-testid="sidebar-link-ia:-test-pdf"]');
       await waitForElement(page, '[data-testid="pdf-test-gen-page"]');
       await takeScreenshot(page, 'admin/11-admin-ai-tests', viewport);
 
       // 12. Expediente page
       console.log('📍 Navegando a expediente page...');
-      await page.goto(`${BASE_URL}/admin/expediente`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/expediente', '[data-testid="sidebar-link-expediente"]');
       await waitForElement(page, '[data-testid="expediente-page"]');
       await takeScreenshot(page, 'admin/12-admin-expediente', viewport);
 
@@ -220,15 +231,14 @@ test.describe('Render Deployment - Full Test Suite', () => {
     test('Admin Flow - Mobile', async ({ page }) => {
       const viewport = 'mobile';
 
-      // 1-13: Mismos tests que desktop pero en mobile
       console.log('📱 Ejecutando admin flow en mobile...');
       
       await page.goto(BASE_URL);
       await waitForLoad(page);
       await takeScreenshot(page, 'admin/01-landing', viewport);
 
-      await page.goto(`${BASE_URL}/admin/login`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/login', '[data-testid="admin-access-link"]');
+      await waitForElement(page, '[data-testid="admin-login-form"]');
       await takeScreenshot(page, 'admin/02-admin-login', viewport);
 
       await page.fill('[data-testid="username-input"]', 'wrong');
@@ -241,16 +251,17 @@ test.describe('Render Deployment - Full Test Suite', () => {
       await page.fill('[data-testid="password-input"]', ADMIN_PASS);
       await page.click('[data-testid="login-submit-btn"]');
       await waitForLoad(page);
+      await waitForElement(page, '[data-testid="admin-app-container"]');
       await takeScreenshot(page, 'admin/04-admin-dashboard', viewport);
 
-      await page.goto(`${BASE_URL}/admin/import`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/import', '[data-testid="sidebar-link-importar-empleados"]');
+      await waitForElement(page, '[data-testid="import-page"]');
       await takeScreenshot(page, 'admin/05-admin-import', viewport);
 
       await takeScreenshot(page, 'admin/06-admin-import-result', viewport);
 
-      await page.goto(`${BASE_URL}/admin/courses`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/courses', '[data-testid="sidebar-link-cursos"]');
+      await waitForElement(page, '[data-testid="courses-page"]');
       await takeScreenshot(page, 'admin/07-admin-courses', viewport);
 
       const firstCourse = await page.locator('[data-testid^="course-row-"]').first();
@@ -260,20 +271,20 @@ test.describe('Render Deployment - Full Test Suite', () => {
       }
       await takeScreenshot(page, 'admin/08-admin-course-detail', viewport);
 
-      await page.goto(`${BASE_URL}/admin/ai/key`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/ai/key', '[data-testid="sidebar-link-ia:-clave"]');
+      await waitForElement(page, '[data-testid="ai-key-form"]');
       await takeScreenshot(page, 'admin/09-admin-ai-key', viewport);
 
-      await page.goto(`${BASE_URL}/admin/ai/content`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/ai/content', '[data-testid="sidebar-link-ia:-contenido"]');
+      await waitForElement(page, '[data-testid="guided-content-page"]');
       await takeScreenshot(page, 'admin/10-admin-ai-content', viewport);
 
-      await page.goto(`${BASE_URL}/admin/ai/tests`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/ai/tests', '[data-testid="sidebar-link-ia:-test-pdf"]');
+      await waitForElement(page, '[data-testid="pdf-test-gen-page"]');
       await takeScreenshot(page, 'admin/11-admin-ai-tests', viewport);
 
-      await page.goto(`${BASE_URL}/admin/expediente`);
-      await waitForLoad(page);
+      await goToPath(page, '/admin/expediente', '[data-testid="sidebar-link-expediente"]');
+      await waitForElement(page, '[data-testid="expediente-page"]');
       await takeScreenshot(page, 'admin/12-admin-expediente', viewport);
 
       const logoutBtn = await page.locator('button:has-text("Salir"), button:has-text("Logout")').first();
