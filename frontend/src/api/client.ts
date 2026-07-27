@@ -11,7 +11,7 @@ const client = axios.create({
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (error.response?.status === 401) {
       const path = window.location.pathname;
       if (path.startsWith("/admin") && !path.startsWith("/admin/login")) {
         window.location.href = "/admin/login";

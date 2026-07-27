@@ -19,6 +19,21 @@ EMPLOYEE_PREFIXES = ("/api/employee/", "/api/reading/", "/api/test/")
 PUBLIC_PREFIXES = ("/api/auth/", "/api/health/")
 
 
+class APICsrfeExemptionMiddleware:
+    """Exempts all /api/ JSON endpoints from Django form-based CSRF checks.
+
+    Security for API endpoints is handled via CORS_ALLOWED_ORIGINS and RoleIsolationMiddleware.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.path.startswith("/api/"):
+            setattr(request, "_dont_enforce_csrf_checks", True)
+        return self.get_response(request)
+
+
 class RoleIsolationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

@@ -61,6 +61,7 @@ except ImportError:
 MIDDLEWARE.extend([
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "authentication.middleware.APICsrfeExemptionMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "authentication.middleware.RoleIsolationMiddleware",
