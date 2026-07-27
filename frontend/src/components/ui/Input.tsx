@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, ReactNode } from "react";
+import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -7,15 +7,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: ReactNode;
 }
 
-export default function Input({
-  label,
-  error,
-  hint,
-  icon,
-  id,
-  style,
-  ...rest
-}: InputProps) {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  { label, error, hint, icon, id, style, ...rest },
+  ref
+) {
   const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
   return (
@@ -42,6 +37,7 @@ export default function Input({
           </span>
         )}
         <input
+          ref={ref}
           id={inputId}
           style={{
             width: "100%",
@@ -63,4 +59,6 @@ export default function Input({
       )}
     </div>
   );
-}
+});
+
+export default Input;
