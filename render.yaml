@@ -39,7 +39,7 @@ services:
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist
-    plan: free
+    plan: starter
     routes:
       - type: rewrite
         source: /*
