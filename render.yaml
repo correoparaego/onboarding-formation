@@ -1,15 +1,22 @@
-services:
-  # Backend Django API
-  - type: web
-    name: onboarding-backend
-    env: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    plan: free
-    healthCheckPath: /api/health/
-    envVars:
+# Exported from Render
+version: "1"
+projects:
+- name: FORMACION
+  environments:
+  - name: Production
+    services:
+    - type: web
+      name: onboarding-formation
+      runtime: docker
+      repo: https://github.com/correoparaego/onboarding-formation
+      plan: free
+      region: frankfurt
+      dockerContext: .
+      dockerfilePath: ./Dockerfile
+      autoDeployTrigger: commit
+      envVars:
       - key: DJANGO_SECRET_KEY
-        generateValue: true
+        sync: false
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
@@ -27,7 +34,7 @@ services:
       - key: POSTGRES_PASSWORD
         value: eucgW3RUBmuZblipGETMPhch8EbCL9LP
       - key: DNI_ENCRYPTION_KEY
-        generateValue: true
+        sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
@@ -36,18 +43,5 @@ services:
         value: "false"
       - key: EMAIL_TRANSPORT
         value: "console"
-
-  # Frontend React Static Site
-  - type: web
-    name: onboarding-frontend
-    env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/dist
-    plan: starter
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        sync: false
+      - key: PORT
+        value: "10000"
