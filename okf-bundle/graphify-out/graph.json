@@ -1,0 +1,1538 @@
+{
+  "version": 1,
+  "generated": "2026-07-27T09:13:01.394603",
+  "source": "C:\\Users\\Egoitz\\Documents\\onboarding formation\\okf-bundle",
+  "nodes": [
+    {
+      "id": "backend/ai_generation",
+      "label": "AI content generation with BYO LLM key, OpenAI-compatible client, PII protection",
+      "type": "backend-module",
+      "file": "backend\\ai_generation.md",
+      "tags": [
+        "django",
+        "app",
+        "ai",
+        "llm",
+        "openai",
+        "generation",
+        "encryption",
+        "pii",
+        "hitl"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/ai_generation/"
+    },
+    {
+      "id": "backend/authentication",
+      "label": "Admin login/logout, employee access token, role isolation middleware",
+      "type": "backend-module",
+      "file": "backend\\authentication.md",
+      "tags": [
+        "django",
+        "app",
+        "auth",
+        "session",
+        "token",
+        "employee-access",
+        "admin-login",
+        "middleware"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/authentication/"
+    },
+    {
+      "id": "backend/certificates",
+      "label": "Certificate PDF generation and badge award system",
+      "type": "backend-module",
+      "file": "backend\\certificates.md",
+      "tags": [
+        "django",
+        "app",
+        "certificate",
+        "badge",
+        "pdf",
+        "employee-badge"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/certificates/"
+    },
+    {
+      "id": "backend/common",
+      "label": "Shared utilities - crypto, DNI fields, parsing, rate limiting, retention policy",
+      "type": "backend-module",
+      "file": "backend\\common.md",
+      "tags": [
+        "django",
+        "utility",
+        "crypto",
+        "dni",
+        "encryption",
+        "parsing",
+        "rate-limit",
+        "retention"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/common/"
+    },
+    {
+      "id": "backend/courses",
+      "label": "Course, Section, Question, QuestionBank, Position models and CRUD views",
+      "type": "backend-module",
+      "file": "backend\\courses.md",
+      "tags": [
+        "django",
+        "app",
+        "course",
+        "section",
+        "question",
+        "position",
+        "catalog"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/courses/"
+    },
+    {
+      "id": "backend/employees",
+      "label": "Employee model with encrypted DNI and Excel import",
+      "type": "backend-module",
+      "file": "backend\\employees.md",
+      "tags": [
+        "django",
+        "app",
+        "employee",
+        "dni",
+        "encryption",
+        "import",
+        "excel"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/employees/"
+    },
+    {
+      "id": "backend/notifications",
+      "label": "Email notification system with configurable transport and Spanish templates",
+      "type": "backend-module",
+      "file": "backend\\notifications.md",
+      "tags": [
+        "django",
+        "app",
+        "notification",
+        "email",
+        "transport",
+        "template",
+        "spanish"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/notifications/"
+    },
+    {
+      "id": "backend/reading_gate",
+      "label": "Core compliance engine - enrollment, timed reading, comprehension test, audit, e",
+      "type": "backend-module",
+      "file": "backend\\reading_gate.md",
+      "tags": [
+        "django",
+        "app",
+        "enrollment",
+        "reading",
+        "gate",
+        "heartbeat",
+        "audit",
+        "expediente",
+        "compliance"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "backend/reading_gate/"
+    },
+    {
+      "id": "frontend/admin",
+      "label": "Admin panel - dashboard, employee import, course management, expediente, AI page",
+      "type": "frontend-module",
+      "file": "frontend\\admin.md",
+      "tags": [
+        "react",
+        "admin",
+        "dashboard",
+        "import",
+        "course",
+        "expediente",
+        "ai",
+        "lazy"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "frontend/src/admin/"
+    },
+    {
+      "id": "frontend/api",
+      "label": "API layer - Axios client with auth interceptor and typed endpoints",
+      "type": "frontend-module",
+      "file": "frontend\\api.md",
+      "tags": [
+        "react",
+        "api",
+        "axios",
+        "client",
+        "endpoints",
+        "interceptor"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "frontend/src/api/"
+    },
+    {
+      "id": "frontend/auth",
+      "label": "Auth context, admin login, employee redeem, protected routes",
+      "type": "frontend-module",
+      "file": "frontend\\auth.md",
+      "tags": [
+        "react",
+        "auth",
+        "context",
+        "login",
+        "redeem",
+        "protected-route"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "frontend/src/auth/"
+    },
+    {
+      "id": "frontend/components",
+      "label": "Shared components - UI primitives, layout, PDF reader, error boundary",
+      "type": "frontend-module",
+      "file": "frontend\\components.md",
+      "tags": [
+        "react",
+        "components",
+        "ui",
+        "layout",
+        "pdf-reader",
+        "error-boundary"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "frontend/src/components/"
+    },
+    {
+      "id": "frontend/employee",
+      "label": "Employee portal - enrollment list, PDF reader, badges",
+      "type": "frontend-module",
+      "file": "frontend\\employee.md",
+      "tags": [
+        "react",
+        "employee",
+        "enrollment",
+        "pdf-reader",
+        "dashboard"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "frontend/src/employee/"
+    },
+    {
+      "id": "index",
+      "label": "Onboarding Formation - Knowledge Graph Root",
+      "type": "index",
+      "file": "index.md",
+      "tags": [],
+      "status": "active",
+      "community": 0
+    },
+    {
+      "id": "specs/ai-generation",
+      "label": "AI content generation with BYO LLM key, HITL workflow, and PII protection",
+      "type": "spec",
+      "file": "specs\\ai-generation.md",
+      "tags": [
+        "ai",
+        "llm",
+        "openai",
+        "generation",
+        "hitl",
+        "encryption",
+        "pii"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/ai-generation/spec.md"
+    },
+    {
+      "id": "specs/audit-log",
+      "label": "Append-only audit log for reading and exam events with device context",
+      "type": "spec",
+      "file": "specs\\audit-log.md",
+      "tags": [
+        "audit",
+        "log",
+        "append-only",
+        "immutable",
+        "compliance",
+        "rgpd",
+        "worm"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/audit-log/spec.md"
+    },
+    {
+      "id": "specs/authentication",
+      "label": "Admin password session + employee magic-link authentication with role isolation",
+      "type": "spec",
+      "file": "specs\\authentication.md",
+      "tags": [
+        "auth",
+        "security",
+        "session",
+        "rgpd",
+        "admin",
+        "employee"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/authentication/spec.md"
+    },
+    {
+      "id": "specs/badges",
+      "label": "Badge system for employee achievement and recognition",
+      "type": "spec",
+      "file": "specs\\badges.md",
+      "tags": [
+        "badge",
+        "award",
+        "gamification",
+        "recognition"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/badges/spec.md"
+    },
+    {
+      "id": "specs/certificate",
+      "label": "PDF certificate generation with employee data, course info, and result summary",
+      "type": "spec",
+      "file": "specs\\certificate.md",
+      "tags": [
+        "certificate",
+        "pdf",
+        "dni",
+        "verbatim",
+        "regeneration",
+        "compliance"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/certificate/spec.md"
+    },
+    {
+      "id": "specs/comprehension-test",
+      "label": "Comprehension test with attempt limits, scoring, and pass/fail logic",
+      "type": "spec",
+      "file": "specs\\comprehension-test.md",
+      "tags": [
+        "test",
+        "comprehension",
+        "question",
+        "attempt",
+        "score",
+        "pass"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/comprehension-test/spec.md"
+    },
+    {
+      "id": "specs/course-management",
+      "label": "Course CRUD with sections, question banks, and position mapping",
+      "type": "spec",
+      "file": "specs\\course-management.md",
+      "tags": [
+        "course",
+        "section",
+        "question",
+        "position",
+        "catalog",
+        "admin"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/course-management/spec.md"
+    },
+    {
+      "id": "specs/employee-import",
+      "label": "Excel import of employees with DNI encryption and deduplication",
+      "type": "spec",
+      "file": "specs\\employee-import.md",
+      "tags": [
+        "import",
+        "excel",
+        "employee",
+        "dni",
+        "encryption",
+        "rgpd"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/employee-import/spec.md"
+    },
+    {
+      "id": "specs/enrollment-assignment",
+      "label": "Automatic enrollment assignment based on employee position",
+      "type": "spec",
+      "file": "specs\\enrollment-assignment.md",
+      "tags": [
+        "enrollment",
+        "assignment",
+        "course",
+        "position",
+        "mandatory"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/enrollment-assignment/spec.md"
+    },
+    {
+      "id": "specs/expediente",
+      "label": "Employee course result storage with admin filtering and retention policy",
+      "type": "spec",
+      "file": "specs\\expediente.md",
+      "tags": [
+        "expediente",
+        "result",
+        "retention",
+        "admin",
+        "filter",
+        "compliance"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/expediente/spec.md"
+    },
+    {
+      "id": "specs/notifications",
+      "label": "Email notification system with configurable transport and Spanish templates",
+      "type": "spec",
+      "file": "specs\\notifications.md",
+      "tags": [
+        "notifications",
+        "email",
+        "transport",
+        "template",
+        "spanish",
+        "delivery"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/notifications/spec.md"
+    },
+    {
+      "id": "specs/secure-access",
+      "label": "Employee access token generation, delivery, and redemption",
+      "type": "spec",
+      "file": "specs\\secure-access.md",
+      "tags": [
+        "security",
+        "token",
+        "magic-link",
+        "employee",
+        "rgpd"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/secure-access/spec.md"
+    },
+    {
+      "id": "specs/timed-reading",
+      "label": "Server-gated reading time enforcement with heartbeat validation",
+      "type": "spec",
+      "file": "specs\\timed-reading.md",
+      "tags": [
+        "reading",
+        "gate",
+        "heartbeat",
+        "time",
+        "compliance",
+        "server-authority"
+      ],
+      "status": "active",
+      "community": 0,
+      "resource": "openspec/specs/timed-reading/spec.md"
+    }
+  ],
+  "edges": [
+    {
+      "source": "backend/ai_generation",
+      "target": "backend/specs/ai-generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/ai_generation",
+      "target": "backend/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/ai_generation",
+      "target": "backend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/ai_generation",
+      "target": "backend/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/authentication",
+      "target": "backend/specs/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/authentication",
+      "target": "backend/specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/authentication",
+      "target": "backend/backend/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/authentication",
+      "target": "backend/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/authentication",
+      "target": "backend/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/authentication",
+      "target": "backend/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/certificates",
+      "target": "backend/specs/certificate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/certificates",
+      "target": "backend/specs/badges",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/certificates",
+      "target": "backend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/certificates",
+      "target": "backend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/certificates",
+      "target": "backend/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/certificates",
+      "target": "backend/backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/backend/ai_generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/specs/employee-import",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/common",
+      "target": "backend/specs/ai-generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/specs/enrollment-assignment",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/backend/certificates",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/courses",
+      "target": "backend/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/specs/employee-import",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/backend/certificates",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/employees",
+      "target": "backend/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/notifications",
+      "target": "backend/specs/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/notifications",
+      "target": "backend/specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/notifications",
+      "target": "backend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/notifications",
+      "target": "backend/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/specs/expediente",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/specs/enrollment-assignment",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/backend/certificates",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/backend/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/frontend/components",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "backend/reading_gate",
+      "target": "backend/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/specs/employee-import",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/specs/expediente",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/specs/ai-generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/backend/ai_generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/frontend/components",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/admin",
+      "target": "frontend/frontend/api",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/backend/ai_generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/api",
+      "target": "frontend/frontend/employee",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/specs/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/frontend/api",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/frontend/employee",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/auth",
+      "target": "frontend/frontend/components",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/components",
+      "target": "frontend/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/components",
+      "target": "frontend/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/components",
+      "target": "frontend/frontend/employee",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/components",
+      "target": "frontend/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/employee",
+      "target": "frontend/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/employee",
+      "target": "frontend/specs/badges",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/employee",
+      "target": "frontend/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/employee",
+      "target": "frontend/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/employee",
+      "target": "frontend/frontend/components",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "frontend/employee",
+      "target": "frontend/frontend/api",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/employee-import",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/enrollment-assignment",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/ai-generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/certificate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/badges",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/expediente",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/certificates",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/ai_generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "frontend/employee",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "frontend/components",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "index",
+      "target": "frontend/api",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/ai-generation",
+      "target": "specs/backend/ai_generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/ai-generation",
+      "target": "specs/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/ai-generation",
+      "target": "specs/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/ai-generation",
+      "target": "specs/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/audit-log",
+      "target": "specs/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/audit-log",
+      "target": "specs/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/audit-log",
+      "target": "specs/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/audit-log",
+      "target": "specs/specs/certificate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/audit-log",
+      "target": "specs/specs/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/audit-log",
+      "target": "specs/specs/expediente",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/authentication",
+      "target": "specs/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/authentication",
+      "target": "specs/specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/authentication",
+      "target": "specs/specs/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/authentication",
+      "target": "specs/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/badges",
+      "target": "specs/backend/certificates",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/badges",
+      "target": "specs/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/badges",
+      "target": "specs/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/badges",
+      "target": "specs/frontend/employee",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/certificate",
+      "target": "specs/backend/certificates",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/certificate",
+      "target": "specs/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/certificate",
+      "target": "specs/specs/expediente",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/certificate",
+      "target": "specs/specs/employee-import",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/certificate",
+      "target": "specs/specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/certificate",
+      "target": "specs/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/specs/certificate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/specs/badges",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/specs/expediente",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/comprehension-test",
+      "target": "specs/specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/course-management",
+      "target": "specs/backend/courses",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/course-management",
+      "target": "specs/specs/ai-generation",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/course-management",
+      "target": "specs/specs/enrollment-assignment",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/course-management",
+      "target": "specs/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/course-management",
+      "target": "specs/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/course-management",
+      "target": "specs/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/employee-import",
+      "target": "specs/backend/employees",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/employee-import",
+      "target": "specs/backend/common",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/employee-import",
+      "target": "specs/specs/enrollment-assignment",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/employee-import",
+      "target": "specs/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/enrollment-assignment",
+      "target": "specs/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/enrollment-assignment",
+      "target": "specs/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/enrollment-assignment",
+      "target": "specs/specs/employee-import",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/enrollment-assignment",
+      "target": "specs/specs/timed-reading",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/expediente",
+      "target": "specs/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/expediente",
+      "target": "specs/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/expediente",
+      "target": "specs/specs/certificate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/expediente",
+      "target": "specs/specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/expediente",
+      "target": "specs/frontend/admin",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/notifications",
+      "target": "specs/backend/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/notifications",
+      "target": "specs/specs/secure-access",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/notifications",
+      "target": "specs/specs/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/notifications",
+      "target": "specs/specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/secure-access",
+      "target": "specs/backend/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/secure-access",
+      "target": "specs/specs/authentication",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/secure-access",
+      "target": "specs/specs/notifications",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/secure-access",
+      "target": "specs/frontend/auth",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/timed-reading",
+      "target": "specs/backend/reading_gate",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/timed-reading",
+      "target": "specs/specs/comprehension-test",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/timed-reading",
+      "target": "specs/specs/audit-log",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/timed-reading",
+      "target": "specs/specs/course-management",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "specs/timed-reading",
+      "target": "specs/frontend/components",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "stats": {
+    "nodes": 27,
+    "edges": 177
+  }
+}

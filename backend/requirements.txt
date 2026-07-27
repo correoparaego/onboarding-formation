@@ -5,7 +5,7 @@ django>=5.0,<7.0
 djangorestframework>=3.15
 django-cors-headers>=4.3
 cryptography>=42.0
-psycopg2-binary>=2.9   ; for production PostgreSQL (not required for local sqlite verification)
+# psycopg2-binary>=2.9  # for production PostgreSQL (not required for local sqlite)
 
 # Phase 4 — Excel employee import
 pandas>=2.0

@@ -25,6 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import pandas as pd
 
+from common.crypto import dni_lookup_hash
 from common.dni import is_valid_dni
 from reading_gate.services import assign_mandatory_courses
 
@@ -125,7 +126,7 @@ def employee_import(request):
                 }
             )
             continue
-        if Employee.objects.filter(dni=dni).exists():
+        if Employee.objects.filter(dni_lookup=dni_lookup_hash(dni)).exists():
             duplicates += 1
             report.append(
                 {
