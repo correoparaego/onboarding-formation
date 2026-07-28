@@ -17,8 +17,10 @@ from django.http import JsonResponse
 ADMIN_PREFIXES = (
     "/api/admin/",
     "/api/import",
+    "/api/employees",
     "/api/courses/",
     "/api/course-versions/",
+    "/api/sections/",
     "/api/positions/",
     "/api/banks/",
     "/api/ai/",

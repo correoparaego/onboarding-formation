@@ -13,12 +13,15 @@ import json
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import FileResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from common.parsing import json_body
 from .models import Course, CourseVersion, Position, Question, QuestionBank, Section
 from .services import create_course, create_draft_version, publish_version
+
+
+MAX_PDF_SIZE = 25 * 1024 * 1024
 
 
 def _section_payload(section):
@@ -50,6 +53,15 @@ def _version_payload(version):
 
 def _version_is_editable(version):
     return version.status == "draft" or not version.enrollments.exists()
+
+
+def _validate_pdf(upload):
+    if upload.size > MAX_PDF_SIZE:
+        raise ValidationError("PDF exceeds the 25 MB limit")
+    header = upload.read(5)
+    upload.seek(0)
+    if header != b"%PDF-":
+        raise ValidationError("file must be a valid PDF")
 
 
 def _validate_question(q) -> int:
@@ -290,6 +302,56 @@ def position_list(request):
             ]
         }
     )
+
+
+def section_pdf(request, pk):
+    try:
+        section = Section.objects.select_related("version").get(pk=pk)
+    except Section.DoesNotExist:
+        return JsonResponse({"error": "section not found"}, status=404)
+    if request.method == "GET":
+        if not section.pdf_file:
+            return JsonResponse({"error": "PDF not found"}, status=404)
+        return FileResponse(
+            section.pdf_file.open("rb"),
+            content_type="application/pdf",
+            filename=f"section-{section.id}.pdf",
+        )
+    if not section.version or not _version_is_editable(section.version):
+        return JsonResponse({"error": "section version is immutable"}, status=409)
+    if request.method == "DELETE":
+        old_name = section.pdf_file.name
+        storage = section.pdf_file.storage
+        section.pdf_file = None
+        with transaction.atomic():
+            section.save(update_fields=["pdf_file"])
+            if old_name:
+                transaction.on_commit(lambda: storage.delete(old_name), robust=True)
+        return JsonResponse({"ok": True})
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    upload = request.FILES.get("pdf")
+    if not upload:
+        return JsonResponse({"error": "pdf is required"}, status=400)
+    try:
+        _validate_pdf(upload)
+    except ValidationError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    storage = section.pdf_file.storage
+    old_name = section.pdf_file.name
+    generated_name = section.pdf_file.field.generate_filename(section, upload.name)
+    try:
+        new_name = storage.save(generated_name, upload)
+        with transaction.atomic():
+            section.pdf_file.name = new_name
+            section.save(update_fields=["pdf_file"])
+            if old_name and old_name != new_name:
+                transaction.on_commit(lambda: storage.delete(old_name), robust=True)
+    except Exception:
+        if "new_name" in locals():
+            storage.delete(new_name)
+        return JsonResponse({"error": "could not store PDF"}, status=502)
+    return JsonResponse({"ok": True, "section": _section_payload(section)})
 
 
 def question_bank_create(request):

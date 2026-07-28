@@ -11,6 +11,7 @@ const navItems = [
   { to: "/admin/dashboard", label: "Dashboard", icon: "\uD83D\uDCCA" },
   { to: "/admin/import", label: "Importar empleados", icon: "\uD83D\uDCE5" },
   { to: "/admin/courses", label: "Cursos", icon: "\uD83D\uDCDA" },
+  { to: "/admin/assignments", label: "Asignaciones", icon: "\uD83D\uDC65" },
   { to: "/admin/ai/key", label: "IA: Clave", icon: "\uD83D\uDD11" },
   { to: "/admin/ai/content", label: "IA: Contenido", icon: "\uD83E\uDD16" },
   { to: "/admin/ai/tests", label: "IA: Test PDF", icon: "\uD83D\uDCDD" },
