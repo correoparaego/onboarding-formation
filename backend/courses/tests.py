@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from .models import Course, CourseVersion, Position, QuestionBank, Section
+from .services import create_course
 
 User = get_user_model()
 
@@ -48,7 +49,36 @@ class CourseManagementTests(TestCase):
         self.assertEqual(resp.status_code, 201)
         new = Course.objects.get(title="Nuevo")
         self.assertEqual(new.sections.count(), 1)
+        self.assertEqual(new.active_version.number, 1)
+        self.assertEqual(new.active_version.status, "published")
+        self.assertEqual(new.sections.first().version, new.active_version)
         self.assertTrue(new.position_catalog.filter(id=self.pos.id).exists())
+
+    def test_draft_can_be_edited_and_published_without_changing_version_one(self):
+        self.client.force_login(self.admin)
+        _, first = create_course(
+            "Versionado",
+            sections=[{"order": 1, "title": "Uno", "content": "Original"}],
+        )
+        draft_resp = self.client.post(f"/api/courses/{first.course_id}/draft/")
+        draft = draft_resp.json()["version"]
+        update = self.client.patch(
+            f"/api/course-versions/{draft['id']}/",
+            data={
+                "title": "Versionado 2",
+                "sections": [
+                    {"order": 1, "title": "Uno", "content": "Revisado"}
+                ],
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(update.status_code, 200)
+        publish = self.client.post(
+            f"/api/course-versions/{draft['id']}/publish/"
+        )
+        self.assertEqual(publish.status_code, 200)
+        first.refresh_from_db()
+        self.assertEqual(first.sections.get().content, "Original")
 
     def test_single_correct_enforced_on_save(self):
         c = self.client
