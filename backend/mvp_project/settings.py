@@ -13,7 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_SECRET_KEY = "dev-insecure-key-change-me-in-production-0123456789"
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", DEFAULT_SECRET_KEY)
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
+DEBUG = False if os.environ.get("RENDER") == "true" else os.environ.get(
+    "DJANGO_DEBUG", "True"
+).lower() in ("1", "true", "yes")
 
 if not DEBUG and SECRET_KEY == DEFAULT_SECRET_KEY:
     raise ValueError(
