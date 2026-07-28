@@ -21,7 +21,6 @@ import logging
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 import pandas as pd
 
@@ -59,7 +58,6 @@ def _is_valid_email(value: str) -> bool:
         return False
 
 
-@csrf_exempt
 def employee_import(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
