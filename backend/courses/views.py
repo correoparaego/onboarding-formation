@@ -320,9 +320,13 @@ def section_pdf(request, pk):
     if not section.version or not _version_is_editable(section.version):
         return JsonResponse({"error": "section version is immutable"}, status=409)
     if request.method == "DELETE":
-        section.pdf_file.delete(save=False)
+        old_name = section.pdf_file.name
+        storage = section.pdf_file.storage
         section.pdf_file = None
-        section.save(update_fields=["pdf_file"])
+        with transaction.atomic():
+            section.save(update_fields=["pdf_file"])
+            if old_name:
+                transaction.on_commit(lambda: storage.delete(old_name), robust=True)
         return JsonResponse({"ok": True})
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -333,9 +337,20 @@ def section_pdf(request, pk):
         _validate_pdf(upload)
     except ValidationError as exc:
         return JsonResponse({"error": str(exc)}, status=400)
-    if section.pdf_file:
-        section.pdf_file.delete(save=False)
-    section.pdf_file.save(upload.name, upload, save=True)
+    storage = section.pdf_file.storage
+    old_name = section.pdf_file.name
+    generated_name = section.pdf_file.field.generate_filename(section, upload.name)
+    try:
+        new_name = storage.save(generated_name, upload)
+        with transaction.atomic():
+            section.pdf_file.name = new_name
+            section.save(update_fields=["pdf_file"])
+            if old_name and old_name != new_name:
+                transaction.on_commit(lambda: storage.delete(old_name), robust=True)
+    except Exception:
+        if "new_name" in locals():
+            storage.delete(new_name)
+        return JsonResponse({"error": "could not store PDF"}, status=502)
     return JsonResponse({"ok": True, "section": _section_payload(section)})
 
 
