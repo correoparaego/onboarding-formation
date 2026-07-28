@@ -52,9 +52,10 @@ frontend/test-results/
 frontend/playwright-report/
 frontend/screenshots/
 
-# Graphify
-graphify-out/
-okf-bundle/
+# Knowledge graph build scratch files (final graph artifacts are versioned)
+.graphify_*.json
+.graphify_*.txt
+tools/knowledge_graph/.work/
 
 # IDE
 .vscode/

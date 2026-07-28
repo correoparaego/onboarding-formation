@@ -1,0 +1,17 @@
+---
+source_file: "openspec/changes/archive/2026-07-15-mvp-formacion-inicial/exploration.md"
+type: "document"
+community: "Openspec · Document"
+location: "L59"
+tags:
+  - graphify/document
+  - graphify/EXTRACTED
+  - community/Openspec_·_Document
+---
+
+# Recommendation (proposal input — NOT locked)
+
+## Connections
+- [[4. Technology Stack Analysis]] - `contains` [EXTRACTED]
+
+#graphify/document #graphify/EXTRACTED #community/Openspec_·_Document

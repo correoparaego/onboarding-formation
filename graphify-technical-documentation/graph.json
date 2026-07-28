@@ -1,0 +1,2261 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "Arquitectura y documentaci\u00f3n t\u00e9cnica de Onboarding Formation",
+      "file_type": "document",
+      "concept_type": "documentation",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1",
+      "id": "doc_technical_documentation",
+      "community": 6
+    },
+    {
+      "label": "Arquitectura y documentaci\u00f3n t\u00e9cnica de Onboarding Formation",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1",
+      "id": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "community": 6
+    },
+    {
+      "label": "\u00cdndice",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L9",
+      "id": "doc_technical_documentation_l9_ndice",
+      "community": 6
+    },
+    {
+      "label": "1. Prop\u00f3sito y alcance",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L26",
+      "id": "doc_technical_documentation_l26_1_prop_sito_y_alcance",
+      "community": 6
+    },
+    {
+      "label": "1.1 Audiencia",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L32",
+      "id": "doc_technical_documentation_l32_1_1_audiencia",
+      "community": 6
+    },
+    {
+      "label": "1.2 Convenciones de estado",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L44",
+      "id": "doc_technical_documentation_l44_1_2_convenciones_de_estado",
+      "community": 6
+    },
+    {
+      "label": "1.3 Principios de interpretaci\u00f3n",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L55",
+      "id": "doc_technical_documentation_l55_1_3_principios_de_interpretaci_n",
+      "community": 6
+    },
+    {
+      "label": "2. Contexto del producto",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L66",
+      "id": "doc_technical_documentation_l66_2_contexto_del_producto",
+      "community": 11
+    },
+    {
+      "label": "2.1 Problema empresarial",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L68",
+      "id": "doc_technical_documentation_l68_2_1_problema_empresarial",
+      "community": 11
+    },
+    {
+      "label": "2.2 Propuesta de valor",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L79",
+      "id": "doc_technical_documentation_l79_2_2_propuesta_de_valor",
+      "community": 11
+    },
+    {
+      "label": "2.3 Actores",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L95",
+      "id": "doc_technical_documentation_l95_2_3_actores",
+      "community": 11
+    },
+    {
+      "label": "2.4 Objetivos y m\u00e9tricas de negocio",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L106",
+      "id": "doc_technical_documentation_l106_2_4_objetivos_y_m_tricas_de_negocio",
+      "community": 11
+    },
+    {
+      "label": "2.5 Stack tecnol\u00f3gico",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L119",
+      "id": "doc_technical_documentation_l119_2_5_stack_tecnol_gico",
+      "community": 11
+    },
+    {
+      "label": "3. Especificaci\u00f3n de features: OKF y Graphify",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L139",
+      "id": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "community": 12
+    },
+    {
+      "label": "3.1 Modelo Entidad-Relaci\u00f3n-Impacto",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L141",
+      "id": "doc_technical_documentation_l141_3_1_modelo_entidad_relaci_n_impacto",
+      "community": 12
+    },
+    {
+      "label": "3.2 Grafo de capacidades",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L152",
+      "id": "doc_technical_documentation_l152_3_2_grafo_de_capacidades",
+      "community": 12
+    },
+    {
+      "label": "3.3 Cat\u00e1logo detallado de features",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L185",
+      "id": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "community": 1
+    },
+    {
+      "label": "F-01. Autenticaci\u00f3n administrativa y aislamiento de roles",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L187",
+      "id": "doc_technical_documentation_l187_f_01_autenticaci_n_administrativa_y_aislamiento_de_roles",
+      "community": 1
+    },
+    {
+      "label": "F-02. Acceso temporal del empleado",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L201",
+      "id": "doc_technical_documentation_l201_f_02_acceso_temporal_del_empleado",
+      "community": 1
+    },
+    {
+      "label": "F-03. Importaci\u00f3n y protecci\u00f3n de empleados",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L215",
+      "id": "doc_technical_documentation_l215_f_03_importaci_n_y_protecci_n_de_empleados",
+      "community": 1
+    },
+    {
+      "label": "F-04. Puestos y cat\u00e1logo obligatorio",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L229",
+      "id": "doc_technical_documentation_l229_f_04_puestos_y_cat_logo_obligatorio",
+      "community": 1
+    },
+    {
+      "label": "F-05. Gesti\u00f3n y versionado de cursos",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L243",
+      "id": "doc_technical_documentation_l243_f_05_gesti_n_y_versionado_de_cursos",
+      "community": 1
+    },
+    {
+      "label": "F-06. PDFs privados por secci\u00f3n",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L257",
+      "id": "doc_technical_documentation_l257_f_06_pdfs_privados_por_secci_n",
+      "community": 1
+    },
+    {
+      "label": "F-07. Asignaci\u00f3n y ciclo de matr\u00edcula",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L271",
+      "id": "doc_technical_documentation_l271_f_07_asignaci_n_y_ciclo_de_matr_cula",
+      "community": 1
+    },
+    {
+      "label": "F-08. Lectura temporizada y secuencial",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L285",
+      "id": "doc_technical_documentation_l285_f_08_lectura_temporizada_y_secuencial",
+      "community": 1
+    },
+    {
+      "label": "F-09. Test de comprensi\u00f3n",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L299",
+      "id": "doc_technical_documentation_l299_f_09_test_de_comprensi_n",
+      "community": 1
+    },
+    {
+      "label": "F-10. Expediente de formaci\u00f3n",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L313",
+      "id": "doc_technical_documentation_l313_f_10_expediente_de_formaci_n",
+      "community": 1
+    },
+    {
+      "label": "F-11. Certificados y badges",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L327",
+      "id": "doc_technical_documentation_l327_f_11_certificados_y_badges",
+      "community": 1
+    },
+    {
+      "label": "F-12. Auditor\u00eda transversal",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L341",
+      "id": "doc_technical_documentation_l341_f_12_auditor_a_transversal",
+      "community": 1
+    },
+    {
+      "label": "F-13. Notificaciones y accesos masivos",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L354",
+      "id": "doc_technical_documentation_l354_f_13_notificaciones_y_accesos_masivos",
+      "community": 1
+    },
+    {
+      "label": "F-14. Autor\u00eda asistida por IA",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L368",
+      "id": "doc_technical_documentation_l368_f_14_autor_a_asistida_por_ia",
+      "community": 1
+    },
+    {
+      "label": "3.4 Dependencias entre m\u00f3dulos",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L382",
+      "id": "doc_technical_documentation_l382_3_4_dependencias_entre_m_dulos",
+      "community": 12
+    },
+    {
+      "label": "3.5 Matriz de trazabilidad feature-especificaci\u00f3n-prueba",
+      "file_type": "document",
+      "concept_type": "feature",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L395",
+      "id": "doc_technical_documentation_l395_3_5_matriz_de_trazabilidad_feature_especificaci_n_prueba",
+      "community": 12
+    },
+    {
+      "label": "3.6 Estado del conocimiento generado",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L414",
+      "id": "doc_technical_documentation_l414_3_6_estado_del_conocimiento_generado",
+      "community": 12
+    },
+    {
+      "label": "4. Arquitectura visual",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L424",
+      "id": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "community": 2
+    },
+    {
+      "label": "4.1 Arquitectura general del sistema",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L426",
+      "id": "doc_technical_documentation_l426_4_1_arquitectura_general_del_sistema",
+      "community": 2
+    },
+    {
+      "label": "4.2 Arquitectura del frontend",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L465",
+      "id": "doc_technical_documentation_l465_4_2_arquitectura_del_frontend",
+      "community": 2
+    },
+    {
+      "label": "Gesti\u00f3n de estado",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L506",
+      "id": "doc_technical_documentation_l506_gesti_n_de_estado",
+      "community": 2
+    },
+    {
+      "label": "4.3 Arquitectura del backend",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L519",
+      "id": "doc_technical_documentation_l519_4_3_arquitectura_del_backend",
+      "community": 2
+    },
+    {
+      "label": "Capas efectivas",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L562",
+      "id": "doc_technical_documentation_l562_capas_efectivas",
+      "community": 2
+    },
+    {
+      "label": "4.4 Modelo de dominio",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L573",
+      "id": "doc_technical_documentation_l573_4_4_modelo_de_dominio",
+      "community": 2
+    },
+    {
+      "label": "4.5 Estados de matr\u00edcula",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L599",
+      "id": "doc_technical_documentation_l599_4_5_estados_de_matr_cula",
+      "community": 2
+    },
+    {
+      "label": "4.6 Flujo cr\u00edtico 1: alta, asignaci\u00f3n y acceso",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L625",
+      "id": "doc_technical_documentation_l625_4_6_flujo_cr_tico_1_alta_asignaci_n_y_acceso",
+      "community": 2
+    },
+    {
+      "label": "Reglas cr\u00edticas del flujo",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L658",
+      "id": "doc_technical_documentation_l658_reglas_cr_ticas_del_flujo",
+      "community": 2
+    },
+    {
+      "label": "4.7 Flujo cr\u00edtico 2: lectura, evaluaci\u00f3n y evidencia",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L666",
+      "id": "doc_technical_documentation_l666_4_7_flujo_cr_tico_2_lectura_evaluaci_n_y_evidencia",
+      "community": 2
+    },
+    {
+      "label": "Garant\u00edas y l\u00edmites",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L702",
+      "id": "doc_technical_documentation_l702_garant_as_y_l_mites",
+      "community": 2
+    },
+    {
+      "label": "5. Registro de decisiones de arquitectura",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L715",
+      "id": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "community": 3
+    },
+    {
+      "label": "ADR-001. Mantener un dominio single-tenant",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L717",
+      "id": "doc_technical_documentation_l717_adr_001_mantener_un_dominio_single_tenant",
+      "community": 3
+    },
+    {
+      "label": "ADR-002. Usar servidor autoritativo para lectura y evaluaci\u00f3n",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L730",
+      "id": "doc_technical_documentation_l730_adr_002_usar_servidor_autoritativo_para_lectura_y_evaluaci_n",
+      "community": 3
+    },
+    {
+      "label": "ADR-003. Versionar contenido y fijar cada matr\u00edcula",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L743",
+      "id": "doc_technical_documentation_l743_adr_003_versionar_contenido_y_fijar_cada_matr_cula",
+      "community": 3
+    },
+    {
+      "label": "ADR-004. Autenticaci\u00f3n con sesi\u00f3n y acceso de un solo uso",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L756",
+      "id": "doc_technical_documentation_l756_adr_004_autenticaci_n_con_sesi_n_y_acceso_de_un_solo_uso",
+      "community": 3
+    },
+    {
+      "label": "ADR-005. Cifrar DNI con AES-GCM y deduplicar mediante HMAC",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L769",
+      "id": "doc_technical_documentation_l769_adr_005_cifrar_dni_con_aes_gcm_y_deduplicar_mediante_hmac",
+      "community": 3
+    },
+    {
+      "label": "ADR-006. Usar Django ORM sin repositorios expl\u00edcitos",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L782",
+      "id": "doc_technical_documentation_l782_adr_006_usar_django_orm_sin_repositorios_expl_citos",
+      "community": 3
+    },
+    {
+      "label": "ADR-007. Generar certificados con ReportLab",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L794",
+      "id": "doc_technical_documentation_l794_adr_007_generar_certificados_con_reportlab",
+      "community": 3
+    },
+    {
+      "label": "ADR-008. Abstraer correo por transporte configurable",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L806",
+      "id": "doc_technical_documentation_l806_adr_008_abstraer_correo_por_transporte_configurable",
+      "community": 3
+    },
+    {
+      "label": "ADR-009. IA human-in-the-loop con credenciales protegidas",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L818",
+      "id": "doc_technical_documentation_l818_adr_009_ia_human_in_the_loop_con_credenciales_protegidas",
+      "community": 3
+    },
+    {
+      "label": "ADR-010. Desplegar SPA y API en un \u00fanico contenedor",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L831",
+      "id": "doc_technical_documentation_l831_adr_010_desplegar_spa_y_api_en_un_nico_contenedor",
+      "community": 3
+    },
+    {
+      "label": "ADR-011. No disponer todav\u00eda de una puerta CI automatizada",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L844",
+      "id": "doc_technical_documentation_l844_adr_011_no_disponer_todav_a_de_una_puerta_ci_automatizada",
+      "community": 3
+    },
+    {
+      "label": "6. Seguridad y protecci\u00f3n de datos",
+      "file_type": "document",
+      "concept_type": "security",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L857",
+      "id": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "community": 9
+    },
+    {
+      "label": "6.1 Modelo de amenazas resumido",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L859",
+      "id": "doc_technical_documentation_l859_6_1_modelo_de_amenazas_resumido",
+      "community": 9
+    },
+    {
+      "label": "6.2 Autenticaci\u00f3n y autorizaci\u00f3n",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L871",
+      "id": "doc_technical_documentation_l871_6_2_autenticaci_n_y_autorizaci_n",
+      "community": 9
+    },
+    {
+      "label": "6.3 Cifrado y secretos",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L883",
+      "id": "doc_technical_documentation_l883_6_3_cifrado_y_secretos",
+      "community": 9
+    },
+    {
+      "label": "6.4 Variables de entorno",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L894",
+      "id": "doc_technical_documentation_l894_6_4_variables_de_entorno",
+      "community": 9
+    },
+    {
+      "label": "6.5 RGPD y cumplimiento",
+      "file_type": "document",
+      "concept_type": "security",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L898",
+      "id": "doc_technical_documentation_l898_6_5_rgpd_y_cumplimiento",
+      "community": 9
+    },
+    {
+      "label": "6.6 Hallazgos de seguridad prioritarios",
+      "file_type": "document",
+      "concept_type": "security",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L910",
+      "id": "doc_technical_documentation_l910_6_6_hallazgos_de_seguridad_prioritarios",
+      "community": 9
+    },
+    {
+      "label": "7. Calidad de c\u00f3digo y estrategia de testing",
+      "file_type": "document",
+      "concept_type": "quality",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L925",
+      "id": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "community": 10
+    },
+    {
+      "label": "7.1 Calidad actual",
+      "file_type": "document",
+      "concept_type": "quality",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L927",
+      "id": "doc_technical_documentation_l927_7_1_calidad_actual",
+      "community": 10
+    },
+    {
+      "label": "7.2 Pir\u00e1mide de testing",
+      "file_type": "document",
+      "concept_type": "quality",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L942",
+      "id": "doc_technical_documentation_l942_7_2_pir_mide_de_testing",
+      "community": 10
+    },
+    {
+      "label": "7.3 Evidencia hist\u00f3rica",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L953",
+      "id": "doc_technical_documentation_l953_7_3_evidencia_hist_rica",
+      "community": 10
+    },
+    {
+      "label": "7.4 Cobertura objetivo",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L962",
+      "id": "doc_technical_documentation_l962_7_4_cobertura_objetivo",
+      "community": 10
+    },
+    {
+      "label": "7.5 Matriz m\u00ednima de escenarios",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L976",
+      "id": "doc_technical_documentation_l976_7_5_matriz_m_nima_de_escenarios",
+      "community": 10
+    },
+    {
+      "label": "7.6 Pipeline de calidad objetivo",
+      "file_type": "document",
+      "concept_type": "quality",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L988",
+      "id": "doc_technical_documentation_l988_7_6_pipeline_de_calidad_objetivo",
+      "community": 10
+    },
+    {
+      "label": "8. IA y herramientas de ingenier\u00eda",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1008",
+      "id": "doc_technical_documentation_l1008_8_ia_y_herramientas_de_ingenier_a",
+      "community": 5
+    },
+    {
+      "label": "8.1 IA integrada en el producto",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1010",
+      "id": "doc_technical_documentation_l1010_8_1_ia_integrada_en_el_producto",
+      "community": 5
+    },
+    {
+      "label": "Selecci\u00f3n efectiva de proveedor",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1012",
+      "id": "doc_technical_documentation_l1012_selecci_n_efectiva_de_proveedor",
+      "community": 5
+    },
+    {
+      "label": "Controles",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1021",
+      "id": "doc_technical_documentation_l1021_controles",
+      "community": 5
+    },
+    {
+      "label": "Riesgos",
+      "file_type": "document",
+      "concept_type": "risk",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1030",
+      "id": "doc_technical_documentation_l1030_riesgos",
+      "community": 5
+    },
+    {
+      "label": "8.2 Herramientas/agentes usados en desarrollo",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1040",
+      "id": "doc_technical_documentation_l1040_8_2_herramientas_agentes_usados_en_desarrollo",
+      "community": 5
+    },
+    {
+      "label": "8.3 Flujo de IA recomendado para ingenier\u00eda",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1052",
+      "id": "doc_technical_documentation_l1052_8_3_flujo_de_ia_recomendado_para_ingenier_a",
+      "community": 5
+    },
+    {
+      "label": "8.4 Pol\u00edtica m\u00ednima de uso responsable",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1063",
+      "id": "doc_technical_documentation_l1063_8_4_pol_tica_m_nima_de_uso_responsable",
+      "community": 5
+    },
+    {
+      "label": "9. Despliegue en Render",
+      "file_type": "document",
+      "concept_type": "deployment",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1074",
+      "id": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "community": 0
+    },
+    {
+      "label": "9.1 Infraestructura actual",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1076",
+      "id": "doc_technical_documentation_l1076_9_1_infraestructura_actual",
+      "community": 0
+    },
+    {
+      "label": "9.2 Build de imagen",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1090",
+      "id": "doc_technical_documentation_l1090_9_2_build_de_imagen",
+      "community": 0
+    },
+    {
+      "label": "9.3 Arranque actual",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1108",
+      "id": "doc_technical_documentation_l1108_9_3_arranque_actual",
+      "community": 0
+    },
+    {
+      "label": "9.4 Enrutamiento",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1120",
+      "id": "doc_technical_documentation_l1120_9_4_enrutamiento",
+      "community": 0
+    },
+    {
+      "label": "9.5 Variables y secretos",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1132",
+      "id": "doc_technical_documentation_l1132_9_5_variables_y_secretos",
+      "community": 0
+    },
+    {
+      "label": "Declaradas en render.yaml",
+      "file_type": "document",
+      "concept_type": "deployment",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1134",
+      "id": "doc_technical_documentation_l1134_declaradas_en_render_yaml",
+      "community": 0
+    },
+    {
+      "label": "Soportadas, no declaradas en Blueprint",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1155",
+      "id": "doc_technical_documentation_l1155_soportadas_no_declaradas_en_blueprint",
+      "community": 0
+    },
+    {
+      "label": "Estrategia requerida",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1165",
+      "id": "doc_technical_documentation_l1165_estrategia_requerida",
+      "community": 0
+    },
+    {
+      "label": "9.6 CI/CD actual",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1173",
+      "id": "doc_technical_documentation_l1173_9_6_ci_cd_actual",
+      "community": 0
+    },
+    {
+      "label": "9.7 CI/CD objetivo",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1185",
+      "id": "doc_technical_documentation_l1185_9_7_ci_cd_objetivo",
+      "community": 0
+    },
+    {
+      "label": "9.8 Monitoreo y observabilidad",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1205",
+      "id": "doc_technical_documentation_l1205_9_8_monitoreo_y_observabilidad",
+      "community": 0
+    },
+    {
+      "label": "Estado actual",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1207",
+      "id": "doc_technical_documentation_l1207_estado_actual",
+      "community": 0
+    },
+    {
+      "label": "Objetivo de producci\u00f3n",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1216",
+      "id": "doc_technical_documentation_l1216_objetivo_de_producci_n",
+      "community": 0
+    },
+    {
+      "label": "9.9 Escalado y resiliencia",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1232",
+      "id": "doc_technical_documentation_l1232_9_9_escalado_y_resiliencia",
+      "community": 0
+    },
+    {
+      "label": "9.10 Runbook objetivo de despliegue",
+      "file_type": "document",
+      "concept_type": "deployment",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1246",
+      "id": "doc_technical_documentation_l1246_9_10_runbook_objetivo_de_despliegue",
+      "community": 0
+    },
+    {
+      "label": "10. Historial de ramas y pull requests",
+      "file_type": "document",
+      "concept_type": "git-history",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1263",
+      "id": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "community": 4
+    },
+    {
+      "label": "10.1 Modelo de branching observado",
+      "file_type": "document",
+      "concept_type": "architecture",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1265",
+      "id": "doc_technical_documentation_l1265_10_1_modelo_de_branching_observado",
+      "community": 4
+    },
+    {
+      "label": "10.2 Gobierno de PR observado",
+      "file_type": "document",
+      "concept_type": "git-history",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1302",
+      "id": "doc_technical_documentation_l1302_10_2_gobierno_de_pr_observado",
+      "community": 4
+    },
+    {
+      "label": "10.3 PRs del MVP inicial",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1317",
+      "id": "doc_technical_documentation_l1317_10_3_prs_del_mvp_inicial",
+      "community": 4
+    },
+    {
+      "label": "10.4 Correcciones independientes",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1329",
+      "id": "doc_technical_documentation_l1329_10_4_correcciones_independientes",
+      "community": 4
+    },
+    {
+      "label": "10.5 Cadena de ciclo formativo #15-#28",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1340",
+      "id": "doc_technical_documentation_l1340_10_5_cadena_de_ciclo_formativo_15_28",
+      "community": 4
+    },
+    {
+      "label": "10.6 Cadena de acceso masivo #34-#35",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1380",
+      "id": "doc_technical_documentation_l1380_10_6_cadena_de_acceso_masivo_34_35",
+      "community": 4
+    },
+    {
+      "label": "10.7 Hitos de commits",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1389",
+      "id": "doc_technical_documentation_l1389_10_7_hitos_de_commits",
+      "community": 4
+    },
+    {
+      "label": "10.8 Pol\u00edtica de branching objetivo",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1406",
+      "id": "doc_technical_documentation_l1406_10_8_pol_tica_de_branching_objetivo",
+      "community": 4
+    },
+    {
+      "label": "11. Riesgos, deuda y evoluci\u00f3n",
+      "file_type": "document",
+      "concept_type": "risk",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1420",
+      "id": "doc_technical_documentation_l1420_11_riesgos_deuda_y_evoluci_n",
+      "community": 7
+    },
+    {
+      "label": "11.1 Registro priorizado",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1422",
+      "id": "doc_technical_documentation_l1422_11_1_registro_priorizado",
+      "community": 7
+    },
+    {
+      "label": "11.2 Roadmap t\u00e9cnico recomendado",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1445",
+      "id": "doc_technical_documentation_l1445_11_2_roadmap_t_cnico_recomendado",
+      "community": 7
+    },
+    {
+      "label": "Fase 0. Contenci\u00f3n de producci\u00f3n",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1447",
+      "id": "doc_technical_documentation_l1447_fase_0_contenci_n_de_producci_n",
+      "community": 7
+    },
+    {
+      "label": "Fase 1. Integridad y contratos",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1454",
+      "id": "doc_technical_documentation_l1454_fase_1_integridad_y_contratos",
+      "community": 7
+    },
+    {
+      "label": "Fase 2. Operaci\u00f3n fiable",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1462",
+      "id": "doc_technical_documentation_l1462_fase_2_operaci_n_fiable",
+      "community": 7
+    },
+    {
+      "label": "Fase 3. Escala y evoluci\u00f3n",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1470",
+      "id": "doc_technical_documentation_l1470_fase_3_escala_y_evoluci_n",
+      "community": 7
+    },
+    {
+      "label": "12. Anexos de trazabilidad",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1480",
+      "id": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "community": 8
+    },
+    {
+      "label": "12.1 Inventario de aplicaciones y rutas",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1482",
+      "id": "doc_technical_documentation_l1482_12_1_inventario_de_aplicaciones_y_rutas",
+      "community": 8
+    },
+    {
+      "label": "12.2 Eventos de auditor\u00eda relevantes",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1499",
+      "id": "doc_technical_documentation_l1499_12_2_eventos_de_auditor_a_relevantes",
+      "community": 8
+    },
+    {
+      "label": "12.3 Glosario",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1514",
+      "id": "doc_technical_documentation_l1514_12_3_glosario",
+      "community": 8
+    },
+    {
+      "label": "12.4 Fuentes principales",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1532",
+      "id": "doc_technical_documentation_l1532_12_4_fuentes_principales",
+      "community": 8
+    },
+    {
+      "label": "12.5 Preguntas pendientes de decisi\u00f3n",
+      "file_type": "document",
+      "concept_type": "decision",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1551",
+      "id": "doc_technical_documentation_l1551_12_5_preguntas_pendientes_de_decisi_n",
+      "community": 8
+    },
+    {
+      "label": "12.6 Criterio de mantenimiento de este documento",
+      "file_type": "document",
+      "concept_type": "document",
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1566",
+      "id": "doc_technical_documentation_l1566_12_6_criterio_de_mantenimiento_de_este_documento",
+      "community": 8
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "doc_technical_documentation",
+      "target": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l9_ndice"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l26_1_prop_sito_y_alcance"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l66_2_contexto_del_producto"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L424",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l424_4_arquitectura_visual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L715",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L857",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L925",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1008",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l1008_8_ia_y_herramientas_de_ingenier_a"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1074",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l1074_9_despliegue_en_render"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1263",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1420",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l1420_11_riesgos_deuda_y_evoluci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1480",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1_arquitectura_y_documentaci_n_t_cnica_de_onboarding_formation",
+      "target": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l26_1_prop_sito_y_alcance",
+      "target": "doc_technical_documentation_l32_1_1_audiencia"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l26_1_prop_sito_y_alcance",
+      "target": "doc_technical_documentation_l44_1_2_convenciones_de_estado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l26_1_prop_sito_y_alcance",
+      "target": "doc_technical_documentation_l55_1_3_principios_de_interpretaci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l66_2_contexto_del_producto",
+      "target": "doc_technical_documentation_l68_2_1_problema_empresarial"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l66_2_contexto_del_producto",
+      "target": "doc_technical_documentation_l79_2_2_propuesta_de_valor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l66_2_contexto_del_producto",
+      "target": "doc_technical_documentation_l95_2_3_actores"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l66_2_contexto_del_producto",
+      "target": "doc_technical_documentation_l106_2_4_objetivos_y_m_tricas_de_negocio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l66_2_contexto_del_producto",
+      "target": "doc_technical_documentation_l119_2_5_stack_tecnol_gico"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "target": "doc_technical_documentation_l141_3_1_modelo_entidad_relaci_n_impacto"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L152",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "target": "doc_technical_documentation_l152_3_2_grafo_de_capacidades"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L185",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "target": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L382",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "target": "doc_technical_documentation_l382_3_4_dependencias_entre_m_dulos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L395",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "target": "doc_technical_documentation_l395_3_5_matriz_de_trazabilidad_feature_especificaci_n_prueba"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L414",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l139_3_especificaci_n_de_features_okf_y_graphify",
+      "target": "doc_technical_documentation_l414_3_6_estado_del_conocimiento_generado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l187_f_01_autenticaci_n_administrativa_y_aislamiento_de_roles"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L201",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l201_f_02_acceso_temporal_del_empleado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L215",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l215_f_03_importaci_n_y_protecci_n_de_empleados"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l229_f_04_puestos_y_cat_logo_obligatorio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l243_f_05_gesti_n_y_versionado_de_cursos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L257",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l257_f_06_pdfs_privados_por_secci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L271",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l271_f_07_asignaci_n_y_ciclo_de_matr_cula"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L285",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l285_f_08_lectura_temporizada_y_secuencial"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L299",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l299_f_09_test_de_comprensi_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L313",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l313_f_10_expediente_de_formaci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L327",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l327_f_11_certificados_y_badges"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L341",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l341_f_12_auditor_a_transversal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L354",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l354_f_13_notificaciones_y_accesos_masivos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L368",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l185_3_3_cat_logo_detallado_de_features",
+      "target": "doc_technical_documentation_l368_f_14_autor_a_asistida_por_ia"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L426",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l426_4_1_arquitectura_general_del_sistema"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L465",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l465_4_2_arquitectura_del_frontend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L519",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l519_4_3_arquitectura_del_backend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L573",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l573_4_4_modelo_de_dominio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L599",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l599_4_5_estados_de_matr_cula"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L625",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l625_4_6_flujo_cr_tico_1_alta_asignaci_n_y_acceso"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L666",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l424_4_arquitectura_visual",
+      "target": "doc_technical_documentation_l666_4_7_flujo_cr_tico_2_lectura_evaluaci_n_y_evidencia"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L506",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l465_4_2_arquitectura_del_frontend",
+      "target": "doc_technical_documentation_l506_gesti_n_de_estado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L562",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l519_4_3_arquitectura_del_backend",
+      "target": "doc_technical_documentation_l562_capas_efectivas"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L658",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l625_4_6_flujo_cr_tico_1_alta_asignaci_n_y_acceso",
+      "target": "doc_technical_documentation_l658_reglas_cr_ticas_del_flujo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L702",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l666_4_7_flujo_cr_tico_2_lectura_evaluaci_n_y_evidencia",
+      "target": "doc_technical_documentation_l702_garant_as_y_l_mites"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L717",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l717_adr_001_mantener_un_dominio_single_tenant"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L730",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l730_adr_002_usar_servidor_autoritativo_para_lectura_y_evaluaci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L743",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l743_adr_003_versionar_contenido_y_fijar_cada_matr_cula"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L756",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l756_adr_004_autenticaci_n_con_sesi_n_y_acceso_de_un_solo_uso"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L769",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l769_adr_005_cifrar_dni_con_aes_gcm_y_deduplicar_mediante_hmac"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L782",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l782_adr_006_usar_django_orm_sin_repositorios_expl_citos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L794",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l794_adr_007_generar_certificados_con_reportlab"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L806",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l806_adr_008_abstraer_correo_por_transporte_configurable"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L818",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l818_adr_009_ia_human_in_the_loop_con_credenciales_protegidas"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L831",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l831_adr_010_desplegar_spa_y_api_en_un_nico_contenedor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L844",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l715_5_registro_de_decisiones_de_arquitectura",
+      "target": "doc_technical_documentation_l844_adr_011_no_disponer_todav_a_de_una_puerta_ci_automatizada"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L859",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "target": "doc_technical_documentation_l859_6_1_modelo_de_amenazas_resumido"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L871",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "target": "doc_technical_documentation_l871_6_2_autenticaci_n_y_autorizaci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L883",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "target": "doc_technical_documentation_l883_6_3_cifrado_y_secretos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L894",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "target": "doc_technical_documentation_l894_6_4_variables_de_entorno"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L898",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "target": "doc_technical_documentation_l898_6_5_rgpd_y_cumplimiento"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L910",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l857_6_seguridad_y_protecci_n_de_datos",
+      "target": "doc_technical_documentation_l910_6_6_hallazgos_de_seguridad_prioritarios"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L927",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "target": "doc_technical_documentation_l927_7_1_calidad_actual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L942",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "target": "doc_technical_documentation_l942_7_2_pir_mide_de_testing"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L953",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "target": "doc_technical_documentation_l953_7_3_evidencia_hist_rica"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L962",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "target": "doc_technical_documentation_l962_7_4_cobertura_objetivo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L976",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "target": "doc_technical_documentation_l976_7_5_matriz_m_nima_de_escenarios"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L988",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l925_7_calidad_de_c_digo_y_estrategia_de_testing",
+      "target": "doc_technical_documentation_l988_7_6_pipeline_de_calidad_objetivo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1010",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1008_8_ia_y_herramientas_de_ingenier_a",
+      "target": "doc_technical_documentation_l1010_8_1_ia_integrada_en_el_producto"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1040",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1008_8_ia_y_herramientas_de_ingenier_a",
+      "target": "doc_technical_documentation_l1040_8_2_herramientas_agentes_usados_en_desarrollo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1052",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1008_8_ia_y_herramientas_de_ingenier_a",
+      "target": "doc_technical_documentation_l1052_8_3_flujo_de_ia_recomendado_para_ingenier_a"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1063",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1008_8_ia_y_herramientas_de_ingenier_a",
+      "target": "doc_technical_documentation_l1063_8_4_pol_tica_m_nima_de_uso_responsable"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1012",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1010_8_1_ia_integrada_en_el_producto",
+      "target": "doc_technical_documentation_l1012_selecci_n_efectiva_de_proveedor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1021",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1010_8_1_ia_integrada_en_el_producto",
+      "target": "doc_technical_documentation_l1021_controles"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1030",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1010_8_1_ia_integrada_en_el_producto",
+      "target": "doc_technical_documentation_l1030_riesgos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1076",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1076_9_1_infraestructura_actual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1090",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1090_9_2_build_de_imagen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1108",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1108_9_3_arranque_actual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1120",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1120_9_4_enrutamiento"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1132",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1132_9_5_variables_y_secretos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1173",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1173_9_6_ci_cd_actual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1185",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1185_9_7_ci_cd_objetivo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1205",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1205_9_8_monitoreo_y_observabilidad"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1232",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1232_9_9_escalado_y_resiliencia"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1246",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1074_9_despliegue_en_render",
+      "target": "doc_technical_documentation_l1246_9_10_runbook_objetivo_de_despliegue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1134",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1132_9_5_variables_y_secretos",
+      "target": "doc_technical_documentation_l1134_declaradas_en_render_yaml"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1155",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1132_9_5_variables_y_secretos",
+      "target": "doc_technical_documentation_l1155_soportadas_no_declaradas_en_blueprint"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1165",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1132_9_5_variables_y_secretos",
+      "target": "doc_technical_documentation_l1165_estrategia_requerida"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1207",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1205_9_8_monitoreo_y_observabilidad",
+      "target": "doc_technical_documentation_l1207_estado_actual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1216",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1205_9_8_monitoreo_y_observabilidad",
+      "target": "doc_technical_documentation_l1216_objetivo_de_producci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1265",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1265_10_1_modelo_de_branching_observado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1302",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1302_10_2_gobierno_de_pr_observado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1317",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1317_10_3_prs_del_mvp_inicial"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1329",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1329_10_4_correcciones_independientes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1340",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1340_10_5_cadena_de_ciclo_formativo_15_28"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1380",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1380_10_6_cadena_de_acceso_masivo_34_35"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1389",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1389_10_7_hitos_de_commits"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1406",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1263_10_historial_de_ramas_y_pull_requests",
+      "target": "doc_technical_documentation_l1406_10_8_pol_tica_de_branching_objetivo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1422",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1420_11_riesgos_deuda_y_evoluci_n",
+      "target": "doc_technical_documentation_l1422_11_1_registro_priorizado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1445",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1420_11_riesgos_deuda_y_evoluci_n",
+      "target": "doc_technical_documentation_l1445_11_2_roadmap_t_cnico_recomendado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1447",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1445_11_2_roadmap_t_cnico_recomendado",
+      "target": "doc_technical_documentation_l1447_fase_0_contenci_n_de_producci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1454",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1445_11_2_roadmap_t_cnico_recomendado",
+      "target": "doc_technical_documentation_l1454_fase_1_integridad_y_contratos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1462",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1445_11_2_roadmap_t_cnico_recomendado",
+      "target": "doc_technical_documentation_l1462_fase_2_operaci_n_fiable"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1470",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1445_11_2_roadmap_t_cnico_recomendado",
+      "target": "doc_technical_documentation_l1470_fase_3_escala_y_evoluci_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1482",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "target": "doc_technical_documentation_l1482_12_1_inventario_de_aplicaciones_y_rutas"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1499",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "target": "doc_technical_documentation_l1499_12_2_eventos_de_auditor_a_relevantes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1514",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "target": "doc_technical_documentation_l1514_12_3_glosario"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1532",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "target": "doc_technical_documentation_l1532_12_4_fuentes_principales"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1551",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "target": "doc_technical_documentation_l1551_12_5_preguntas_pendientes_de_decisi_n"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "TECHNICAL_DOCUMENTATION.md",
+      "source_location": "L1566",
+      "weight": 1.0,
+      "source": "doc_technical_documentation_l1480_12_anexos_de_trazabilidad",
+      "target": "doc_technical_documentation_l1566_12_6_criterio_de_mantenimiento_de_este_documento"
+    }
+  ],
+  "hyperedges": []
+}

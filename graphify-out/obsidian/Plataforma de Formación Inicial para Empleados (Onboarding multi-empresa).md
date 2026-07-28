@@ -1,0 +1,17 @@
+---
+source_file: "idea.txt"
+type: "document"
+community: "Idea.Txt · Document"
+location: "L1"
+tags:
+  - graphify/document
+  - graphify/EXTRACTED
+  - community/Idea.Txt_·_Document
+---
+
+# Plataforma de Formación Inicial para Empleados (Onboarding multi-empresa)
+
+## Connections
+- [[Plataforma de Formación Inicial para Empleados (Onboarding multi-empresa)_1]] - `contains` [EXTRACTED]
+
+#graphify/document #graphify/EXTRACTED #community/Idea.Txt_·_Document

@@ -1,301 +1,790 @@
-# Graph Report - .  (2026-07-27)
+# Graph Report - onboarding formation
 
-## Corpus Check
-- cluster-only mode — file stats not available
+## Generation
+- Generated: `2026-07-28T18:25:17.239072+00:00`
+- Git commit: `ce62f59607cf9558e76866599de6982dbb9cbb36`
+- Extractor: `graphifyy 0.1.14` with path-safe node namespaces
+- Clustering: deterministic NetworkX Louvain (`seed=42`)
+- Output: `C:/Users/Egoitz/Documents/onboarding formation/graphify-out`
 
-## Summary
-- 893 nodes · 1446 edges · 94 communities (51 shown, 43 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.5)
-- Token cost: 0 input · 0 output
+## Corpus
+- 304 source files
+- 2057 nodes
+- 2603 edges
+- 188 communities
 
-## Graph Freshness
-- Built from commit: `3b145d2e`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+## God Nodes
+- `jquery.js`: 86 edges · `backend/staticfiles/admin/js/vendor/jquery/jquery.js`
+- `select2.full.js`: 64 edges · `backend/staticfiles/admin/js/vendor/select2/select2.full.js`
+- `jquery.min.js`: 54 edges · `backend/staticfiles/admin/js/vendor/jquery/jquery.min.js`
+- `jquery-3.7.1.min.js`: 54 edges · `backend/staticfiles/rest_framework/js/jquery-3.7.1.min.js`
+- `xregexp.js`: 39 edges · `backend/staticfiles/admin/js/vendor/xregexp/xregexp.js`
+- `seed_test_data.py`: 30 edges · `backend/seed_test_data.py`
+- `services.py`: 29 edges · `backend/reading_gate/services.py`
+- `build_graphify.py`: 28 edges · `tools/knowledge_graph/build_graphify.py`
+- `react`: 28 edges · ``
+- `xregexp.min.js`: 27 edges · `backend/staticfiles/admin/js/vendor/xregexp/xregexp.min.js`
+- `django_db`: 27 edges · ``
+- `views.py`: 22 edges · `backend/courses/views.py`
+- `tests.py`: 22 edges · `backend/reading_gate/tests.py`
+- `tests.py`: 19 edges · `backend/ai_generation/tests.py`
+- `views.py`: 19 edges · `backend/reading_gate/views.py`
+- `views.py`: 18 edges · `backend/employees/views.py`
+- `tests.py`: 18 edges · `backend/notifications/tests.py`
+- `Design: MVP Formación Inicial`: 18 edges · `openspec/changes/archive/2026-07-15-mvp-formacion-inicial/design.md`
+- `test`: 18 edges · ``
+- `Tasks: MVP Formación Inicial`: 17 edges · `openspec/changes/archive/2026-07-15-mvp-formacion-inicial/tasks.md`
 
-## Community Hubs (Navigation)
-- reading_gate/services.py
-- notifications/services.py
-- encrypt_value
-- reading_gate/tests.py
-- useToast
-- ComprehensionTestTests
-- ai_generation/views.py
-- AdminLLMKey
-- react-dom.js
-- AdminApp.tsx
-- ui/index.ts
-- compilerOptions
-- reading_gate/models.py
-- Dashboard.tsx
-- certificates/services.py
-- AuditApiTests
-- ExpedienteList.tsx
-- seed_test_data.py
-- page-objects/index.ts
-- dependencies
-- json_body
-- EmployeeFlow
-- devDependencies
-- Button
-- make_client
-- BasePage
-- courses/views.py
-- IssuanceTests
-- AuditEvent
-- AdminFlow
-- compilerOptions
-- CertificatePdfTests
-- generar_dnis.py
-- EmployeeDashboardPage
-- EmployeeApp.tsx
-- ErrorBoundary
-- CourseManagementTests
-- Expediente
-- HappyPathIntegrationTests
-- PdfReaderPage
-- AdminSidebar.tsx
-- ExpedientePage
-- ImportPage
-- scripts
-- RoleIsolationMiddleware
-- RateLimiter
-- get_retention_policy
-- flows.spec.ts
-- AiContentPage
-- frontend/package.json
-- 0003_seed_badges.py
-- test_import.py
-- screenshots.spec.ts
-- ResponsiveTable.tsx
-- AiGenerationConfig
-- AuthenticationConfig
-- CertificatesConfig
-- CoursesConfig
-- EmployeesConfig
-- mvp_project/urls.py
-- NotificationsConfig
-- ReadingGateConfig
-- vite-env.d.ts
-- ai_generation/migrations/0001_initial.py
-- authentication/migrations/0001_initial.py
-- certificates/migrations/0001_initial.py
-- 0002_certificate.py
-- common/__init__.py
-- courses/migrations/0001_initial.py
-- asgi.py
-- settings.py
-- wsgi.py
-- notifications/migrations/0001_initial.py
-- reading_gate/migrations/0001_initial.py
-- 0002_expediente.py
-- @hookform/resolvers
-- i18next
-- react-pdf
-- react
-- react-router-dom
-- deps/package.json
+## Communities
 
-## God Nodes (most connected - your core abstractions)
-1. `BasePage` - 24 edges
-2. `Employee` - 19 edges
-3. `AdminFlow` - 17 edges
-4. `useToast()` - 17 edges
-5. `Position` - 16 edges
-6. `Course` - 16 edges
-7. `compilerOptions` - 16 edges
-8. `AdminLLMKey` - 15 edges
-9. `encrypt_value()` - 15 edges
-10. `FakeLLMClient` - 14 edges
+### 0. Backend · Code
+- Nodes: 221
+- Examples: fake_llm.py, fake_generate_course_content(), fake_generate_test_questions(), 0001_initial.py, Migration, models.py, AdminLLMKey, .get_raw_key()
 
-## Surprising Connections (you probably didn't know these)
-- `LLMClient` --uses--> `AdminLLMKey`  [INFERRED]
-  backend/ai_generation/client.py → backend/ai_generation/models.py
-- `OpenAICompatibleClient` --uses--> `AdminLLMKey`  [INFERRED]
-  backend/ai_generation/client.py → backend/ai_generation/models.py
-- `Employee` --uses--> `EncryptedDNIField`  [INFERRED]
-  backend/employees/models.py → backend/common/fields.py
-- `Employee` --uses--> `HashedDNILookupField`  [INFERRED]
-  backend/employees/models.py → backend/common/fields.py
-- `CourseManagementTests` --uses--> `Position`  [INFERRED]
-  backend/courses/tests.py → backend/courses/models.py
+### 1. Frontend · Code
+- Nodes: 119
+- Examples: AdminApp.tsx, handleLogout(), AiKeyForm.tsx, submit(), GuidedContent.tsx, discardDraft(), generate(), restoreDraft()
 
-## Import Cycles
-- None detected.
+### 2. Technical Documentation.Md · Document
+- Nodes: 103
+- Examples: Arquitectura y documentación técnica de Onboarding Formation, 8. IA y herramientas de ingeniería, 8.1 IA integrada en el producto, Selección efectiva de proveedor, Controles, Riesgos, 8.2 Herramientas/agentes usados en desarrollo, 8.3 Flujo de IA recomendado para ingeniería
 
-## Communities (94 total, 43 thin omitted)
+### 3. Frontend · Code
+- Nodes: 101
+- Examples: test-data.ts, getEmployeeToken(), AdminFlow.ts, AdminFlow, .completeFullFlow(), .constructor(), .createCourse(), .generateAIContent()
 
-### Community 0 - "reading_gate/services.py"
-Cohesion: 0.05
-Nodes (48): certificate_pdf(), is_valid_dni(), Spanish DNI format validation (structure + control letter).  Used by the emplo, Return True if ``value`` is a structurally valid Spanish DNI.      Checks: exa, employee_import(), _is_valid_email(), csrf_exempt, Employee Excel import (spec employee-import, Phase 4).  ``POST /api/import`` ( (+40 more)
+### 4. Backend · Code
+- Nodes: 87
+- Examples: jquery.js, addCombinator(), addGetHookIf(), addToPrefiltersOrTransports(), adjustCSS(), adoptValue(), ajaxConvert(), ajaxExtend()
 
-### Community 1 - "notifications/services.py"
-Cohesion: 0.06
-Nodes (38): EmployeeAccessToken, _hash(), Meta, A single-use access token/code issued for an employee's training.      The sam, Create a token and return ``(instance, raw_token, code)``.          The raw va, Redeem a presented ``token`` or ``code``.          Returns ``(employee, "ok")`, Meta, NotificationLog (+30 more)
+### 5. Openspec · Document
+- Nodes: 77
+- Examples: Apply Progress — mvp-formacion-inicial (PR1 + PR2 + PR3 + PR4 + PR5 + PR6), Issues Found, Completed Tasks (PR3 — cumulative continuation), PR3 — Course Management + AI Generation + Enrollment Assignment, PR4 — Timed Reading Gate + Comprehension Test (stacked-to-main), Files Changed (PR3), Work Unit Evidence (PR3), PR3 — Course management
 
-### Community 2 - "encrypt_value"
-Cohesion: 0.08
-Nodes (25): AI generation models (spec ai-generation).  ``AdminLLMKey`` stores a per-admin, Encrypt and store the raw key. Caller MUST discard ``raw_key``., Decrypt the raw key. NEVER serialize the result to a response., decrypt_legacy_value(), decrypt_value(), _derive_key(), _derive_lookup_key(), dni_lookup_hash() (+17 more)
+### 6. Backend · Code
+- Nodes: 68
+- Examples: prompts.py, build_content_prompt(), build_test_prompt(), sanitizer.py, sanitize_many(), sanitize_text(), models.py, EmployeeAccessToken
 
-### Community 3 - "reading_gate/tests.py"
-Cohesion: 0.11
-Nodes (18): Course, Meta, Position, Question, QuestionBank, Catalog key linking job positions to mandatory courses.      The design refere, Section, Tests for course-management (spec course-management, Phase 5). (+10 more)
+### 7. Backend · Code
+- Nodes: 65
+- Examples: select2.full.js, AjaxAdapter(), AllowClear(), ArrayAdapter(), AttachBody(), AttachContainer(), BaseAdapter(), BaseConstructor()
 
-### Community 4 - "useToast"
-Cohesion: 0.11
-Nodes (25): AiKeyForm(), KeyFormData, keySchema, DraftData, GuidedContent(), PdfTestGen(), Course, CourseDetail (+17 more)
+### 8. Backend · Code
+- Nodes: 53
+- Examples: jquery.min.js, A(), Ae(), at(), B(), Be(), c(), Ct()
 
-### Community 5 - "ComprehensionTestTests"
-Cohesion: 0.10
-Nodes (8): ComprehensionTestTests, ExpedienteAndBadgesTests, _make_course_with_bank(), _make_enrollment(), TestCase, Build a course (divisor 3 -> minTime 30/s), sections, and a question bank., ReadingGateAuthzTests, ReadingGateTests
+### 9. Backend · Code
+- Nodes: 53
+- Examples: jquery-3.7.1.min.js, A(), Ae(), at(), B(), Be(), c(), Ct()
 
-### Community 6 - "ai_generation/views.py"
-Cohesion: 0.11
-Nodes (20): fake_generate_course_content(), fake_generate_test_questions(), Fake LLM responses for testing. Returns deterministic course content and test q, Generate fake test questions for testing., Generate fake course draft for testing., build_content_prompt(), build_test_prompt(), Prompt builders (design §PII Guard).  These functions build LLM prompts from C (+12 more)
+### 10. Backend · Code
+- Nodes: 42
+- Examples: TestCase, ComprehensionTestTests, ._correct_answers(), .setUp(), .test_fail_resets_reading_and_increments(), .test_fourth_attempt_is_blocked_and_exhausted(), .test_get_questions_withholds_correct_index(), .test_pass_flow_sets_passed()
 
-### Community 7 - "AdminLLMKey"
-Cohesion: 0.13
-Nodes (11): FakeLLMClient, Deterministic stand-in for tests. Never performs network I/O., AdminLLMKey, Meta, FakeClientTests, GenerationFlowTests, HitlSaveGuardTests, TestCase (+3 more)
+### 11. Backend · Code
+- Nodes: 40
+- Examples: xregexp.js, addMatch(), _arrayLikeToArray(), _arrayWithHoles(), augment(), buildAstral(), cacheAstral(), cacheInvertedBmp()
 
-### Community 8 - "react-dom.js"
-Cohesion: 0.08
-Nodes (11): TODO: When we delete legacy mode, we should make this error argument, TODO: Remove this dead flag, TODO: Remove outdated deferRenderPhaseUpdateToNextBatch experiment. We, NOTE: This will not work correctly for non-generic events such as `change`,, NOTE: menuitem's close tag should be omitted, but that causes problems., TODO: Remove Update flag from before mutation phase by re-landing Visibility, TODO: This prevents the assignment of defaultValue to regular, TODO: Only ignore them on controlled tags. (+3 more)
+### 12. Backend · Code
+- Nodes: 37
+- Examples: crypto.py, decrypt_legacy_value(), decrypt_value(), _derive_key(), _derive_lookup_key(), dni_lookup_hash(), encrypt_value(), retention.py
 
-### Community 9 - "AdminApp.tsx"
-Cohesion: 0.14
-Nodes (16): AdminApp(), AiKeyForm, GuidedContent, PdfTestGen, authApi, AdminLogin(), AdminUser, AuthContext (+8 more)
+### 13. Frontend · Document
+- Nodes: 35
+- Examples: Guia de Captura de Pantallas — Plataforma de Onboarding, Gestion de cursos (/admin/courses), Detalle de curso, Clave IA (/admin/ai/key), Contenido IA (/admin/ai/content), Test desde PDF (/admin/ai/tests), Expediente (/admin/expediente), Acceso empleado (/employee/redeem)
 
-### Community 10 - "ui/index.ts"
-Cohesion: 0.10
-Nodes (12): CardProps, paddingMap, EmptyStateProps, InputProps, ProgressBarProps, SkeletonCard(), SkeletonCardProps, SkeletonTable() (+4 more)
+### 14. Backend · Code
+- Nodes: 33
+- Examples: models.py, Course, .__str__(), CourseVersion, .__str__(), Meta, Position, .save()
 
-### Community 11 - "compilerOptions"
-Cohesion: 0.09
-Nodes (22): compilerOptions, allowImportingTsExtensions, isolatedModules, jsx, lib, module, moduleResolution, noEmit (+14 more)
+### 15. Backend · Code
+- Nodes: 28
+- Examples: xregexp.min.js, addMatch(), _arrayLikeToArray(), augment(), cacheAstral(), cacheInvertedBmp(), charCode(), clipDuplicates()
 
-### Community 12 - "reading_gate/models.py"
-Cohesion: 0.19
-Nodes (9): Authentication models for MVP Formación Inicial.  Admins reuse Django's built-, Certificate, One active certificate per passed enrollment (spec certificate §One Per)., Tests for certificate PDF + badge award (spec certificate, badges)., Certificate PDF endpoint (admin-only via RoleIsolationMiddleware)., Employee, An imported employee.      DNI is stored VERBATIM (no trim/normalise/uppercase, Tests for secure-access issuance + delivery logging (spec secure-access, notific (+1 more)
+### 16. Backend · Code
+- Nodes: 27
+- Examples: generar_dnis.py, calcular_letra_dni(), generar_dni_valido(), generar_lista_dnis(), services.py, _all_sections_complete(), apply_assignment(), assign_courses()
 
-### Community 13 - "Dashboard.tsx"
-Cohesion: 0.13
-Nodes (15): CourseStats, Dashboard(), ExpedienteResponse, ExpedienteRow, STATUS_LABELS, StatusStats, NetworkBanner(), ThemeToggle() (+7 more)
+### 17. Deployment Render.Md · Document
+- Nodes: 25
+- Examples: Despliegue en Render, 7. Seed data (opcional), Solución de problemas, Pasos de despliegue, El backend no arranca, Error de CORS, Error de CSRF, 1. Preparar el repositorio
 
-### Community 14 - "certificates/services.py"
-Cohesion: 0.14
-Nodes (15): Badge, EmployeeBadge, Meta, award_badges_on_pass(), _core_fields(), _core_hash(), ensure_badges(), generate_certificate_pdf() (+7 more)
+### 18. Openspec · Document
+- Nodes: 25
+- Examples: Design: MVP Formación Inicial, Testing Strategy, Threat Matrix, Migration / Rollout, Open Questions, Tenancy Model (explicit, config rule), Design: MVP Formación Inicial, Architecture Overview
 
-### Community 15 - "AuditApiTests"
-Cohesion: 0.12
-Nodes (4): AuditApiTests, AuditCoverageTests, TestCase, _seed()
+### 19. Backend · Code
+- Nodes: 24
+- Examples: urls.py, urls.py, urls.py, urls.py, urls.py, urls.py, urls.py, views.py
 
-### Community 16 - "ExpedienteList.tsx"
-Cohesion: 0.11
-Nodes (11): columns, Expediente, ExpedienteResponse, BreadcrumbItem, BreadcrumbProps, Badge(), BadgeProps, Size (+3 more)
+### 20. Backend · Code
+- Nodes: 22
+- Examples: apps.py, AppConfig, AiGenerationConfig, apps.py, AppConfig, AuthenticationConfig, apps.py, AppConfig
 
-### Community 17 - "seed_test_data.py"
-Cohesion: 0.15
-Nodes (8): generate_excel(), make_minimal_pdf(), Comprehensive seed script for testing the onboarding formation platform.  Crea, Generate a minimal valid 1-page PDF with the given title using reportlab., Generate a structurally valid Spanish DNI for a given index (0-based)., seed_courses(), seed_employees(), valid_dni_for_index()
+### 21. Readme.Md · Document
+- Nodes: 21
+- Examples: MVP Formación Inicial, Section PDF storage, Frontend — run locally, Tests, Backend (two equivalent harnesses), Option A — Django test runner (always works):, Option B — pytest (requires pytest-django, already added to requirements):, Navigation and workflow walkthrough
 
-### Community 19 - "dependencies"
-Cohesion: 0.13
-Nodes (15): axios, dependencies, axios, i18next-browser-languagedetector, react-dom, react-hook-form, react-i18next, recharts (+7 more)
+### 22. Openspec · Document
+- Nodes: 19
+- Examples: Tasks: MVP Formación Inicial, Suggested Work Units (PR slices), Phase 2: Data Model & Migrations, Phase 3: Authentication, Tasks: MVP Formación Inicial, Phase 4: Employee Import, Phase 5: Course Management, Phase 6: AI Generation
 
-### Community 20 - "json_body"
-Cohesion: 0.18
-Nodes (10): ai_key_set(), admin_login(), admin_logout(), employee_redeem(), csrf_exempt, Authentication views (spec authentication).  - ``POST /api/auth/admin/login``, json_body(), course_list_create() (+2 more)
+### 23. Backend · Code
+- Nodes: 18
+- Examples: TestCase, AuditApiTests, .setUp(), .test_get_filters_by_date(), .test_get_filters_by_employee(), .test_get_filters_by_enrollment(), .test_get_filters_by_event_type(), .test_no_dni_in_payloads()
 
-### Community 22 - "devDependencies"
-Cohesion: 0.13
-Nodes (15): devDependencies, @playwright/test, @types/node, @types/react, @types/react-dom, typescript, vite, @vitejs/plugin-react (+7 more)
+### 24. Idea.Txt · Document
+- Nodes: 18
+- Examples: Plataforma de Formación Inicial para Empleados (Onboarding multi-empresa), 3. Flujo principal, Plataforma de Formación Inicial para Empleados (Onboarding multi-empresa), 4. Funcionalidades detalladas, 4.1 Carga de empleados (Excel), 4.2 Notificaciones (SMS / WhatsApp), 4.3 Catálogo de cursos por puesto, 4.4 Lector PDF con control anti-salto
 
-### Community 23 - "Button"
-Cohesion: 0.17
-Nodes (9): Button(), ButtonProps, Size, sizeStyles, Variant, variantStyles, ConfirmDialog(), ConfirmDialogProps (+1 more)
+### 25. Openspec · Document
+- Nodes: 18
+- Examples: Proposal: MVP Formación Inicial, Rollback Plan, Dependencies, Success Criteria, Out of Scope (MVP), Proposal: MVP Formación Inicial, Capabilities (contract with sdd-spec), New Capabilities
 
-### Community 24 - "make_client"
-Cohesion: 0.24
-Nodes (7): LLMClient, make_client(), OpenAICompatibleClient, OpenAI-compatible LLM client (spec ai-generation §OpenAI-Compatible Client)., Factory: returns a fake client (tests) or a real OpenAI-compatible one., Abstract client. Subclasses implement `chat`., Talks to any OpenAI-compatible `/chat/completions` endpoint.
+### 26. Backend · Code
+- Nodes: 17
+- Examples: client.py, FakeLLMClient, .chat(), .__init__(), GeminiClient, .chat(), .__init__(), LLMClient
 
-### Community 26 - "courses/views.py"
-Cohesion: 0.22
-Nodes (6): course_catalog(), question_bank_create(), Course management views (spec course-management, Phase 5).  Admin CRUD for cou, GET /api/courses/catalog?position=Operario -> mandatory courses., Return a single valid correct_index or raise ValidationError., _validate_question()
+### 27. Backend · Code
+- Nodes: 17
+- Examples: select2.full.min.js, A(), b(), c(), D(), e(), i(), l()
 
-### Community 27 - "IssuanceTests"
-Cohesion: 0.22
-Nodes (5): IssuanceTests, _make_enrollment(), TestCase, ResendEndpointTests, TransportConfigTests
+### 28. Openspec · Document
+- Nodes: 17
+- Examples: Delta for ai-generation, Scenario: Key stored encrypted and never exposed, Scenario: Employee routes never load the key, Delta for ai-generation, Requirement: OpenAI-Compatible Client, Scenario: Generation uses stored provider config, Requirement: Guided Content Generation, ADDED Requirements
 
-### Community 28 - "AuditEvent"
-Cohesion: 0.22
-Nodes (5): AuditEventAdmin, Read-only admin for the append-only audit log (spec audit-log §No Mutation)., AuditEvent, Append-only compliance log (RGPD/LOPDGDD evidence trail).      No update/delet, register
+### 29. Openspec · Document
+- Nodes: 17
+- Examples: Delta for ai-generation, Scenario: Key stored encrypted and never exposed, Scenario: Employee routes never load the key, Delta for ai-generation, Requirement: OpenAI-Compatible Client, Scenario: Generation uses stored provider config, Requirement: Guided Content Generation, ADDED Requirements
 
-### Community 30 - "compilerOptions"
-Cohesion: 0.20
-Nodes (9): compilerOptions, allowSyntheticDefaultImports, composite, module, moduleResolution, skipLibCheck, strict, include (+1 more)
+### 30. Backend · Code
+- Nodes: 16
+- Examples: TestCase, BatchAccessCodeTests, .setUp(), .test_batch_endpoint_requires_csrf(), .test_batch_limit_is_enforced(), .test_batch_returns_unique_codes_once_and_invalidates_old_access(), .test_missing_employees_and_non_object_json_are_reported(), IssuanceTests
 
-### Community 31 - "CertificatePdfTests"
-Cohesion: 0.31
-Nodes (5): BadgeSeedTests, _build_passed_enrollment(), CertificatePdfTests, _pdf_text(), TestCase
+### 31. Technical Documentation.Md · Document
+- Nodes: 16
+- Examples: 9. Despliegue en Render, 9.1 Infraestructura actual, 9.2 Build de imagen, 9.3 Arranque actual, 9.4 Enrutamiento, 9.5 Variables y secretos, Declaradas en render.yaml, Soportadas, no declaradas en Blueprint
 
-### Community 32 - "generar_dnis.py"
-Cohesion: 0.32
-Nodes (7): calcular_letra_dni(), generar_dni_valido(), generar_lista_dnis(), Script para generar DNIs españoles válidos. Formato: 8 dígitos + letra de contr, Calcula la letra de control para un DNI., Genera un DNI español válido aleatorio., Genera una lista de DNIs únicos válidos.
+### 32. Backend · Code
+- Nodes: 14
+- Examples: TestCase, CourseManagementTests, .setUp(), .test_catalog_case_insensitive(), .test_catalog_lookup_returns_mandatory_courses(), .test_course_create_with_sections(), .test_draft_can_be_edited_and_published_without_changing_version_one(), .test_single_correct_enforced_on_save()
 
-### Community 34 - "EmployeeApp.tsx"
-Cohesion: 0.36
-Nodes (3): client, PdfReaderProps, Enrollment
+### 33. Backend · Code
+- Nodes: 14
+- Examples: RelatedObjectLookups.js, addPopupIndex(), dismissAddRelatedObjectPopup(), dismissChangeRelatedObjectPopup(), dismissChildPopups(), dismissDeleteRelatedObjectPopup(), dismissRelatedLookupPopup(), removePopupIndex()
 
-### Community 35 - "ErrorBoundary"
-Cohesion: 0.25
-Nodes (3): ErrorBoundary, Props, State
+### 34. Openspec · Document
+- Nodes: 14
+- Examples: Exploration: mvp-formacion-inicial, 8. Ready for Proposal, 2. MVP Scope (tightened), Actors (MVP), Exploration: mvp-formacion-inicial, Core flows, Out of scope (MVP — explicit), 3. Compliance & Legal Assumptions (RGPD / LOPDGDD)
 
-### Community 37 - "Expediente"
-Cohesion: 0.29
-Nodes (5): Expediente, Meta, Per-(enrollment, section) accumulated reading time.      Cross-device resume i, Per-enrollment training result (spec expediente §Result Storage).      Linked, ReadingProgress
+### 35. Frontend · Document
+- Nodes: 13
+- Examples: E2E Test Results — Phase B, How to Run, Admin Flow Results, E2E Test Results — Phase B, Employee Flow Results, Files Created, Page Objects (e2e/page-objects/), Flows (e2e/flows/)
 
-### Community 40 - "AdminSidebar.tsx"
-Cohesion: 0.29
-Nodes (3): AdminLayoutProps, AdminSidebarProps, navItems
+### 36. Openspec · Document
+- Nodes: 13
+- Examples: Delta for comprehension-test, Requirement: Distinct Question Subset Per Attempt, Scenario: Different subsets, Delta for comprehension-test, Requirement: Single Correct Answer, Scenario: Validation on authoring, Requirement: Fail Restarts Reading, Scenario: Fail triggers restart
 
-### Community 43 - "scripts"
-Cohesion: 0.33
-Nodes (6): scripts, build, dev, lint, preview, test:e2e
+### 37. Openspec · Document
+- Nodes: 13
+- Examples: Verification Report — mvp-formacion-inicial, RESOLVED (previously BLOCKING), WARNING (non-blocking — informational), SUGGESTION (informational), 7. Final Verdict, Archive gate, Verification Report — mvp-formacion-inicial, 2. Build / Test / Coverage Evidence
 
-### Community 46 - "get_retention_policy"
-Cohesion: 0.40
-Nodes (3): get_retention_policy(), Retention policy hook (RGPD / LOPDGDD) — task 1.4.  Centralises retention wind, Return retention window in days for ``entity`` (None = indefinite).
+### 38. Openspec · Document
+- Nodes: 13
+- Examples: Delta for comprehension-test, Requirement: Distinct Question Subset Per Attempt, Scenario: Different subsets, Delta for comprehension-test, Requirement: Single Correct Answer, Scenario: Validation on authoring, Requirement: Fail Restarts Reading, Scenario: Fail triggers restart
 
-### Community 47 - "flows.spec.ts"
-Cohesion: 0.60
-Nodes (3): getEmployeeToken(), TEST_DATA, SCREENSHOTS_DIR
+### 39. Backend · Code
+- Nodes: 11
+- Examples: actions.js, affectedCheckboxes(), checker(), clearAcross(), hide(), ready(), reset(), show()
 
-### Community 49 - "frontend/package.json"
-Cohesion: 0.40
-Nodes (4): name, private, type, version
+### 40. Deployment.Md · Document
+- Nodes: 11
+- Examples: Despliegue — MVP Formación Inicial, 2. Push de ramas y PRs (stacked-to-main), Despliegue — MVP Formación Inicial, ... y así con las 7, en orden., 3. Variables de entorno (backend Django), 4. Despliegue del backend (Django), 5. Despliegue del frontend (React/Vite), 6. Verificación post-despliegue
 
-### Community 51 - "test_import.py"
-Cohesion: 0.50
-Nodes (3): Script para probar la importación de empleados y ver el error exacto., Prueba el endpoint de importación con el archivo de ejemplo., test_import()
+### 41. Openspec · Document
+- Nodes: 11
+- Examples: Delta for audit-log, Scenario: Event appended, Requirement: No Mutation, Delta for audit-log, Scenario: Delete rejected, Requirement: Cross-Device Context, Scenario: Context captured, Requirement: Event Coverage
 
-## Knowledge Gaps
-- **137 isolated node(s):** `Migration`, `Meta`, `Migration`, `Meta`, `Migration` (+132 more)
-  These have ≤1 connection - possible missing edges or undocumented components.
-- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+### 42. Openspec · Document
+- Nodes: 11
+- Examples: Delta for authentication, Scenario: Admin login, Requirement: Employee Magic-Link/Code Access, Delta for authentication, Scenario: Employee enters code, Requirement: Session Isolation, Scenario: Employee blocked from admin, Requirement: Admin Logout
 
-## Suggested Questions
-_Questions this graph is uniquely positioned to answer:_
+### 43. Openspec · Document
+- Nodes: 11
+- Examples: Delta for badges, Requirement: Award "Primer curso", Scenario: First pass awards badge, Delta for badges, Requirement: Award "Catálogo completo", Scenario: All position courses passed, Requirement: Award "Sin fallos", Scenario: Clean first-pass
 
-- **Why does `Course` connect `reading_gate/tests.py` to `CourseManagementTests`, `AdminLLMKey`, `reading_gate/models.py`, `certificates/services.py`, `seed_test_data.py`, `courses/views.py`?**
-  _High betweenness centrality (0.024) - this node is a cross-community bridge._
-- **Why does `Position` connect `reading_gate/tests.py` to `reading_gate/services.py`, `CourseManagementTests`, `AdminLLMKey`, `certificates/services.py`, `seed_test_data.py`, `courses/views.py`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `Employee` connect `reading_gate/models.py` to `reading_gate/services.py`, `seed_test_data.py`, `encrypt_value`, `reading_gate/tests.py`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `Employee` (e.g. with `EncryptedDNIField` and `HashedDNILookupField`) actually correct?**
-  _`Employee` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Migration`, `Meta`, `Migration` to the rest of the system?**
-  _137 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `reading_gate/services.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.05376972530683811 - nodes in this community are weakly interconnected._
-- **Should `notifications/services.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.05660377358490566 - nodes in this community are weakly interconnected._
+### 44. Openspec · Document
+- Nodes: 11
+- Examples: Delta for employee-import, Requirement: DNI Stored Verbatim (RGPD), Delta for employee-import, Scenario: DNI preserved byte-for-byte, Requirement: Validation Report, Scenario: Rejected rows reported, Requirement: Dedupe by DNI, ADDED Requirements
+
+### 45. Openspec · Document
+- Nodes: 11
+- Examples: Delta for timed-reading, Scenario: Advance blocked before minTime, Requirement: Active-Time Accumulation via Heartbeats, Delta for timed-reading, Scenario: Heartbeat credited, Requirement: Cross-Device Resume, Scenario: Resume on new device, Requirement: Completion on Full Gate Pass
+
+### 46. Openspec · Document
+- Nodes: 11
+- Examples: Delta for audit-log, Scenario: Event appended, Requirement: No Mutation, Delta for audit-log, Scenario: Delete rejected, Requirement: Cross-Device Context, Scenario: Context captured, Requirement: Event Coverage
+
+### 47. Openspec · Document
+- Nodes: 11
+- Examples: Delta for authentication, Scenario: Admin login, Requirement: Employee Magic-Link/Code Access, Delta for authentication, Scenario: Employee enters code, Requirement: Session Isolation, Scenario: Employee blocked from admin, Requirement: Admin Logout
+
+### 48. Openspec · Document
+- Nodes: 11
+- Examples: Delta for badges, Requirement: Award "Primer curso", Scenario: First pass awards badge, Delta for badges, Requirement: Award "Catálogo completo", Scenario: All position courses passed, Requirement: Award "Sin fallos", Scenario: Clean first-pass
+
+### 49. Openspec · Document
+- Nodes: 11
+- Examples: Delta for employee-import, Requirement: DNI Stored Verbatim (RGPD), Delta for employee-import, Scenario: DNI preserved byte-for-byte, Requirement: Validation Report, Scenario: Rejected rows reported, Requirement: Dedupe by DNI, ADDED Requirements
+
+### 50. Openspec · Document
+- Nodes: 11
+- Examples: Delta for timed-reading, Scenario: Advance blocked before minTime, Requirement: Active-Time Accumulation via Heartbeats, Delta for timed-reading, Scenario: Heartbeat credited, Requirement: Cross-Device Resume, Scenario: Resume on new device, Requirement: Completion on Full Gate Pass
+
+### 51. Backend · Code
+- Nodes: 10
+- Examples: prettify-min.js, B(), C(), D(), E(), k(), L(), M()
+
+### 52. Openspec · Document
+- Nodes: 10
+- Examples: Archive Report — mvp-formacion-inicial, Final Stack, Archive Report — mvp-formacion-inicial, Scope, Verification Result, Resolved W1 Debt (DNI crypto), Source of Truth Updated, Archive Contents (audit trail — preserved, never modified)
+
+### 53. Openspec · Document
+- Nodes: 10
+- Examples: SDD Init — onboarding-formation, Stack detection, SDD Init — onboarding-formation, Architecture detection, Conventions detection, Testing capability, Open product / legal questions (from idea.txt), Persistence
+
+### 54. Backend · Document
+- Nodes: 9
+- Examples: Information about icons in this directory, Usage, Information about icons in this directory, Modifications, Contributing SVG Icons, ⚠️ Important: Changing Font Awesome Version, License, Adding a new icon
+
+### 55. Openspec · Document
+- Nodes: 9
+- Examples: Delta for certificate, Scenario: Certificate generated on pass, Requirement: DNI Verbatim on Certificate, Delta for certificate, Scenario: DNI reproduced, Requirement: One Certificate Per Passed Enrollment, Scenario: Regeneration, ADDED Requirements
+
+### 56. Openspec · Document
+- Nodes: 9
+- Examples: Delta for course-management, Requirement: Test and Question-Bank Authoring, Delta for course-management, Scenario: Bank attached to course, Requirement: Catalog by Position, Scenario: Position catalog lookup, ADDED Requirements, Requirement: PDF Course Authoring
+
+### 57. Openspec · Document
+- Nodes: 9
+- Examples: Delta for expediente, Requirement: Admin Filter by Course Completion, Scenario: Filter completed, Delta for expediente, Requirement: Retention Policy, Scenario: Rollback preserves, ADDED Requirements, Requirement: Result Storage Per Enrollment
+
+### 58. Openspec · Document
+- Nodes: 9
+- Examples: Delta for notifications, Requirement: Spanish Templates, Scenario: Access email in Spanish, Delta for notifications, Requirement: Delivery Logging, Scenario: Logged without token, ADDED Requirements, Requirement: Configurable Email Transport
+
+### 59. Openspec · Document
+- Nodes: 9
+- Examples: Delta for secure-access, Scenario: Token issued on assignment, Requirement: Token Delivery, Delta for secure-access, Scenario: Link delivered by email, Requirement: Token Consumption, Scenario: Reuse blocked, ADDED Requirements
+
+### 60. Openspec · Document
+- Nodes: 9
+- Examples: Delta for certificate, Scenario: Certificate generated on pass, Requirement: DNI Verbatim on Certificate, Delta for certificate, Scenario: DNI reproduced, Requirement: One Certificate Per Passed Enrollment, Scenario: Regeneration, ADDED Requirements
+
+### 61. Openspec · Document
+- Nodes: 9
+- Examples: Delta for course-management, Requirement: Test and Question-Bank Authoring, Delta for course-management, Scenario: Bank attached to course, Requirement: Catalog by Position, Scenario: Position catalog lookup, ADDED Requirements, Requirement: PDF Course Authoring
+
+### 62. Openspec · Document
+- Nodes: 9
+- Examples: Delta for expediente, Requirement: Admin Filter by Course Completion, Scenario: Filter completed, Delta for expediente, Requirement: Retention Policy, Scenario: Rollback preserves, ADDED Requirements, Requirement: Result Storage Per Enrollment
+
+### 63. Openspec · Document
+- Nodes: 9
+- Examples: Delta for notifications, Requirement: Spanish Templates, Scenario: Access email in Spanish, Delta for notifications, Requirement: Delivery Logging, Scenario: Logged without token, ADDED Requirements, Requirement: Configurable Email Transport
+
+### 64. Openspec · Document
+- Nodes: 9
+- Examples: Delta for secure-access, Scenario: Token issued on assignment, Requirement: Token Delivery, Delta for secure-access, Scenario: Link delivered by email, Requirement: Token Consumption, Scenario: Reuse blocked, ADDED Requirements
+
+### 65. Backend · Code
+- Nodes: 8
+- Examples: EncryptedDNIField, .from_db_value(), .get_prep_value(), .__init__(), HashedDNILookupField, .from_db_value(), .get_prep_value(), .__init__()
+
+### 66. Backend · Code
+- Nodes: 8
+- Examples: TestCase, DniCryptoTests, .test_dni_roundtrip_verbatim(), .test_duplicate_dni_rejected_via_lookup(), .test_equal_dnis_diff_ciphertext_same_lookup(), .test_fixed_nonce_gone(), .test_import_rejects_duplicate_dni(), .test_legacy_ciphertext_recoverable()
+
+### 67. Backend · Code
+- Nodes: 8
+- Examples: bootstrap.min.js, e(), i(), l(), n(), r(), s(), u()
+
+### 68. Backend · Document
+- Nodes: 8
+- Examples: MVP Formación Inicial — backend dependencies, Phase 4 — Excel employee import, Phase 11 — Certificate PDF generation, Phase 8 — Optional Resend email transport (only needed when EMAILTRANSPORT=resend), MVP Formación Inicial — backend dependencies, Phase 15 — QA harness (pytest can also be run via python manage.py test), Production, Later phases will extend this list (reportlab, pdfplumber, ...).
+
+### 69. Backend · Code
+- Nodes: 7
+- Examples: middleware.py, APICsrfeExemptionMiddleware, .__call__(), .__init__(), RoleIsolationMiddleware, .__call__(), .__init__()
+
+### 70. Backend · Code
+- Nodes: 7
+- Examples: TestCase, HappyPathIntegrationTests, ._employee_session(), ._import_employee(), ._read_to_complete(), .setUp(), .test_import_read_test_cert_audit()
+
+### 71. Openspec · Document
+- Nodes: 7
+- Examples: Delta for enrollment-assignment, Scenario: Auto-enrollment on import, Requirement: Assignment Idempotency, Delta for enrollment-assignment, Scenario: Re-import skips duplicates, ADDED Requirements, Requirement: Mandatory Assignment Per Position
+
+### 72. Openspec · Document
+- Nodes: 7
+- Examples: Delta for enrollment-assignment, Scenario: Auto-enrollment on import, Requirement: Assignment Idempotency, Delta for enrollment-assignment, Scenario: Re-import skips duplicates, ADDED Requirements, Requirement: Mandatory Assignment Per Position
+
+### 73. Backend · Code
+- Nodes: 6
+- Examples: TestCase, EmployeePositionManagementTests, .setUp(), .test_bulk_position_change(), .test_employee_routes_require_admin(), .test_individual_position_change_preserves_imported_label()
+
+### 74. Backend · Code
+- Nodes: 5
+- Examples: core.js, findPosX(), findPosY(), quickElement(), removeChildren()
+
+### 75. Frontend · External
+- Nodes: 5
+- Examples: index.ts, es_json, i18next, i18next_browser_languagedetector, react_i18next
+
+### 76. Backend · Code
+- Nodes: 4
+- Examples: models.py, Meta, NotificationLog, .__str__()
+
+### 77. Backend · Code
+- Nodes: 4
+- Examples: theme.js, cycleTheme(), initTheme(), setTheme()
+
+### 78. Backend · Code
+- Nodes: 4
+- Examples: ajax-form.js, captureSubmittingElement(), doAjaxSubmit(), replaceDocument()
+
+### 79. Backend · Code
+- Nodes: 4
+- Examples: csrf.js, csrfSafeMethod(), getCookie(), sameOrigin()
+
+### 80. Tools · Document
+- Nodes: 4
+- Examples: graphifyy depends on a legacy graspologic stack that is incompatible with, graphifyy depends on a legacy graspologic stack that is incompatible with, Python 3.14. Install the package itself with --no-deps on 3.14; the compatible, runtime dependencies used by this repository are pinned below.
+
+### 81. Backend · Code
+- Nodes: 3
+- Examples: cancel.js, handleClick(), ready()
+
+### 82. Backend · Code
+- Nodes: 3
+- Examples: urlify.js, downcode(), URLify()
+
+### 83. Frontend · External
+- Nodes: 3
+- Examples: vite.config.ts, plugin_react, vite
+
+### 84. Tools · Document
+- Nodes: 3
+- Examples: Knowledge graph generation, Toolchain, Knowledge graph generation
+
+### 85. Backend · Code
+- Nodes: 2
+- Examples: calendar.js, Calendar()
+
+### 86. Backend · Code
+- Nodes: 2
+- Examples: nav_sidebar.js, initSidebarQuickFilter()
+
+### 87. Backend · Code
+- Nodes: 2
+- Examples: bs.js, e()
+
+### 88. Backend · Code
+- Nodes: 2
+- Examples: cs.js, e()
+
+### 89. Backend · Code
+- Nodes: 2
+- Examples: hr.js, n()
+
+### 90. Backend · Code
+- Nodes: 2
+- Examples: lt.js, n()
+
+### 91. Backend · Code
+- Nodes: 2
+- Examples: lv.js, e()
+
+### 92. Backend · Code
+- Nodes: 2
+- Examples: ru.js, n()
+
+### 93. Backend · Code
+- Nodes: 2
+- Examples: sr.js, n()
+
+### 94. Backend · Code
+- Nodes: 2
+- Examples: sr-Cyrl.js, n()
+
+### 95. Backend · Code
+- Nodes: 2
+- Examples: uk.js, n()
+
+### 96. Frontend · Code
+- Nodes: 2
+- Examples: client.ts, axios
+
+### 97. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 98. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 99. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 100. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 101. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 102. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 103. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 104. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 105. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 106. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 107. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 108. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 109. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 110. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 111. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 112. Backend · Code
+- Nodes: 1
+- Examples: __init__.py
+
+### 113. Backend · Code
+- Nodes: 1
+- Examples: DateTimeShortcuts.js
+
+### 114. Backend · Code
+- Nodes: 1
+- Examples: autocomplete.js
+
+### 115. Backend · Code
+- Nodes: 1
+- Examples: change_form.js
+
+### 116. Backend · Code
+- Nodes: 1
+- Examples: filters.js
+
+### 117. Backend · Code
+- Nodes: 1
+- Examples: inlines.js
+
+### 118. Backend · Code
+- Nodes: 1
+- Examples: jquery.init.js
+
+### 119. Backend · Code
+- Nodes: 1
+- Examples: popup_response.js
+
+### 120. Backend · Code
+- Nodes: 1
+- Examples: prepopulate.js
+
+### 121. Backend · Code
+- Nodes: 1
+- Examples: prepopulate_init.js
+
+### 122. Backend · Code
+- Nodes: 1
+- Examples: SelectBox.js
+
+### 123. Backend · Code
+- Nodes: 1
+- Examples: SelectFilter2.js
+
+### 124. Backend · Code
+- Nodes: 1
+- Examples: af.js
+
+### 125. Backend · Code
+- Nodes: 1
+- Examples: ar.js
+
+### 126. Backend · Code
+- Nodes: 1
+- Examples: az.js
+
+### 127. Backend · Code
+- Nodes: 1
+- Examples: bg.js
+
+### 128. Backend · Code
+- Nodes: 1
+- Examples: bn.js
+
+### 129. Backend · Code
+- Nodes: 1
+- Examples: ca.js
+
+### 130. Backend · Code
+- Nodes: 1
+- Examples: da.js
+
+### 131. Backend · Code
+- Nodes: 1
+- Examples: de.js
+
+### 132. Backend · Code
+- Nodes: 1
+- Examples: dsb.js
+
+### 133. Backend · Code
+- Nodes: 1
+- Examples: el.js
+
+### 134. Backend · Code
+- Nodes: 1
+- Examples: en.js
+
+### 135. Backend · Code
+- Nodes: 1
+- Examples: es.js
+
+### 136. Backend · Code
+- Nodes: 1
+- Examples: et.js
+
+### 137. Backend · Code
+- Nodes: 1
+- Examples: eu.js
+
+### 138. Backend · Code
+- Nodes: 1
+- Examples: fa.js
+
+### 139. Backend · Code
+- Nodes: 1
+- Examples: fi.js
+
+### 140. Backend · Code
+- Nodes: 1
+- Examples: fr.js
+
+### 141. Backend · Code
+- Nodes: 1
+- Examples: gl.js
+
+### 142. Backend · Code
+- Nodes: 1
+- Examples: he.js
+
+### 143. Backend · Code
+- Nodes: 1
+- Examples: hi.js
+
+### 144. Backend · Code
+- Nodes: 1
+- Examples: hsb.js
+
+### 145. Backend · Code
+- Nodes: 1
+- Examples: hu.js
+
+### 146. Backend · Code
+- Nodes: 1
+- Examples: hy.js
+
+### 147. Backend · Code
+- Nodes: 1
+- Examples: id.js
+
+### 148. Backend · Code
+- Nodes: 1
+- Examples: is.js
+
+### 149. Backend · Code
+- Nodes: 1
+- Examples: it.js
+
+### 150. Backend · Code
+- Nodes: 1
+- Examples: ja.js
+
+### 151. Backend · Code
+- Nodes: 1
+- Examples: ka.js
+
+### 152. Backend · Code
+- Nodes: 1
+- Examples: km.js
+
+### 153. Backend · Code
+- Nodes: 1
+- Examples: ko.js
+
+### 154. Backend · Code
+- Nodes: 1
+- Examples: mk.js
+
+### 155. Backend · Code
+- Nodes: 1
+- Examples: ms.js
+
+### 156. Backend · Code
+- Nodes: 1
+- Examples: nb.js
+
+### 157. Backend · Code
+- Nodes: 1
+- Examples: ne.js
+
+### 158. Backend · Code
+- Nodes: 1
+- Examples: nl.js
+
+### 159. Backend · Code
+- Nodes: 1
+- Examples: pl.js
+
+### 160. Backend · Code
+- Nodes: 1
+- Examples: ps.js
+
+### 161. Backend · Code
+- Nodes: 1
+- Examples: pt.js
+
+### 162. Backend · Code
+- Nodes: 1
+- Examples: pt-BR.js
+
+### 163. Backend · Code
+- Nodes: 1
+- Examples: ro.js
+
+### 164. Backend · Code
+- Nodes: 1
+- Examples: sk.js
+
+### 165. Backend · Code
+- Nodes: 1
+- Examples: sl.js
+
+### 166. Backend · Code
+- Nodes: 1
+- Examples: sq.js
+
+### 167. Backend · Code
+- Nodes: 1
+- Examples: sv.js
+
+### 168. Backend · Code
+- Nodes: 1
+- Examples: th.js
+
+### 169. Backend · Code
+- Nodes: 1
+- Examples: tk.js
+
+### 170. Backend · Code
+- Nodes: 1
+- Examples: tr.js
+
+### 171. Backend · Code
+- Nodes: 1
+- Examples: vi.js
+
+### 172. Backend · Code
+- Nodes: 1
+- Examples: zh-CN.js
+
+### 173. Backend · Code
+- Nodes: 1
+- Examples: zh-TW.js
+
+### 174. Backend · Code
+- Nodes: 1
+- Examples: default.js
+
+### 175. Backend · Code
+- Nodes: 1
+- Examples: load-ajax-form.js
+
+### 176. Frontend · Code
+- Nodes: 1
+- Examples: index.ts
+
+### 177. Frontend · Code
+- Nodes: 1
+- Examples: index.ts
+
+### 178. Frontend · Code
+- Nodes: 1
+- Examples: index.ts
+
+### 179. Frontend · Code
+- Nodes: 1
+- Examples: ProgressBar.tsx
+
+### 180. Frontend · Code
+- Nodes: 1
+- Examples: Skeleton.tsx
+
+### 181. Frontend · Code
+- Nodes: 1
+- Examples: Spinner.tsx
+
+### 182. Frontend · Code
+- Nodes: 1
+- Examples: vite-env.d.ts
+
+### 183. Frontend · Code
+- Nodes: 1
+- Examples: vite.config.d.ts
+
+### 184. Backend · Documentation
+- Nodes: 1
+- Examples: LICENSE-SELECT2.md
+
+### 185. Backend · Documentation
+- Nodes: 1
+- Examples: LICENSE.txt
+
+### 186. Backend · Documentation
+- Nodes: 1
+- Examples: LICENSE.md
+
+### 187. Backend · Documentation
+- Nodes: 1
+- Examples: LICENSE.txt

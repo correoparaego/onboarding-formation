@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-07-28T18:25:17.294660+00:00",
+  "git_commit": "ce62f59607cf9558e76866599de6982dbb9cbb36",
+  "root": "C:\\Users\\Egoitz\\Documents\\onboarding formation",
+  "only": null,
+  "extractor": "graphifyy 0.1.14",
+  "clustering": "networkx-louvain-seed-42",
+  "files": 304,
+  "nodes": 2057,
+  "edges": 2603,
+  "communities": 188
+}

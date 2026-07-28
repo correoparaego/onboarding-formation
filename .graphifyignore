@@ -17,6 +17,16 @@ uv.lock
 .git/
 .vscode/
 .idea/
+.atl/
+pantallazos/
+frontend/.vite/
+frontend/playwright-report/
+backend/media/
+graphify-out/
+graphify-technical-documentation/
+okf-bundle/
+okf-technical-documentation/
+tools/knowledge_graph/.work/
 *.log
 backend_server.err.log
 backend_server.out.log
