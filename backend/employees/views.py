@@ -21,12 +21,13 @@ import logging
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 import pandas as pd
 
 from common.crypto import dni_lookup_hash
 from common.dni import is_valid_dni
+from common.parsing import json_body
+from courses.models import Position
 from reading_gate.services import assign_mandatory_courses
 
 from .models import Employee
@@ -57,7 +58,6 @@ def _is_valid_email(value: str) -> bool:
         return False
 
 
-@csrf_exempt
 def employee_import(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -146,6 +146,10 @@ def employee_import(request):
             email=email,
             phone=phone,
         )
+        current_position = Position.objects.filter(name__iexact=position).first()
+        if current_position:
+            emp.current_position = current_position
+            emp.save(update_fields=["current_position"])
         seen_in_file.add(dni)
         created += 1
         # Audit: record the employee import (append-only; metadata only — NO DNI).
@@ -200,9 +204,86 @@ def employee_list(request):
             "id": emp.id,
             "name": emp.name,
             "position": emp.position,
+            "current_position": (
+                {
+                    "id": emp.current_position_id,
+                    "name": emp.current_position.name,
+                }
+                if emp.current_position_id
+                else None
+            ),
             "email": emp.email,
             "phone": emp.phone,
         }
-        for emp in page
+        for emp in page.select_related("current_position")
     ]
     return JsonResponse({"count": total, "limit": limit, "offset": offset, "results": rows})
+
+
+def employee_detail(request, pk):
+    if request.method != "PATCH":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    try:
+        employee = Employee.objects.get(pk=pk)
+    except Employee.DoesNotExist:
+        return JsonResponse({"error": "employee not found"}, status=404)
+    data = json_body(request)
+    position_id = data.get("position_id")
+    try:
+        position = Position.objects.get(pk=position_id)
+    except Position.DoesNotExist:
+        return JsonResponse({"error": "position not found"}, status=404)
+    old_position_id = employee.current_position_id
+    employee.current_position = position
+    employee.save(update_fields=["current_position"])
+    try:
+        from reading_gate import services
+
+        services.audit_event(
+            None,
+            "employee_position_changed",
+            "",
+            "",
+            {
+                "employee_id": employee.id,
+                "old_position_id": old_position_id,
+                "new_position_id": position.id,
+            },
+        )
+    except Exception as exc:
+        logger.warning("position change audit failed: %s", exc)
+    return JsonResponse(
+        {"id": employee.id, "position": {"id": position.id, "name": position.name}}
+    )
+
+
+def employee_bulk_position(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    data = json_body(request)
+    employee_ids = data.get("employee_ids") or []
+    try:
+        position = Position.objects.get(pk=data.get("position_id"))
+    except Position.DoesNotExist:
+        return JsonResponse({"error": "position not found"}, status=404)
+    employees = list(Employee.objects.filter(id__in=employee_ids))
+    Employee.objects.filter(id__in=employee_ids).update(current_position=position)
+    try:
+        from reading_gate import services
+
+        for employee in employees:
+            services.audit_event(
+                None,
+                "employee_position_changed",
+                "",
+                "",
+                {
+                    "employee_id": employee.id,
+                    "old_position_id": employee.current_position_id,
+                    "new_position_id": position.id,
+                    "bulk": True,
+                },
+            )
+    except Exception as exc:
+        logger.warning("bulk position audit failed: %s", exc)
+    return JsonResponse({"updated": len(employees)})

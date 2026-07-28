@@ -17,6 +17,7 @@ urlpatterns = [
         name="course-version-publish",
     ),
     path("api/positions/", views.position_list, name="position-list"),
+    path("api/sections/<int:pk>/pdf/", views.section_pdf, name="section-pdf"),
     path("api/courses/catalog/", views.course_catalog, name="course-catalog"),
     path("api/banks/", views.question_bank_create, name="question-bank-create"),
 ]
