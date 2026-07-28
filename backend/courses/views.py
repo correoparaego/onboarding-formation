@@ -326,7 +326,7 @@ def section_pdf(request, pk):
         with transaction.atomic():
             section.save(update_fields=["pdf_file"])
             if old_name:
-                transaction.on_commit(lambda: storage.delete(old_name))
+                transaction.on_commit(lambda: storage.delete(old_name), robust=True)
         return JsonResponse({"ok": True})
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -346,7 +346,7 @@ def section_pdf(request, pk):
             section.pdf_file.name = new_name
             section.save(update_fields=["pdf_file"])
             if old_name and old_name != new_name:
-                transaction.on_commit(lambda: storage.delete(old_name))
+                transaction.on_commit(lambda: storage.delete(old_name), robust=True)
     except Exception:
         if "new_name" in locals():
             storage.delete(new_name)

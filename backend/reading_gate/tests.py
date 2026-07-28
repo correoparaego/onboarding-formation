@@ -374,6 +374,14 @@ class ComprehensionTestTests(TestCase):
             AuditEvent.objects.filter(event_type="attempt_start").count(), 1
         )
 
+    def test_test_is_rejected_before_reading_completion(self):
+        self.enr.status = "in_progress"
+        self.enr.save(update_fields=["status"])
+        questions = services.get_test_questions(self.enr)
+        submission = services.grade_submission(self.enr, [])
+        self.assertEqual(questions["status_code"], 409)
+        self.assertEqual(submission["status_code"], 409)
+
 
 class ReadingGateAuthzTests(TestCase):
     def setUp(self):

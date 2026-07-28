@@ -283,6 +283,7 @@ def employee_enrollment_detail(request, pk):
             "cycle": enrollment.cycle,
             "status": enrollment.status,
             "can_read": can_read,
+            "test_unlocked": enrollment.status == "complete",
             "active_seconds": sum(row["accumulated_seconds"] for row in rows),
             "sections": rows,
         }
