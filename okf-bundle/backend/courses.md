@@ -1,10 +1,10 @@
 ---
 type: backend-module
 resource: backend/courses/
-tags: [django, app, course, section, question, position, catalog]
-description: Course, Section, Question, QuestionBank, Position models and CRUD views
+tags: [django, app, course, versioning, section, question, position, catalog, private-pdf]
+description: Versioned courses, sections, question banks, positions, publication lifecycle, and private PDFs
 status: active
-generated: 2026-07-27
+generated: 2026-07-28
 ---
 
 # Courses (Django App)
@@ -13,8 +13,9 @@ App Django para gestión de cursos, secciones, preguntas y posiciones.
 
 ## Modelos
 
-- **Course**: Título, descripción, metadata del curso
-- **Section**: PDFs dentro de un curso, con orden y minTimePerSection
+- **Course**: Identidad estable, catálogo por puestos y referencia a versión activa
+- **CourseVersion**: Snapshot draft/published/archived fijado a las matrículas
+- **Section**: Contenido y PDF privado dentro de una versión, con orden y tiempo base
 - **Question**: Preguntas del question bank (single correct answer)
 - **QuestionBank**: Contenedor de preguntas por curso
 - **Position**: Posiciones de trabajo (mapeo N:M con cursos)
@@ -25,6 +26,8 @@ App Django para gestión de cursos, secciones, preguntas y posiciones.
 - Section management
 - Question bank management
 - Position-catalog listing
+- Version clone, publish, archive, and active-version lifecycle
+- Authenticated section PDF upload and delivery
 
 ## Relaciones
 
@@ -35,6 +38,8 @@ App Django para gestión de cursos, secciones, preguntas y posiciones.
 - Importado por: [Reading Gate](../backend/reading_gate.md) (Course, Section, Question, Position)
 - Importado por: [Certificates](../backend/certificates.md) (Course lazy import)
 - Frontend: [Admin](../frontend/admin.md) (CourseManagement component)
+- Feature: [Course Versioning](../features/course-versioning.md)
+- Feature: [Private Section PDFs](../features/private-section-pdfs.md)
 
 ## Dependencias
 

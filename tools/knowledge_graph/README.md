@@ -40,6 +40,7 @@ command:
 
 ```powershell
 .\.graph-tools\Scripts\python tools\knowledge_graph\build_okf_viz.py okf-bundle --strict
+.\.graph-tools\Scripts\python tools\knowledge_graph\build_technical_okf.py TECHNICAL_DOCUMENTATION.md okf-technical-documentation --clean
 .\.graph-tools\Scripts\python tools\knowledge_graph\build_okf_viz.py okf-technical-documentation --strict
 ```
 

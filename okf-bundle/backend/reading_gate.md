@@ -4,7 +4,7 @@ resource: backend/reading_gate/
 tags: [django, app, enrollment, reading, gate, heartbeat, audit, expediente, compliance]
 description: Core compliance engine - enrollment, timed reading, comprehension test, audit, expediente
 status: active
-generated: 2026-07-27
+generated: 2026-07-28
 ---
 
 # Reading Gate (Django App)
