@@ -164,6 +164,24 @@ export const assignmentsApi = {
     client.post(`/admin/enrollments/${enrollmentId}/${action}`),
 };
 
+export interface EmployeeAccessCodeResult {
+  employee_id: number;
+  employee_name: string;
+  email: string;
+  code: string;
+  delivery_status: "sent" | "failed" | "skipped";
+  expires_at: string;
+}
+
+export const accessCodesApi = {
+  generateBatch: (employeeIds: number[]) =>
+    client.post<{
+      results: EmployeeAccessCodeResult[];
+      missing_employee_ids: number[];
+      errors: Array<{ employee_id: number; error: string }>;
+    }>("/admin/access-codes/batch", { employee_ids: employeeIds }),
+};
+
 export const aiApi = {
   // POST /api/ai/key  (Phase 6) — set/update encrypted BYO key (raw never returned)
   setKey: (payload: { provider: string; base_url: string; model: string; api_key: string }) =>
