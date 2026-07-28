@@ -144,10 +144,7 @@ def main() -> int:
 
     index_lines = [
         "---",
-        "type: index",
-        "description: Technical documentation knowledge graph",
-        f"generated: {date.today().isoformat()}",
-        "status: active",
+        'okf_version: "0.1"',
         "---",
         "",
         "# Technical Documentation OKF",

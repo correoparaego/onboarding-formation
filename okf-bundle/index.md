@@ -1,8 +1,5 @@
 ---
-type: index
-description: Onboarding Formation - Knowledge Graph Root
-generated: 2026-07-28
-status: active
+okf_version: "0.1"
 ---
 
 # Onboarding Formation
