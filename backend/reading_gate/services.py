@@ -419,6 +419,12 @@ def get_test_questions(enrollment, device_id="", session_id=""):
     `attempt_start` audit event so the audit trail records the attempt view.
     Returns a dict with `status_code` for the caller to translate to HTTP.
     """
+    if enrollment.status != "complete":
+        return {
+            "error": "reading must be completed before the test",
+            "test_unlocked": False,
+            "status_code": 409,
+        }
     if enrollment.attempts_used >= 3:
         return {
             "error": "maximum attempts exhausted",
@@ -469,6 +475,12 @@ def grade_submission(enrollment, answers, device_id="", session_id=""):
                {"reason": "4th attempt blocked", "attempts_used": enrollment.attempts_used})
         return {
             "error": "maximum attempts exceeded",
+            "enrollment_status": enrollment.status,
+            "status_code": 409,
+        }
+    if enrollment.status != "complete":
+        return {
+            "error": "reading must be completed before the test",
             "enrollment_status": enrollment.status,
             "status_code": 409,
         }
