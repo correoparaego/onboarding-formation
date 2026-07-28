@@ -1,6 +1,6 @@
 from django.db import models
 
-from courses.models import Course, Section
+from courses.models import Course, CourseVersion, Section
 from employees.models import Employee
 
 
@@ -8,6 +8,8 @@ class Enrollment(models.Model):
     STATUS_CHOICES = [
         ("assigned", "assigned"),
         ("in_progress", "in_progress"),
+        ("paused", "paused"),
+        ("cancelled", "cancelled"),
         ("complete", "complete"),
         ("passed", "passed"),
         ("failed_exhausted", "failed_exhausted"),
@@ -19,13 +21,36 @@ class Enrollment(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="enrollments"
     )
+    course_version = models.ForeignKey(
+        CourseVersion,
+        on_delete=models.PROTECT,
+        related_name="enrollments",
+        null=True,
+        blank=True,
+    )
+    cycle = models.PositiveIntegerField(default=1)
+    source = models.CharField(max_length=30, default="position")
+    assigned_by = models.ForeignKey(
+        "auth.User",
+        on_delete=models.SET_NULL,
+        related_name="assigned_enrollments",
+        null=True,
+        blank=True,
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="assigned")
     attempts_used = models.PositiveIntegerField(default=0)
     enrolled_at = models.DateTimeField(auto_now_add=True)
+    paused_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = [("employee", "course")]  # idempotent import/enroll
         ordering = ["-enrolled_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["employee", "course", "cycle"],
+                name="unique_employee_course_cycle",
+            )
+        ]
 
     def __str__(self):
         return f"{self.employee_id} -> {self.course_id} [{self.status}]"

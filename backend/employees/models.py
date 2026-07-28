@@ -24,6 +24,13 @@ class Employee(models.Model):
     name = models.CharField(max_length=255)
     # Verbatim imported position label (reconciled to courses.Position later).
     position = models.CharField(max_length=120)
+    current_position = models.ForeignKey(
+        "courses.Position",
+        on_delete=models.PROTECT,
+        related_name="employees",
+        null=True,
+        blank=True,
+    )
     email = models.EmailField()
     phone = models.CharField(max_length=40, blank=True, default="")
 
