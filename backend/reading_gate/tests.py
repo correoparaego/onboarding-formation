@@ -1,7 +1,9 @@
 """Tests for enrollment-assignment (spec enrollment-assignment, Phase 7)."""
 import io
+import tempfile
 
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 import pandas as pd
@@ -420,6 +422,55 @@ class ReadingGateAuthzTests(TestCase):
         body = resp.json()
         self.assertEqual(body["accumulated"], 30)
         self.assertTrue(body["section_complete"])
+
+    def test_employee_enrollment_detail_uses_owned_sections(self):
+        self._emp_session(self.emp)
+        response = self.client.get(f"/api/employee/enrollments/{self.enr.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["sections"][0]["order"], 1)
+
+        self._emp_session(self.other)
+        denied = self.client.get(f"/api/employee/enrollments/{self.enr.id}")
+        self.assertEqual(denied.status_code, 404)
+
+    def test_employee_can_download_pdf_only_from_owned_enrollment(self):
+        section = self.course.sections.get()
+        with tempfile.TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            section.pdf_file.save(
+                "employee.pdf",
+                SimpleUploadedFile("employee.pdf", b"%PDF-1.4\ncontent"),
+            )
+            self._emp_session(self.emp)
+            response = self.client.get(
+                f"/api/employee/enrollments/{self.enr.id}/sections/{section.id}/pdf"
+            )
+            self.assertEqual(response.status_code, 200)
+            response.close()
+            self._emp_session(self.other)
+            denied = self.client.get(
+                f"/api/employee/enrollments/{self.enr.id}/sections/{section.id}/pdf"
+            )
+            self.assertEqual(denied.status_code, 404)
+
+    def test_paused_enrollment_does_not_credit_heartbeat(self):
+        self.enr.status = "paused"
+        self.enr.save(update_fields=["status"])
+        self._emp_session(self.emp)
+        response = self.client.post(
+            "/api/reading/heartbeat",
+            data=json.dumps(
+                {
+                    "enrollment_id": self.enr.id,
+                    "section_order": 1,
+                    "delta": 30,
+                    "visibility": True,
+                    "interaction": True,
+                }
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 409)
+        self.assertFalse(ReadingProgress.objects.filter(enrollment=self.enr).exists())
 
 
 # ---------------------------------------------------------------------------

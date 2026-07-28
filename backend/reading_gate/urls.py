@@ -10,6 +10,16 @@ urlpatterns = [
     path("api/audit", views.audit_list, name="audit-list"),
     path("api/employee/enrollments", views.employee_enrollments, name="employee-enrollments"),
     path(
+        "api/employee/enrollments/<int:pk>",
+        views.employee_enrollment_detail,
+        name="employee-enrollment-detail",
+    ),
+    path(
+        "api/employee/enrollments/<int:pk>/sections/<int:section_id>/pdf",
+        views.employee_section_pdf,
+        name="employee-section-pdf",
+    ),
+    path(
         "api/admin/assignments/preview",
         views.assignment_preview,
         name="assignment-preview",

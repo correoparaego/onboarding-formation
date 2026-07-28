@@ -5,7 +5,7 @@ Both route groups are employee-only (RoleIsolationMiddleware enforces
 is taken from the session established by `employee_redeem` — never from the
 request body, so one employee cannot act on another's enrollment.
 """
-from django.http import JsonResponse
+from django.http import FileResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from common.parsing import json_body
@@ -205,7 +205,9 @@ def employee_enrollments(request):
     if not employee_id:
         return JsonResponse({"error": "employee authentication required"}, status=403)
 
-    enrollments = Enrollment.objects.filter(employee_id=employee_id).select_related("course")
+    enrollments = Enrollment.objects.filter(employee_id=employee_id).select_related(
+        "course", "course_version"
+    )
     rows = []
     for e in enrollments:
         row = {
@@ -213,6 +215,11 @@ def employee_enrollments(request):
             "course_id": e.course_id,
             "course_title": e.course.title,
             "status": e.status,
+            "version": e.course_version.number if e.course_version else None,
+            "cycle": e.cycle,
+            "active_seconds": sum(
+                e.progress.values_list("accumulated_time", flat=True)
+            ),
             "attempts_used": e.attempts_used,
             "score": None,
             "total": None,
@@ -225,6 +232,81 @@ def employee_enrollments(request):
             pass
         rows.append(row)
     return JsonResponse({"enrollments": rows})
+
+
+def employee_enrollment_detail(request, pk):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    employee_id = _employee_id(request)
+    if not employee_id:
+        return JsonResponse({"error": "employee authentication required"}, status=403)
+    enrollment, err = _owned_enrollment(pk, employee_id)
+    if err:
+        return JsonResponse({"error": err["error"]}, status=err["status_code"])
+
+    sections = services.enrollment_sections(enrollment)
+    divisor = services.enrollment_time_divisor(enrollment)
+    progress_by_section = {
+        progress.section_id: progress
+        for progress in enrollment.progress.filter(section__in=sections)
+    }
+    rows = []
+    for section in sections:
+        progress = progress_by_section.get(section.id)
+        accumulated = progress.accumulated_time if progress else 0
+        minimum = services.min_time_for_section(section, divisor)
+        rows.append(
+            {
+                "id": section.id,
+                "order": section.order,
+                "title": section.title or f"Sección {section.order}",
+                "content": section.content,
+                "has_pdf": bool(section.pdf_file),
+                "accumulated_seconds": accumulated,
+                "minimum_seconds": minimum,
+                "complete": accumulated >= minimum,
+            }
+        )
+    return JsonResponse(
+        {
+            "id": enrollment.id,
+            "course_id": enrollment.course_id,
+            "course_title": (
+                enrollment.course_version.title
+                if enrollment.course_version
+                else enrollment.course.title
+            ),
+            "version": (
+                enrollment.course_version.number
+                if enrollment.course_version
+                else None
+            ),
+            "cycle": enrollment.cycle,
+            "status": enrollment.status,
+            "can_read": enrollment.status not in ("paused", "cancelled"),
+            "active_seconds": sum(row["accumulated_seconds"] for row in rows),
+            "sections": rows,
+        }
+    )
+
+
+def employee_section_pdf(request, pk, section_id):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    employee_id = _employee_id(request)
+    if not employee_id:
+        return JsonResponse({"error": "employee authentication required"}, status=403)
+    enrollment, err = _owned_enrollment(pk, employee_id)
+    if err:
+        return JsonResponse({"error": err["error"]}, status=err["status_code"])
+    section = services.enrollment_sections(enrollment).filter(pk=section_id).first()
+    if section is None or not section.pdf_file:
+        return JsonResponse({"error": "PDF not found"}, status=404)
+    return FileResponse(
+        section.pdf_file.open("rb"),
+        content_type="application/pdf",
+        filename=f"section-{section.id}.pdf",
+    )
 
 
 def assignment_preview(request):
