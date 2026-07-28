@@ -7,6 +7,7 @@ from django.test import TestCase
 import pandas as pd
 
 from courses.models import Course, Position
+from courses.services import ensure_active_version
 from employees.models import Employee
 from reading_gate.models import Enrollment
 from reading_gate.services import (
@@ -163,6 +164,48 @@ class ManualAssignmentLifecycleTests(TestCase):
             ).count(),
             2,
         )
+
+    def test_admin_assignment_preview_apply_and_lifecycle_endpoints(self):
+        self.client.force_login(self.admin)
+        ensure_active_version(self.course)
+        preview = self.client.post(
+            "/api/admin/assignments/preview",
+            data={
+                "course_ids": [self.course.id],
+                "position_ids": [self.position.id],
+                "exclude_ids": [self.employee_b.id],
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(preview.status_code, 200)
+        self.assertEqual(preview.json()["new_assignments"], 1)
+
+        applied = self.client.post(
+            "/api/admin/assignments",
+            data={
+                "course_ids": [self.course.id],
+                "position_ids": [self.position.id],
+                "exclude_ids": [self.employee_b.id],
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(applied.status_code, 201)
+        enrollment_id = applied.json()["enrollment_ids"][0]
+        listed = self.client.get(
+            f"/api/admin/enrollments?employee={self.employee_a.id}"
+        )
+        self.assertEqual(listed.json()["enrollments"][0]["cycle"], 1)
+
+        paused = self.client.post(
+            f"/api/admin/enrollments/{enrollment_id}/pause"
+        )
+        self.assertEqual(paused.json()["status"], "paused")
+        self.client.post(f"/api/admin/enrollments/{enrollment_id}/resume")
+        self.client.post(f"/api/admin/enrollments/{enrollment_id}/cancel")
+        repeated = self.client.post(
+            f"/api/admin/enrollments/{enrollment_id}/repeat"
+        )
+        self.assertEqual(repeated.json()["cycle"], 2)
 
 
 # ---------------------------------------------------------------------------

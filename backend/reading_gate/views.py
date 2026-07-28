@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from common.parsing import json_body
+from courses.models import Course
 from reading_gate import services
 from reading_gate.models import AuditEvent, Enrollment, Expediente
 
@@ -224,3 +225,118 @@ def employee_enrollments(request):
             pass
         rows.append(row)
     return JsonResponse({"enrollments": rows})
+
+
+def assignment_preview(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    data = json_body(request)
+    course_ids = data.get("course_ids") or []
+    employees = services.resolve_assignment_employees(
+        data.get("employee_ids"),
+        data.get("position_ids"),
+        data.get("include_ids"),
+        data.get("exclude_ids"),
+    )
+    courses = Course.objects.filter(
+        id__in=course_ids, is_archived=False, active_version__isnull=False
+    )
+    employee_rows = [
+        {
+            "id": employee.id,
+            "name": employee.name,
+            "position": (
+                employee.current_position.name
+                if employee.current_position
+                else employee.position
+            ),
+        }
+        for employee in employees.select_related("current_position")
+    ]
+    existing_pairs = Enrollment.objects.filter(
+        employee__in=employees, course__in=courses
+    ).count()
+    return JsonResponse(
+        {
+            "employees": employee_rows,
+            "courses": [{"id": course.id, "title": course.title} for course in courses],
+            "new_assignments": len(employee_rows) * courses.count() - existing_pairs,
+            "existing_assignments": existing_pairs,
+        }
+    )
+
+
+def assignment_apply(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    data = json_body(request)
+    course_ids = data.get("course_ids") or []
+    if not course_ids:
+        return JsonResponse({"error": "course_ids are required"}, status=400)
+    created = services.apply_assignment(
+        course_ids=course_ids,
+        employee_ids=data.get("employee_ids"),
+        position_ids=data.get("position_ids"),
+        include_ids=data.get("include_ids"),
+        exclude_ids=data.get("exclude_ids"),
+        assigned_by=request.user,
+    )
+    return JsonResponse(
+        {"created": len(created), "enrollment_ids": [item.id for item in created]},
+        status=201,
+    )
+
+
+def admin_enrollments(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    qs = Enrollment.objects.select_related(
+        "employee", "course", "course_version"
+    ).all()
+    employee_id = request.GET.get("employee")
+    if employee_id and employee_id.isdigit():
+        qs = qs.filter(employee_id=int(employee_id))
+    rows = [
+        {
+            "id": enrollment.id,
+            "employee_id": enrollment.employee_id,
+            "employee_name": enrollment.employee.name,
+            "course_id": enrollment.course_id,
+            "course_title": enrollment.course.title,
+            "version": (
+                enrollment.course_version.number
+                if enrollment.course_version
+                else None
+            ),
+            "cycle": enrollment.cycle,
+            "status": enrollment.status,
+            "active_seconds": sum(
+                enrollment.progress.values_list("accumulated_time", flat=True)
+            ),
+        }
+        for enrollment in qs
+    ]
+    return JsonResponse({"enrollments": rows})
+
+
+def admin_enrollment_action(request, pk, action):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    try:
+        enrollment = Enrollment.objects.select_related(
+            "employee", "course", "course__active_version"
+        ).get(pk=pk)
+    except Enrollment.DoesNotExist:
+        return JsonResponse({"error": "enrollment not found"}, status=404)
+    try:
+        if action == "repeat":
+            result = services.repeat_enrollment(enrollment, actor=request.user)
+        else:
+            result = services.change_enrollment_status(
+                enrollment, action, actor=request.user
+            )
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=409)
+    return JsonResponse(
+        {"id": result.id, "status": result.status, "cycle": result.cycle}
+    )
