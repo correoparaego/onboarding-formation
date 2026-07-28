@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import PdfReader from "../components/PdfReader";
@@ -11,9 +11,92 @@ interface Enrollment {
   course_id: number;
   course_title: string;
   status: string;
+  version: number | null;
+  cycle: number;
+  active_seconds: number;
   attempts_used: number;
   score: number | null;
   total: number | null;
+}
+
+interface EnrollmentDetail {
+  id: number;
+  course_title: string;
+  version: number | null;
+  cycle: number;
+  status: string;
+  can_read: boolean;
+  active_seconds: number;
+  sections: Array<{
+    id: number;
+    order: number;
+    title: string;
+    content: string;
+    has_pdf: boolean;
+    accumulated_seconds: number;
+    minimum_seconds: number;
+    complete: boolean;
+  }>;
+}
+
+function EnrollmentReader() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const enrollmentId = Number(params.get("enrollment"));
+  const [detail, setDetail] = useState<EnrollmentDetail | null>(null);
+  const [sectionIndex, setSectionIndex] = useState(0);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!enrollmentId) return;
+    client.get<EnrollmentDetail>(`/employee/enrollments/${enrollmentId}`)
+      .then((response) => setDetail(response.data))
+      .catch((requestError) => setError(requestError?.response?.data?.error || "No se pudo cargar el curso"));
+  }, [enrollmentId]);
+
+  if (error) return <p role="alert" style={{ color: "var(--color-danger)" }}>{error}</p>;
+  if (!detail) return <p style={{ color: "var(--color-text-muted)" }}>Cargando curso...</p>;
+  const section = detail.sections[sectionIndex];
+  if (!section) return <EmptyState title="Curso sin secciones" description="Contacta con administración." />;
+  const apiBase = import.meta.env.VITE_API_BASE_URL || "/api";
+  const pdfUrl = section.has_pdf
+    ? `${apiBase}/employee/enrollments/${detail.id}/sections/${section.id}/pdf`
+    : undefined;
+
+  return (
+    <div>
+      <Button variant="ghost" size="sm" onClick={() => navigate("/employee")}>Volver a mis cursos</Button>
+      <div style={{ margin: "var(--space-md) 0" }}>
+        <h1 style={{ fontSize: "var(--font-size-2xl)" }}>{detail.course_title}</h1>
+        <p style={{ color: "var(--color-text-secondary)" }}>Versión {detail.version || "-"} · Realización {detail.cycle} · Tiempo activo {detail.active_seconds}s</p>
+      </div>
+      <PdfReader
+        enrollmentId={detail.id}
+        sectionId={section.id}
+        sectionOrder={section.order}
+        title={section.title}
+        content={section.content}
+        minimumSeconds={section.minimum_seconds}
+        accumulatedSeconds={section.accumulated_seconds}
+        complete={section.complete}
+        pdfUrl={pdfUrl}
+        canRead={detail.can_read}
+        onProgress={(progress) => setDetail((current) => current ? {
+          ...current,
+          active_seconds: current.active_seconds - section.accumulated_seconds + progress.accumulated,
+          sections: current.sections.map((item) => item.id === section.id ? {
+            ...item,
+            accumulated_seconds: progress.accumulated,
+            complete: progress.complete,
+          } : item),
+        } : current)}
+      />
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "var(--space-md)" }}>
+        <Button variant="secondary" onClick={() => setSectionIndex((index) => Math.max(0, index - 1))} disabled={sectionIndex === 0}>Sección anterior</Button>
+        <Button onClick={() => setSectionIndex((index) => Math.min(detail.sections.length - 1, index + 1))} disabled={sectionIndex >= detail.sections.length - 1 || !section.complete}>Siguiente sección</Button>
+      </div>
+    </div>
+  );
 }
 
 export default function EmployeeApp() {
@@ -47,28 +130,33 @@ export default function EmployeeApp() {
 
   const getStatusVariant = (status: string): "success" | "warning" | "danger" | "neutral" => {
     switch (status) {
-      case "completed": return "success";
+      case "passed": return "success";
+      case "complete": return "success";
       case "in_progress": return "warning";
-      case "pending": return "neutral";
-      case "failed": return "danger";
+      case "paused": return "warning";
+      case "assigned": return "neutral";
+      case "cancelled": return "danger";
+      case "failed_exhausted": return "danger";
       default: return "neutral";
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "completed": return "Completado";
+      case "passed": return "Aprobado";
+      case "complete": return "Lectura completada";
       case "in_progress": return "En progreso";
-      case "pending": return "Pendiente";
-      case "failed": return "Fallido";
+      case "paused": return "Pausado";
+      case "assigned": return "Asignado";
+      case "cancelled": return "Cancelado";
+      case "failed_exhausted": return "Intentos agotados";
       default: return status;
     }
   };
 
   const getProgress = (enrollment: Enrollment): number => {
-    if (enrollment.status === "completed") return 100;
-    if (enrollment.status === "pending") return 0;
-    if (enrollment.status === "failed") return 100;
+    if (["passed", "complete", "failed_exhausted"].includes(enrollment.status)) return 100;
+    if (enrollment.status === "assigned") return 0;
     if (enrollment.score !== null && enrollment.total !== null && enrollment.total > 0) {
       return (enrollment.score / enrollment.total) * 100;
     }
@@ -104,14 +192,7 @@ export default function EmployeeApp() {
           <Routes>
             <Route
               path="read"
-              element={
-                <PdfReader
-                  enrollmentId={0}
-                  sectionId={0}
-                  sectionBaseSeconds={0}
-                  pdfUrl=""
-                />
-              }
+              element={<EnrollmentReader />}
             />
             <Route
               path="*"
@@ -149,9 +230,9 @@ export default function EmployeeApp() {
                               data-testid="continue-reading-btn"
                               size="sm"
                               onClick={() => navigate(`/employee/read?enrollment=${enrollment.id}`)}
-                              disabled={enrollment.status === "completed"}
+                              disabled={["passed", "failed_exhausted", "cancelled"].includes(enrollment.status)}
                             >
-                              {enrollment.status === "completed" ? "Finalizado" : "Continuar"}
+                              {["passed", "failed_exhausted", "cancelled"].includes(enrollment.status) ? "Finalizado" : "Continuar"}
                             </Button>
                           </div>
                           <ProgressBar
@@ -165,7 +246,7 @@ export default function EmployeeApp() {
                             </p>
                           )}
                           <p style={{ marginTop: "var(--space-xs)", fontSize: "var(--font-size-sm)", color: "var(--color-text-secondary)" }}>
-                            Intentos utilizados: {enrollment.attempts_used}
+                            Versión {enrollment.version || "-"} · Realización {enrollment.cycle} · Tiempo activo {enrollment.active_seconds}s
                           </p>
                         </Card>
                       ))}
