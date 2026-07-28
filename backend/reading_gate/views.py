@@ -5,10 +5,10 @@ Both route groups are employee-only (RoleIsolationMiddleware enforces
 is taken from the session established by `employee_redeem` — never from the
 request body, so one employee cannot act on another's enrollment.
 """
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.http import FileResponse, JsonResponse
 
 from common.parsing import json_body
+from courses.models import Course
 from reading_gate import services
 from reading_gate.models import AuditEvent, Enrollment, Expediente
 
@@ -29,7 +29,6 @@ def _owned_enrollment(enrollment_id, employee_id):
     return enrollment, None
 
 
-@csrf_exempt
 def reading_heartbeat(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -57,7 +56,6 @@ def reading_heartbeat(request):
     )
 
 
-@csrf_exempt
 def test_questions(request):
     if request.method != "GET":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -77,7 +75,6 @@ def test_questions(request):
     )
 
 
-@csrf_exempt
 def test_submit(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -204,7 +201,9 @@ def employee_enrollments(request):
     if not employee_id:
         return JsonResponse({"error": "employee authentication required"}, status=403)
 
-    enrollments = Enrollment.objects.filter(employee_id=employee_id).select_related("course")
+    enrollments = Enrollment.objects.filter(employee_id=employee_id).select_related(
+        "course", "course_version"
+    )
     rows = []
     for e in enrollments:
         row = {
@@ -212,6 +211,11 @@ def employee_enrollments(request):
             "course_id": e.course_id,
             "course_title": e.course.title,
             "status": e.status,
+            "version": e.course_version.number if e.course_version else None,
+            "cycle": e.cycle,
+            "active_seconds": sum(
+                e.progress.values_list("accumulated_time", flat=True)
+            ),
             "attempts_used": e.attempts_used,
             "score": None,
             "total": None,
@@ -224,3 +228,201 @@ def employee_enrollments(request):
             pass
         rows.append(row)
     return JsonResponse({"enrollments": rows})
+
+
+def employee_enrollment_detail(request, pk):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    employee_id = _employee_id(request)
+    if not employee_id:
+        return JsonResponse({"error": "employee authentication required"}, status=403)
+    enrollment, err = _owned_enrollment(pk, employee_id)
+    if err:
+        return JsonResponse({"error": err["error"]}, status=err["status_code"])
+
+    sections = services.enrollment_sections(enrollment)
+    divisor = services.enrollment_time_divisor(enrollment)
+    progress_by_section = {
+        progress.section_id: progress
+        for progress in enrollment.progress.filter(section__in=sections)
+    }
+    rows = []
+    can_read = enrollment.status not in ("paused", "cancelled")
+    for section in sections if can_read else []:
+        if not services.section_is_unlocked(enrollment, section):
+            break
+        progress = progress_by_section.get(section.id)
+        accumulated = progress.accumulated_time if progress else 0
+        minimum = services.min_time_for_section(section, divisor)
+        rows.append(
+            {
+                "id": section.id,
+                "order": section.order,
+                "title": section.title or f"Sección {section.order}",
+                "content": section.content,
+                "has_pdf": bool(section.pdf_file),
+                "accumulated_seconds": accumulated,
+                "minimum_seconds": minimum,
+                "complete": accumulated >= minimum,
+            }
+        )
+    return JsonResponse(
+        {
+            "id": enrollment.id,
+            "course_id": enrollment.course_id,
+            "course_title": (
+                enrollment.course_version.title
+                if enrollment.course_version
+                else enrollment.course.title
+            ),
+            "version": (
+                enrollment.course_version.number
+                if enrollment.course_version
+                else None
+            ),
+            "cycle": enrollment.cycle,
+            "status": enrollment.status,
+            "can_read": can_read,
+            "test_unlocked": enrollment.status == "complete",
+            "active_seconds": sum(row["accumulated_seconds"] for row in rows),
+            "sections": rows,
+        }
+    )
+
+
+def employee_section_pdf(request, pk, section_id):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    employee_id = _employee_id(request)
+    if not employee_id:
+        return JsonResponse({"error": "employee authentication required"}, status=403)
+    enrollment, err = _owned_enrollment(pk, employee_id)
+    if err:
+        return JsonResponse({"error": err["error"]}, status=err["status_code"])
+    section = services.enrollment_sections(enrollment).filter(pk=section_id).first()
+    if (
+        section is None
+        or not section.pdf_file
+        or not services.section_is_unlocked(enrollment, section)
+    ):
+        return JsonResponse({"error": "PDF not found"}, status=404)
+    return FileResponse(
+        section.pdf_file.open("rb"),
+        content_type="application/pdf",
+        filename=f"section-{section.id}.pdf",
+    )
+
+
+def assignment_preview(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    data = json_body(request)
+    course_ids = data.get("course_ids") or []
+    employees = services.resolve_assignment_employees(
+        data.get("employee_ids"),
+        data.get("position_ids"),
+        data.get("include_ids"),
+        data.get("exclude_ids"),
+    )
+    courses = Course.objects.filter(
+        id__in=course_ids, is_archived=False, active_version__isnull=False
+    )
+    employee_rows = [
+        {
+            "id": employee.id,
+            "name": employee.name,
+            "position": (
+                employee.current_position.name
+                if employee.current_position
+                else employee.position
+            ),
+        }
+        for employee in employees.select_related("current_position")
+    ]
+    existing_pairs = Enrollment.objects.filter(
+        employee__in=employees, course__in=courses
+    ).count()
+    return JsonResponse(
+        {
+            "employees": employee_rows,
+            "courses": [{"id": course.id, "title": course.title} for course in courses],
+            "new_assignments": len(employee_rows) * courses.count() - existing_pairs,
+            "existing_assignments": existing_pairs,
+        }
+    )
+
+
+def assignment_apply(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    data = json_body(request)
+    course_ids = data.get("course_ids") or []
+    if not course_ids:
+        return JsonResponse({"error": "course_ids are required"}, status=400)
+    created = services.apply_assignment(
+        course_ids=course_ids,
+        employee_ids=data.get("employee_ids"),
+        position_ids=data.get("position_ids"),
+        include_ids=data.get("include_ids"),
+        exclude_ids=data.get("exclude_ids"),
+        assigned_by=request.user,
+    )
+    return JsonResponse(
+        {"created": len(created), "enrollment_ids": [item.id for item in created]},
+        status=201,
+    )
+
+
+def admin_enrollments(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    qs = Enrollment.objects.select_related(
+        "employee", "course", "course_version"
+    ).all()
+    employee_id = request.GET.get("employee")
+    if employee_id and employee_id.isdigit():
+        qs = qs.filter(employee_id=int(employee_id))
+    rows = [
+        {
+            "id": enrollment.id,
+            "employee_id": enrollment.employee_id,
+            "employee_name": enrollment.employee.name,
+            "course_id": enrollment.course_id,
+            "course_title": enrollment.course.title,
+            "version": (
+                enrollment.course_version.number
+                if enrollment.course_version
+                else None
+            ),
+            "cycle": enrollment.cycle,
+            "status": enrollment.status,
+            "active_seconds": sum(
+                enrollment.progress.values_list("accumulated_time", flat=True)
+            ),
+        }
+        for enrollment in qs
+    ]
+    return JsonResponse({"enrollments": rows})
+
+
+def admin_enrollment_action(request, pk, action):
+    if request.method != "POST":
+        return JsonResponse({"error": "method not allowed"}, status=405)
+    try:
+        enrollment = Enrollment.objects.select_related(
+            "employee", "course", "course__active_version"
+        ).get(pk=pk)
+    except Enrollment.DoesNotExist:
+        return JsonResponse({"error": "enrollment not found"}, status=404)
+    try:
+        if action == "repeat":
+            result = services.repeat_enrollment(enrollment, actor=request.user)
+        else:
+            result = services.change_enrollment_status(
+                enrollment, action, actor=request.user
+            )
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=409)
+    return JsonResponse(
+        {"id": result.id, "status": result.status, "cycle": result.cycle}
+    )

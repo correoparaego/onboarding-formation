@@ -1,15 +1,24 @@
 """Tests for enrollment-assignment (spec enrollment-assignment, Phase 7)."""
 import io
+import tempfile
 
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 import pandas as pd
 
 from courses.models import Course, Position
+from courses.services import ensure_active_version
 from employees.models import Employee
 from reading_gate.models import Enrollment
-from reading_gate.services import assign_mandatory_courses
+from reading_gate.services import (
+    apply_assignment,
+    assign_courses,
+    assign_mandatory_courses,
+    change_enrollment_status,
+    repeat_enrollment,
+)
 
 User = get_user_model()
 
@@ -91,6 +100,114 @@ class EnrollmentAssignmentTests(TestCase):
         )
         self.assertEqual(assign_mandatory_courses(emp), 0)
         self.assertEqual(Enrollment.objects.filter(employee=emp).count(), 0)
+
+
+class ManualAssignmentLifecycleTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            "manager", "manager@example.com", "pw", is_staff=True
+        )
+        self.position = Position.objects.create(name="Técnico")
+        self.course = Course.objects.create(title="Prevención")
+        self.employee_a = Employee.objects.create(
+            dni="12345678Z",
+            name="Alicia",
+            position="Técnico",
+            current_position=self.position,
+            email="alicia@example.com",
+        )
+        self.employee_b = Employee.objects.create(
+            dni="87654321X",
+            name="Bruno",
+            position="Técnico",
+            current_position=self.position,
+            email="bruno@example.com",
+        )
+        self.employee_c = Employee.objects.create(
+            dni="11111111H",
+            name="Carla",
+            position="Dirección",
+            email="carla@example.com",
+        )
+
+    def test_position_assignment_supports_individual_include_and_exclude(self):
+        created = apply_assignment(
+            course_ids=[self.course.id],
+            position_ids=[self.position.id],
+            include_ids=[self.employee_c.id],
+            exclude_ids=[self.employee_b.id],
+            assigned_by=self.admin,
+        )
+        self.assertEqual(len(created), 2)
+        self.assertSetEqual(
+            set(Enrollment.objects.values_list("employee_id", flat=True)),
+            {self.employee_a.id, self.employee_c.id},
+        )
+        self.assertTrue(all(item.course_version_id for item in created))
+
+    def test_pause_cancel_and_repeat_preserve_previous_cycle(self):
+        enrollment = assign_courses(
+            self.employee_a, [self.course], notify=False
+        )[0]
+        change_enrollment_status(enrollment, "pause", self.admin)
+        self.assertEqual(enrollment.status, "paused")
+        change_enrollment_status(enrollment, "resume", self.admin)
+        self.assertEqual(enrollment.status, "in_progress")
+        change_enrollment_status(enrollment, "cancel", self.admin)
+        repeated = repeat_enrollment(enrollment, self.admin)
+
+        enrollment.refresh_from_db()
+        self.assertEqual(enrollment.status, "cancelled")
+        self.assertEqual(repeated.cycle, 2)
+        self.assertEqual(repeated.status, "assigned")
+        self.assertEqual(
+            Enrollment.objects.filter(
+                employee=self.employee_a, course=self.course
+            ).count(),
+            2,
+        )
+
+    def test_admin_assignment_preview_apply_and_lifecycle_endpoints(self):
+        self.client.force_login(self.admin)
+        ensure_active_version(self.course)
+        preview = self.client.post(
+            "/api/admin/assignments/preview",
+            data={
+                "course_ids": [self.course.id],
+                "position_ids": [self.position.id],
+                "exclude_ids": [self.employee_b.id],
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(preview.status_code, 200)
+        self.assertEqual(preview.json()["new_assignments"], 1)
+
+        applied = self.client.post(
+            "/api/admin/assignments",
+            data={
+                "course_ids": [self.course.id],
+                "position_ids": [self.position.id],
+                "exclude_ids": [self.employee_b.id],
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(applied.status_code, 201)
+        enrollment_id = applied.json()["enrollment_ids"][0]
+        listed = self.client.get(
+            f"/api/admin/enrollments?employee={self.employee_a.id}"
+        )
+        self.assertEqual(listed.json()["enrollments"][0]["cycle"], 1)
+
+        paused = self.client.post(
+            f"/api/admin/enrollments/{enrollment_id}/pause"
+        )
+        self.assertEqual(paused.json()["status"], "paused")
+        self.client.post(f"/api/admin/enrollments/{enrollment_id}/resume")
+        self.client.post(f"/api/admin/enrollments/{enrollment_id}/cancel")
+        repeated = self.client.post(
+            f"/api/admin/enrollments/{enrollment_id}/repeat"
+        )
+        self.assertEqual(repeated.json()["cycle"], 2)
 
 
 # ---------------------------------------------------------------------------
@@ -257,6 +374,14 @@ class ComprehensionTestTests(TestCase):
             AuditEvent.objects.filter(event_type="attempt_start").count(), 1
         )
 
+    def test_test_is_rejected_before_reading_completion(self):
+        self.enr.status = "in_progress"
+        self.enr.save(update_fields=["status"])
+        questions = services.get_test_questions(self.enr)
+        submission = services.grade_submission(self.enr, [])
+        self.assertEqual(questions["status_code"], 409)
+        self.assertEqual(submission["status_code"], 409)
+
 
 class ReadingGateAuthzTests(TestCase):
     def setUp(self):
@@ -305,6 +430,70 @@ class ReadingGateAuthzTests(TestCase):
         body = resp.json()
         self.assertEqual(body["accumulated"], 30)
         self.assertTrue(body["section_complete"])
+
+    def test_employee_enrollment_detail_uses_owned_sections(self):
+        Section.objects.create(course=self.course, order=2, section_base=30)
+        self._emp_session(self.emp)
+        response = self.client.get(f"/api/employee/enrollments/{self.enr.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["sections"][0]["order"], 1)
+        self.assertEqual(len(response.json()["sections"]), 1)
+
+        self._emp_session(self.other)
+        denied = self.client.get(f"/api/employee/enrollments/{self.enr.id}")
+        self.assertEqual(denied.status_code, 404)
+
+    def test_employee_can_download_pdf_only_from_owned_enrollment(self):
+        section = self.course.sections.get()
+        with tempfile.TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            section.pdf_file.save(
+                "employee.pdf",
+                SimpleUploadedFile("employee.pdf", b"%PDF-1.4\ncontent"),
+            )
+            self._emp_session(self.emp)
+            response = self.client.get(
+                f"/api/employee/enrollments/{self.enr.id}/sections/{section.id}/pdf"
+            )
+            self.assertEqual(response.status_code, 200)
+            response.close()
+            locked = Section.objects.create(
+                course=self.course, order=2, section_base=30
+            )
+            locked.pdf_file.save(
+                "locked.pdf", SimpleUploadedFile("locked.pdf", b"%PDF-1.4\nlocked")
+            )
+            locked_response = self.client.get(
+                f"/api/employee/enrollments/{self.enr.id}/sections/{locked.id}/pdf"
+            )
+            self.assertEqual(locked_response.status_code, 404)
+            self._emp_session(self.other)
+            denied = self.client.get(
+                f"/api/employee/enrollments/{self.enr.id}/sections/{section.id}/pdf"
+            )
+            self.assertEqual(denied.status_code, 404)
+
+    def test_paused_enrollment_does_not_credit_heartbeat(self):
+        self.enr.status = "paused"
+        self.enr.save(update_fields=["status"])
+        self._emp_session(self.emp)
+        response = self.client.post(
+            "/api/reading/heartbeat",
+            data=json.dumps(
+                {
+                    "enrollment_id": self.enr.id,
+                    "section_order": 1,
+                    "delta": 30,
+                    "visibility": True,
+                    "interaction": True,
+                }
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 409)
+        self.assertFalse(ReadingProgress.objects.filter(enrollment=self.enr).exists())
+        detail = self.client.get(f"/api/employee/enrollments/{self.enr.id}")
+        self.assertFalse(detail.json()["can_read"])
+        self.assertEqual(detail.json()["sections"], [])
 
 
 # ---------------------------------------------------------------------------

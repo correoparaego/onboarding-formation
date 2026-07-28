@@ -1,8 +1,34 @@
+from pathlib import Path
+
+from django.core.files import File
 from django.db import transaction
 from django.db.models import Max
 from django.utils import timezone
 
 from .models import Course, CourseVersion, Question, QuestionBank, Section
+
+
+@transaction.atomic
+def ensure_active_version(course):
+    if course.active_version_id:
+        return course.active_version
+    course = Course.objects.select_for_update().get(pk=course.pk)
+    if course.active_version_id:
+        return course.active_version
+    next_number = (course.versions.aggregate(value=Max("number"))["value"] or 0) + 1
+    version = CourseVersion.objects.create(
+        course=course,
+        number=next_number,
+        title=course.title,
+        min_time_divisor=course.min_time_divisor,
+        status="published",
+        published_at=timezone.now(),
+    )
+    course.sections.filter(version__isnull=True).update(version=version)
+    course.banks.filter(version__isnull=True).update(version=version)
+    course.active_version = version
+    course.save(update_fields=["active_version"])
+    return version
 
 
 @transaction.atomic
@@ -53,15 +79,21 @@ def create_draft_version(course):
     )
     source_sections = source.sections.all() if source else course.sections.all()
     for section in source_sections:
-        Section.objects.create(
+        cloned_section = Section.objects.create(
             course=course,
             version=version,
             order=section.order,
             title=section.title,
             content=section.content,
-            pdf_file=section.pdf_file.name if section.pdf_file else None,
             section_base=section.section_base,
         )
+        if section.pdf_file:
+            with section.pdf_file.open("rb") as source_pdf:
+                cloned_section.pdf_file.save(
+                    f"v{version.number}-{Path(section.pdf_file.name).name}",
+                    File(source_pdf),
+                    save=True,
+                )
     if source:
         for bank in source.banks.prefetch_related("questions"):
             new_bank = QuestionBank.objects.create(course=course, version=version)
