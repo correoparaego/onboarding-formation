@@ -44,6 +44,8 @@ Render te pedirá que configures las siguientes variables:
 | `S3_REGION_NAME` | Región del bucket | Ejemplo: `eu-west-1` |
 | `S3_ACCESS_KEY_ID` | Credencial del bucket | Configurar como secreto |
 | `S3_SECRET_ACCESS_KEY` | Secreto del bucket | Configurar como secreto |
+| `RESEND_API_KEY` | Clave de Resend para enviar accesos | Configurar como secreto |
+| `DEFAULT_FROM_EMAIL` | Remitente verificado en Resend | Ejemplo: `formacion@tu-dominio.com` |
 
 #### Frontend (onboarding-frontend)
 
