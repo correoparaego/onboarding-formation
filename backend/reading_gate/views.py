@@ -6,7 +6,6 @@ is taken from the session established by `employee_redeem` — never from the
 request body, so one employee cannot act on another's enrollment.
 """
 from django.http import FileResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from common.parsing import json_body
 from courses.models import Course
@@ -30,7 +29,6 @@ def _owned_enrollment(enrollment_id, employee_id):
     return enrollment, None
 
 
-@csrf_exempt
 def reading_heartbeat(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -58,7 +56,6 @@ def reading_heartbeat(request):
     )
 
 
-@csrf_exempt
 def test_questions(request):
     if request.method != "GET":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -78,7 +75,6 @@ def test_questions(request):
     )
 
 
-@csrf_exempt
 def test_submit(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -251,7 +247,10 @@ def employee_enrollment_detail(request, pk):
         for progress in enrollment.progress.filter(section__in=sections)
     }
     rows = []
-    for section in sections:
+    can_read = enrollment.status not in ("paused", "cancelled")
+    for section in sections if can_read else []:
+        if not services.section_is_unlocked(enrollment, section):
+            break
         progress = progress_by_section.get(section.id)
         accumulated = progress.accumulated_time if progress else 0
         minimum = services.min_time_for_section(section, divisor)
@@ -283,7 +282,8 @@ def employee_enrollment_detail(request, pk):
             ),
             "cycle": enrollment.cycle,
             "status": enrollment.status,
-            "can_read": enrollment.status not in ("paused", "cancelled"),
+            "can_read": can_read,
+            "test_unlocked": enrollment.status == "complete",
             "active_seconds": sum(row["accumulated_seconds"] for row in rows),
             "sections": rows,
         }
@@ -300,7 +300,11 @@ def employee_section_pdf(request, pk, section_id):
     if err:
         return JsonResponse({"error": err["error"]}, status=err["status_code"])
     section = services.enrollment_sections(enrollment).filter(pk=section_id).first()
-    if section is None or not section.pdf_file:
+    if (
+        section is None
+        or not section.pdf_file
+        or not services.section_is_unlocked(enrollment, section)
+    ):
         return JsonResponse({"error": "PDF not found"}, status=404)
     return FileResponse(
         section.pdf_file.open("rb"),

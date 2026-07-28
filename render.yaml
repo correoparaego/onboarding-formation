@@ -52,4 +52,8 @@ projects:
       - key: S3_SECRET_ACCESS_KEY
         sync: false
       - key: EMAIL_TRANSPORT
-        value: "console"
+        value: "resend"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
