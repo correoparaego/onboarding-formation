@@ -12,6 +12,7 @@ This is a deliberate, documented MVP trade-off.
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from common.parsing import json_body
 from common.rate_limit import login_rate_limit, redeem_rate_limit
@@ -35,7 +36,6 @@ def admin_login(request):
     return JsonResponse({"ok": True, "user": {"username": user.username}})
 
 
-@csrf_exempt
 def admin_logout(request):
     if request.method != "POST":
         return JsonResponse({"error": "method not allowed"}, status=405)
@@ -62,6 +62,7 @@ def employee_redeem(request):
     )
 
 
+@ensure_csrf_cookie
 def auth_status(request):
     if request.method != "GET":
         return JsonResponse({"error": "method not allowed"}, status=405)

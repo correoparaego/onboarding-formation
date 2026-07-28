@@ -106,6 +106,64 @@ export const banksApi = {
   }) => client.post("/banks/", payload),
 };
 
+export interface EmployeeSummary {
+  id: number;
+  name: string;
+  position: string;
+  current_position: { id: number; name: string } | null;
+  email: string;
+}
+
+export const employeesApi = {
+  list: () =>
+    client.get<{ count: number; results: EmployeeSummary[] }>("/employees", {
+      params: { limit: 200, offset: 0 },
+    }),
+  updatePosition: (employeeId: number, positionId: number) =>
+    client.patch(`/employees/${employeeId}`, { position_id: positionId }),
+  bulkPosition: (employeeIds: number[], positionId: number) =>
+    client.post("/employees/bulk-position", {
+      employee_ids: employeeIds,
+      position_id: positionId,
+    }),
+};
+
+export interface AssignmentSelection {
+  course_ids: number[];
+  employee_ids?: number[];
+  position_ids?: number[];
+  include_ids?: number[];
+  exclude_ids?: number[];
+}
+
+export interface AdminEnrollment {
+  id: number;
+  employee_id: number;
+  employee_name: string;
+  course_id: number;
+  course_title: string;
+  version: number | null;
+  cycle: number;
+  status: string;
+  active_seconds: number;
+}
+
+export const assignmentsApi = {
+  preview: (payload: AssignmentSelection) =>
+    client.post<{
+      employees: Array<{ id: number; name: string; position: string }>;
+      courses: Array<{ id: number; title: string }>;
+      new_assignments: number;
+      existing_assignments: number;
+    }>("/admin/assignments/preview", payload),
+  apply: (payload: AssignmentSelection) =>
+    client.post<{ created: number; enrollment_ids: number[] }>("/admin/assignments", payload),
+  enrollments: () =>
+    client.get<{ enrollments: AdminEnrollment[] }>("/admin/enrollments"),
+  action: (enrollmentId: number, action: "pause" | "resume" | "cancel" | "repeat") =>
+    client.post(`/admin/enrollments/${enrollmentId}/${action}`),
+};
+
 export const aiApi = {
   // POST /api/ai/key  (Phase 6) — set/update encrypted BYO key (raw never returned)
   setKey: (payload: { provider: string; base_url: string; model: string; api_key: string }) =>
