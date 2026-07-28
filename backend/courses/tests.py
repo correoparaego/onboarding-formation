@@ -1,5 +1,8 @@
 """Tests for course-management (spec course-management, Phase 5)."""
+import tempfile
+
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils import timezone
 
@@ -138,3 +141,39 @@ class CourseVersioningTests(TestCase):
             "Contenido revisado",
         )
         self.assertEqual(CourseVersion.objects.filter(course=course).count(), 2)
+
+    def test_admin_can_upload_valid_pdf_to_editable_section(self):
+        admin = User.objects.create_user("pdf", "pdf@example.com", "pw", is_staff=True)
+        course, version = create_course(
+            "PDF", sections=[{"order": 1, "title": "Lectura"}]
+        )
+        section = version.sections.get()
+        self.client.force_login(admin)
+        upload = SimpleUploadedFile(
+            "section.pdf", b"%PDF-1.4\ncontent", content_type="application/pdf"
+        )
+        with tempfile.TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            response = self.client.post(
+                f"/api/sections/{section.id}/pdf/", {"pdf": upload}
+            )
+            self.assertEqual(response.status_code, 200)
+            download = self.client.get(f"/api/sections/{section.id}/pdf/")
+            self.assertEqual(download.status_code, 200)
+            self.assertEqual(download["Content-Type"], "application/pdf")
+            download.close()
+
+    def test_section_rejects_non_pdf_content(self):
+        admin = User.objects.create_user("badpdf", "bad@example.com", "pw", is_staff=True)
+        _, version = create_course(
+            "PDF inválido", sections=[{"order": 1, "title": "Lectura"}]
+        )
+        self.client.force_login(admin)
+        response = self.client.post(
+            f"/api/sections/{version.sections.get().id}/pdf/",
+            {
+                "pdf": SimpleUploadedFile(
+                    "fake.pdf", b"not-a-pdf", content_type="application/pdf"
+                )
+            },
+        )
+        self.assertEqual(response.status_code, 400)

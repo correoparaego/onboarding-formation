@@ -20,6 +20,7 @@ ADMIN_PREFIXES = (
     "/api/employees",
     "/api/courses/",
     "/api/course-versions/",
+    "/api/sections/",
     "/api/positions/",
     "/api/banks/",
     "/api/ai/",

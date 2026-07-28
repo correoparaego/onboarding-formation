@@ -239,8 +239,29 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# WhiteNoise for static files compression and caching
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
+
+storage_bucket = os.environ.get("S3_STORAGE_BUCKET_NAME")
+if storage_bucket:
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": storage_bucket,
+            "endpoint_url": os.environ.get("S3_ENDPOINT_URL") or None,
+            "region_name": os.environ.get("S3_REGION_NAME", "eu-west-1"),
+            "access_key": os.environ.get("S3_ACCESS_KEY_ID"),
+            "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY"),
+            "default_acl": None,
+            "querystring_auth": True,
+            "querystring_expire": 300,
+            "file_overwrite": False,
+        },
+    }
 
 # ---------------------------------------------------------------------------
 # Production security settings
