@@ -1,8 +1,9 @@
 """Tests for course-management (spec course-management, Phase 5)."""
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.utils import timezone
 
-from .models import Course, Position, QuestionBank
+from .models import Course, CourseVersion, Position, QuestionBank, Section
 
 User = get_user_model()
 
@@ -65,3 +66,45 @@ class CourseManagementTests(TestCase):
         )
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(QuestionBank.objects.filter(course=self.course).count(), 0)
+
+
+class CourseVersioningTests(TestCase):
+    def test_publishing_new_version_preserves_previous_content(self):
+        course = Course.objects.create(title="Seguridad")
+        first = CourseVersion.objects.create(
+            course=course,
+            number=1,
+            title=course.title,
+            status="published",
+            published_at=timezone.now(),
+        )
+        course.active_version = first
+        course.save(update_fields=["active_version"])
+        Section.objects.create(
+            course=course,
+            version=first,
+            order=1,
+            title="Original",
+            content="Contenido inicial",
+            section_base=90,
+        )
+        draft = CourseVersion.objects.create(
+            course=course, number=2, title=course.title
+        )
+        Section.objects.create(
+            course=course,
+            version=draft,
+            order=1,
+            title="Original",
+            content="Contenido revisado",
+            section_base=90,
+        )
+
+        self.assertEqual(
+            first.sections.get(order=1).content, "Contenido inicial"
+        )
+        self.assertEqual(
+            draft.sections.get(order=1).content,
+            "Contenido revisado",
+        )
+        self.assertEqual(CourseVersion.objects.filter(course=course).count(), 2)

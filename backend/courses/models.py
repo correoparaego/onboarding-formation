@@ -37,6 +37,14 @@ class Course(models.Model):
     position_catalog = models.ManyToManyField(
         Position, related_name="courses", blank=True
     )
+    active_version = models.ForeignKey(
+        "CourseVersion",
+        on_delete=models.PROTECT,
+        related_name="active_for_courses",
+        null=True,
+        blank=True,
+    )
+    is_archived = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["title"]
@@ -45,17 +53,62 @@ class Course(models.Model):
         return self.title
 
 
+class CourseVersion(models.Model):
+    STATUS_CHOICES = [
+        ("draft", "draft"),
+        ("published", "published"),
+        ("archived", "archived"),
+    ]
+
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="versions"
+    )
+    number = models.PositiveIntegerField()
+    title = models.CharField(max_length=255)
+    min_time_divisor = models.PositiveIntegerField(default=3)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    created_at = models.DateTimeField(auto_now_add=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["course", "-number"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "number"], name="unique_course_version_number"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.course.title} v{self.number}"
+
+
 class Section(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="sections"
     )
+    version = models.ForeignKey(
+        CourseVersion,
+        on_delete=models.CASCADE,
+        related_name="sections",
+        null=True,
+        blank=True,
+    )
     order = models.PositiveIntegerField()
+    title = models.CharField(max_length=255, blank=True, default="")
+    content = models.TextField(blank=True, default="")
+    pdf_file = models.FileField(
+        upload_to="courses/sections/pdfs/", null=True, blank=True
+    )
     # Estimated base reading time for this section, in seconds.
     section_base = models.PositiveIntegerField(help_text="Base reading time (seconds)")
 
     class Meta:
         ordering = ["course", "order"]
-        unique_together = [("course", "order")]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["version", "order"], name="unique_version_section_order"
+            )
+        ]
 
     def __str__(self):
         return f"{self.course.title} / section {self.order}"
@@ -64,6 +117,13 @@ class Section(models.Model):
 class QuestionBank(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="banks"
+    )
+    version = models.ForeignKey(
+        CourseVersion,
+        on_delete=models.CASCADE,
+        related_name="banks",
+        null=True,
+        blank=True,
     )
 
     class Meta:
