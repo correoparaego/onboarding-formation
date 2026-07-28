@@ -6,6 +6,7 @@ import EmployeeImport from "./EmployeeImport";
 import CourseManagement from "./CourseManagement";
 import ExpedienteList from "./ExpedienteList";
 import Dashboard from "./Dashboard";
+import AssignmentManagement from "./AssignmentManagement";
 import AdminLayout from "../components/layout/AdminLayout";
 import { SkeletonCard } from "../components/ui";
 
@@ -31,6 +32,7 @@ export default function AdminApp() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="import" element={<EmployeeImport />} />
           <Route path="courses" element={<CourseManagement />} />
+          <Route path="assignments" element={<AssignmentManagement />} />
           <Route
             path="ai/key"
             element={
