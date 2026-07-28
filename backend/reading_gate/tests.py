@@ -9,7 +9,13 @@ import pandas as pd
 from courses.models import Course, Position
 from employees.models import Employee
 from reading_gate.models import Enrollment
-from reading_gate.services import assign_mandatory_courses
+from reading_gate.services import (
+    apply_assignment,
+    assign_courses,
+    assign_mandatory_courses,
+    change_enrollment_status,
+    repeat_enrollment,
+)
 
 User = get_user_model()
 
@@ -91,6 +97,72 @@ class EnrollmentAssignmentTests(TestCase):
         )
         self.assertEqual(assign_mandatory_courses(emp), 0)
         self.assertEqual(Enrollment.objects.filter(employee=emp).count(), 0)
+
+
+class ManualAssignmentLifecycleTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            "manager", "manager@example.com", "pw", is_staff=True
+        )
+        self.position = Position.objects.create(name="Técnico")
+        self.course = Course.objects.create(title="Prevención")
+        self.employee_a = Employee.objects.create(
+            dni="12345678Z",
+            name="Alicia",
+            position="Técnico",
+            current_position=self.position,
+            email="alicia@example.com",
+        )
+        self.employee_b = Employee.objects.create(
+            dni="87654321X",
+            name="Bruno",
+            position="Técnico",
+            current_position=self.position,
+            email="bruno@example.com",
+        )
+        self.employee_c = Employee.objects.create(
+            dni="11111111H",
+            name="Carla",
+            position="Dirección",
+            email="carla@example.com",
+        )
+
+    def test_position_assignment_supports_individual_include_and_exclude(self):
+        created = apply_assignment(
+            course_ids=[self.course.id],
+            position_ids=[self.position.id],
+            include_ids=[self.employee_c.id],
+            exclude_ids=[self.employee_b.id],
+            assigned_by=self.admin,
+        )
+        self.assertEqual(len(created), 2)
+        self.assertSetEqual(
+            set(Enrollment.objects.values_list("employee_id", flat=True)),
+            {self.employee_a.id, self.employee_c.id},
+        )
+        self.assertTrue(all(item.course_version_id for item in created))
+
+    def test_pause_cancel_and_repeat_preserve_previous_cycle(self):
+        enrollment = assign_courses(
+            self.employee_a, [self.course], notify=False
+        )[0]
+        change_enrollment_status(enrollment, "pause", self.admin)
+        self.assertEqual(enrollment.status, "paused")
+        change_enrollment_status(enrollment, "resume", self.admin)
+        self.assertEqual(enrollment.status, "in_progress")
+        change_enrollment_status(enrollment, "cancel", self.admin)
+        repeated = repeat_enrollment(enrollment, self.admin)
+
+        enrollment.refresh_from_db()
+        self.assertEqual(enrollment.status, "cancelled")
+        self.assertEqual(repeated.cycle, 2)
+        self.assertEqual(repeated.status, "assigned")
+        self.assertEqual(
+            Enrollment.objects.filter(
+                employee=self.employee_a, course=self.course
+            ).count(),
+            2,
+        )
 
 
 # ---------------------------------------------------------------------------

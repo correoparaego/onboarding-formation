@@ -6,6 +6,29 @@ from .models import Course, CourseVersion, Question, QuestionBank, Section
 
 
 @transaction.atomic
+def ensure_active_version(course):
+    if course.active_version_id:
+        return course.active_version
+    course = Course.objects.select_for_update().get(pk=course.pk)
+    if course.active_version_id:
+        return course.active_version
+    next_number = (course.versions.aggregate(value=Max("number"))["value"] or 0) + 1
+    version = CourseVersion.objects.create(
+        course=course,
+        number=next_number,
+        title=course.title,
+        min_time_divisor=course.min_time_divisor,
+        status="published",
+        published_at=timezone.now(),
+    )
+    course.sections.filter(version__isnull=True).update(version=version)
+    course.banks.filter(version__isnull=True).update(version=version)
+    course.active_version = version
+    course.save(update_fields=["active_version"])
+    return version
+
+
+@transaction.atomic
 def create_course(title, sections=None, position_ids=None, min_time_divisor=3):
     course = Course.objects.create(
         title=title,
