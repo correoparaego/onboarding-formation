@@ -75,6 +75,10 @@ admin at `http://localhost:8000/admin/`.
 | `AI_USE_FAKE_LLM` | When `True`, AI generation uses a deterministic fake LLM (tests/CI). Leave `False` in prod. | `False` |
 | `GEMINI_API_KEY` | Google Gemini API key for default LLM (course generation). Get free at https://aistudio.google.com/app/apikey | — |
 | `GEMINI_MODEL` | Gemini model to use | `gemini-3.6-flash` |
+| `S3_STORAGE_BUCKET_NAME` | Private bucket for section PDFs | local filesystem |
+| `S3_ENDPOINT_URL` | Optional S3-compatible endpoint (R2, MinIO, etc.) | AWS S3 |
+| `S3_REGION_NAME` | Bucket region | `eu-west-1` |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | Private bucket credentials | — |
 
 ### AI Generation — LLM Priority
 
@@ -90,6 +94,13 @@ For Gemini BYO configuration, use the OpenAI-compatible base URL
 `https://generativelanguage.googleapis.com/v1beta/openai/`. Saving the key
 validates both the credential and model against the provider's `/models`
 endpoint before encrypting it.
+
+### Section PDF storage
+
+Section PDFs are never exposed through `/media/`. In production, configure the
+five `S3_*` variables above with a private S3-compatible bucket. The application
+validates PDF signatures and a 25 MB size limit, then serves files only through
+authenticated API routes. Local development falls back to `backend/media/`.
 
 ## Frontend — run locally
 

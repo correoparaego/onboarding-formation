@@ -39,6 +39,13 @@ Render te pedirá que configures las siguientes variables:
 | `DJANGO_ALLOWED_HOSTS` | `<backend-url>.onrender.com` | Reemplaza con la URL de tu backend |
 | `FRONTEND_BASE_URL` | `https://<frontend-url>.onrender.com` | Reemplaza con la URL de tu frontend |
 | `GEMINI_API_KEY` | Tu API key de Gemini | Obtén una gratis en https://aistudio.google.com/app/apikey |
+| `S3_STORAGE_BUCKET_NAME` | Nombre del bucket privado | Obligatorio para conservar PDFs entre despliegues |
+| `S3_ENDPOINT_URL` | Endpoint S3 compatible | Déjalo vacío para AWS S3 |
+| `S3_REGION_NAME` | Región del bucket | Ejemplo: `eu-west-1` |
+| `S3_ACCESS_KEY_ID` | Credencial del bucket | Configurar como secreto |
+| `S3_SECRET_ACCESS_KEY` | Secreto del bucket | Configurar como secreto |
+| `RESEND_API_KEY` | Clave de Resend para enviar accesos | Configurar como secreto |
+| `DEFAULT_FROM_EMAIL` | Remitente verificado en Resend | Ejemplo: `formacion@tu-dominio.com` |
 
 #### Frontend (onboarding-frontend)
 
