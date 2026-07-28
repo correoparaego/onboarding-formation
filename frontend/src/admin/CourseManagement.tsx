@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { coursesApi } from "../api/endpoints";
+import { coursesApi, CourseSectionPayload, CourseVersionPayload } from "../api/endpoints";
 import { Button, Card, Badge, Input, EmptyState, ConfirmDialog, SkeletonTable, ResponsiveTable } from "../components/ui";
 import { useToast } from "../contexts/ToastContext";
 import Breadcrumb from "../components/layout/Breadcrumb";
@@ -18,12 +18,18 @@ interface CourseDetail {
   id: number;
   title: string;
   min_time_divisor: number;
-  positions: string[];
-  sections: Array<{ order: number; section_base: number }>;
+  positions: Array<{ id: number; name: string }>;
+  active_version: CourseVersionPayload | null;
+  editing_version: CourseVersionPayload | null;
+  sections: CourseSectionPayload[];
   banks: Array<{
     id: number;
     questions: Array<{ text: string; options: string[]; correct_index: number }>;
   }>;
+}
+
+interface EditableSection extends CourseSectionPayload {
+  file?: File | null;
 }
 
 export default function CourseManagement() {
@@ -34,14 +40,19 @@ export default function CourseManagement() {
   const [editingCourse, setEditingCourse] = useState<CourseDetail | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newMinDivisor, setNewMinDivisor] = useState(3);
-  const [sections, setSections] = useState<Array<{ order: number; section_base: number }>>([
-    { order: 1, section_base: 60 },
+  const [sections, setSections] = useState<EditableSection[]>([
+    { order: 1, title: "", content: "", section_base: 60, file: null },
   ]);
+  const [positions, setPositions] = useState<Array<{ id: number; name: string }>>([]);
+  const [selectedPositionIds, setSelectedPositionIds] = useState<number[]>([]);
+  const [editingVersion, setEditingVersion] = useState<CourseVersionPayload | null>(null);
+  const [editSections, setEditSections] = useState<EditableSection[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<Course | null>(null);
   const toast = useToast();
 
   useEffect(() => {
     loadCourses();
+    coursesApi.positions().then((response) => setPositions(response.data.positions));
   }, []);
 
   const loadCourses = async () => {
@@ -60,9 +71,22 @@ export default function CourseManagement() {
   const createCourse = async () => {
     if (!newTitle.trim()) return;
     try {
-      await coursesApi.create({ title: newTitle, sections });
+      const created = await coursesApi.create({
+        title: newTitle,
+        min_time_divisor: newMinDivisor,
+        position_ids: selectedPositionIds,
+        sections: sections.map(({ file: _file, ...section }) => section),
+      });
+      const detail = await coursesApi.detail(created.data.id);
+      for (const section of sections) {
+        const persisted = detail.data.sections.find((item) => item.order === section.order);
+        if (section.file && persisted?.id) {
+          await coursesApi.uploadSectionPdf(persisted.id, section.file);
+        }
+      }
       setNewTitle("");
-      setSections([{ order: 1, section_base: 60 }]);
+      setSections([{ order: 1, title: "", content: "", section_base: 60, file: null }]);
+      setSelectedPositionIds([]);
       setShowForm(false);
       loadCourses();
       toast.success("Curso creado correctamente");
@@ -97,17 +121,56 @@ export default function CourseManagement() {
   };
 
   const addSection = () => {
-    setSections([...sections, { order: sections.length + 1, section_base: 60 }]);
+    setSections([
+      ...sections,
+      { order: sections.length + 1, title: "", content: "", section_base: 60, file: null },
+    ]);
   };
 
   const removeSection = (index: number) => {
     setSections(sections.filter((_, i) => i !== index));
   };
 
-  const updateSection = (index: number, field: "order" | "section_base", value: number) => {
+  const updateSection = (index: number, updates: Partial<EditableSection>) => {
     const updated = [...sections];
-    updated[index][field] = value;
+    updated[index] = { ...updated[index], ...updates };
     setSections(updated);
+  };
+
+  const startEditingVersion = async () => {
+    if (!editingCourse) return;
+    try {
+      const response = await coursesApi.createDraft(editingCourse.id);
+      setEditingVersion(response.data.version);
+      setEditSections(response.data.version.sections);
+    } catch (e: any) {
+      toast.error(e?.response?.data?.error || "Error al crear el borrador");
+    }
+  };
+
+  const saveAndPublishVersion = async () => {
+    if (!editingCourse || !editingVersion) return;
+    try {
+      const updated = await coursesApi.updateVersion(editingVersion.id, {
+        title: editingVersion.title,
+        min_time_divisor: editingVersion.min_time_divisor,
+        position_ids: editingCourse.positions.map((position) => position.id),
+        sections: editSections.map(({ file: _file, ...section }) => section),
+      });
+      for (const section of editSections) {
+        const persisted = updated.data.version.sections.find((item) => item.order === section.order);
+        if (section.file && persisted?.id) {
+          await coursesApi.uploadSectionPdf(persisted.id, section.file);
+        }
+      }
+      await coursesApi.publishVersion(editingVersion.id);
+      toast.success("Nueva versión publicada");
+      setEditingVersion(null);
+      await viewCourse(editingCourse.id);
+      loadCourses();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.error || "Error al publicar la versión");
+    }
   };
 
   const tableColumns = [
@@ -210,26 +273,46 @@ export default function CourseManagement() {
               />
             </div>
             <div>
+              <label style={{ fontSize: "var(--font-size-sm)", fontWeight: 500 }}>Puestos aplicables</label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", marginTop: "var(--space-xs)" }}>
+                {positions.map((position) => (
+                  <label key={position.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedPositionIds.includes(position.id)}
+                      onChange={(event) => setSelectedPositionIds(
+                        event.target.checked
+                          ? [...selectedPositionIds, position.id]
+                          : selectedPositionIds.filter((id) => id !== position.id)
+                      )}
+                    />
+                    {position.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
               <label style={{ fontSize: "var(--font-size-sm)", fontWeight: 500, display: "block", marginBottom: "var(--space-xs)" }}>
                 Secciones
               </label>
               {sections.map((section, i) => (
-                <div key={i} style={{ display: "flex", gap: "var(--space-sm)", marginTop: "var(--space-sm)", alignItems: "center" }}>
-                  <input
-                    type="number"
-                    placeholder="Orden"
-                    value={section.order}
-                    onChange={(e) => updateSection(i, "order", Number(e.target.value))}
-                    style={{ width: 80 }}
+                <Card key={i} style={{ marginTop: "var(--space-sm)", padding: "var(--space-md)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 130px", gap: "var(--space-sm)" }}>
+                    <input type="number" aria-label="Orden" value={section.order} onChange={(e) => updateSection(i, { order: Number(e.target.value) })} />
+                    <input placeholder="Título de la sección" value={section.title} onChange={(e) => updateSection(i, { title: e.target.value })} />
+                    <input type="number" aria-label="Tiempo base en segundos" value={section.section_base} onChange={(e) => updateSection(i, { section_base: Number(e.target.value) })} />
+                  </div>
+                  <textarea
+                    placeholder="Texto editable de la sección"
+                    value={section.content}
+                    onChange={(e) => updateSection(i, { content: e.target.value })}
+                    rows={5}
+                    style={{ width: "100%", marginTop: "var(--space-sm)" }}
                   />
-                  <input
-                    type="number"
-                    placeholder="Tiempo base (s)"
-                    value={section.section_base}
-                    onChange={(e) => updateSection(i, "section_base", Number(e.target.value))}
-                    style={{ width: 120 }}
-                  />
-                  <span style={{ fontSize: "var(--font-size-xs)", color: "var(--color-text-muted)" }}>segundos</span>
+                  <label style={{ display: "block", marginTop: "var(--space-sm)", fontSize: "var(--font-size-sm)" }}>
+                    PDF complementario (máximo 25 MB)
+                    <input type="file" accept="application/pdf,.pdf" onChange={(e) => updateSection(i, { file: e.target.files?.[0] || null })} style={{ display: "block", marginTop: 6 }} />
+                  </label>
                   {sections.length > 1 && (
                     <button
                       onClick={() => removeSection(i)}
@@ -239,7 +322,7 @@ export default function CourseManagement() {
                       ✕
                     </button>
                   )}
-                </div>
+                </Card>
               ))}
               <Button variant="ghost" size="sm" onClick={addSection} style={{ marginTop: "var(--space-sm)" }}>
                 + Añadir sección
@@ -262,8 +345,36 @@ export default function CourseManagement() {
             <strong>Divisor de tiempo:</strong> {editingCourse.min_time_divisor}
           </p>
           <p style={{ marginBottom: "var(--space-md)" }}>
-            <strong>Posiciones:</strong> {editingCourse.positions.join(", ") || "Ninguna"}
+            <strong>Posiciones:</strong> {editingCourse.positions.map((position) => position.name).join(", ") || "Ninguna"}
           </p>
+          {!editingVersion ? (
+            <Button onClick={startEditingVersion} style={{ marginBottom: "var(--space-md)" }}>
+              Crear nueva versión
+            </Button>
+          ) : (
+            <Card style={{ marginBottom: "var(--space-lg)", background: "var(--color-bg-secondary)" }}>
+              <h4 style={{ marginBottom: "var(--space-sm)" }}>Borrador v{editingVersion.number}</h4>
+              <Input label="Título" value={editingVersion.title} onChange={(event) => setEditingVersion({ ...editingVersion, title: event.target.value })} />
+              {editSections.map((section, index) => (
+                <div key={section.id || index} style={{ marginTop: "var(--space-md)", paddingTop: "var(--space-md)", borderTop: "1px solid var(--color-border)" }}>
+                  <Input label={`Sección ${index + 1}`} value={section.title} onChange={(event) => setEditSections(editSections.map((item, itemIndex) => itemIndex === index ? { ...item, title: event.target.value } : item))} />
+                  <textarea
+                    value={section.content}
+                    onChange={(event) => setEditSections(editSections.map((item, itemIndex) => itemIndex === index ? { ...item, content: event.target.value } : item))}
+                    rows={5}
+                    style={{ width: "100%", marginTop: "var(--space-sm)" }}
+                  />
+                  <label style={{ display: "block", marginTop: "var(--space-sm)", fontSize: "var(--font-size-sm)" }}>
+                    {section.has_pdf ? "Sustituir PDF" : "Añadir PDF"}
+                    <input type="file" accept="application/pdf,.pdf" onChange={(event) => setEditSections(editSections.map((item, itemIndex) => itemIndex === index ? { ...item, file: event.target.files?.[0] || null } : item))} style={{ display: "block", marginTop: 6 }} />
+                  </label>
+                </div>
+              ))}
+              <Button onClick={saveAndPublishVersion} style={{ marginTop: "var(--space-md)" }}>
+                Guardar y publicar versión
+              </Button>
+            </Card>
+          )}
           <h4 style={{ marginBottom: "var(--space-sm)" }}>Secciones ({editingCourse.sections.length})</h4>
           {editingCourse.sections.length > 0 ? (
             <ul style={{ marginBottom: "var(--space-md)", paddingLeft: "var(--space-lg)" }}>

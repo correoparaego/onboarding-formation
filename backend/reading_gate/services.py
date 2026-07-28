@@ -16,9 +16,11 @@ import logging
 import math
 import random
 
+from django.db import transaction
+from django.db.models import Max
 from django.utils import timezone
 
-from courses.models import Question
+from courses.models import Course, Position, Question
 from reading_gate.models import AuditEvent, Enrollment, ReadingProgress
 
 logger = logging.getLogger(__name__)
@@ -47,47 +49,168 @@ TEST_PASS_THRESHOLD = 1.0
 
 
 # ---------------------------------------------------------------------------
-# Enrollment assignment (Phase 7) — unchanged from PR3.
+# Enrollment assignment
 # ---------------------------------------------------------------------------
-def assign_mandatory_courses(employee) -> int:
-    """Create assigned enrollments for the employee's position.
+@transaction.atomic
+def assign_courses(employee, courses, source="manual", assigned_by=None, notify=True):
+    from courses.services import ensure_active_version
 
-    Returns the number of NEW enrollments created (skips pre-existing ones).
-    """
+    created = []
+    for course in courses:
+        if course.is_archived:
+            continue
+        version = ensure_active_version(course)
+        if Enrollment.objects.filter(employee=employee, course=course).exists():
+            continue
+        enrollment = Enrollment.objects.create(
+            employee=employee,
+            course=course,
+            course_version=version,
+            cycle=1,
+            source=source,
+            assigned_by=assigned_by,
+        )
+        created.append(enrollment)
+        _audit(
+            enrollment,
+            "enrollment_assigned",
+            "",
+            "",
+            {
+                "course_id": course.id,
+                "course_version_id": version.id,
+                "source": source,
+            },
+        )
+    if created and notify:
+        enrollment_id = created[0].id
+
+        def deliver_access():
+            try:
+                from notifications import services as notify_services
+
+                enrollment = Enrollment.objects.select_related("employee").get(
+                    pk=enrollment_id
+                )
+                notify_services.issue_access_token(enrollment)
+            except Exception as exc:
+                logger.warning("access token issuance failed: %s", exc)
+
+        transaction.on_commit(deliver_access)
+    return created
+
+
+def assign_mandatory_courses(employee) -> int:
     from django.utils.text import slugify
 
-    from courses.models import Position
-
-    positions = list(Position.objects.filter(name__iexact=employee.position))
-    if not positions:
-        positions = list(Position.objects.filter(slug__iexact=slugify(employee.position)))
-    if not positions:
+    position = employee.current_position
+    if position is None:
+        position = (
+            Position.objects.filter(name__iexact=employee.position).first()
+            or Position.objects.filter(
+                slug__iexact=slugify(employee.position)
+            ).first()
+        )
+    if position is None:
         return 0
+    courses = position.courses.filter(is_archived=False)
+    return len(assign_courses(employee, courses, source="position"))
 
-    created_total = 0
-    for pos in positions:
-        for course in pos.courses.all():
-            enrollment, was_created = Enrollment.objects.get_or_create(
-                employee=employee,
-                course=course,
-                defaults={"status": "assigned"},
+
+def resolve_assignment_employees(
+    employee_ids=None, position_ids=None, include_ids=None, exclude_ids=None
+):
+    from employees.models import Employee
+
+    selected_ids = set(employee_ids or []) | set(include_ids or [])
+    if position_ids:
+        selected_ids.update(
+            Employee.objects.filter(current_position_id__in=position_ids).values_list(
+                "id", flat=True
             )
-            if was_created:
-                created_total += 1
-                # Audit: record the mandatory-course assignment (append-only;
-                # metadata only — no DNI / token / PII).
-                _audit(enrollment, "enrollment_assigned", "", "",
-                       {"course_id": course.id, "position": employee.position})
-                # Issue a single-use access token + email the employee (PR5,
-                # Phase 8). Best-effort: a delivery failure MUST NOT block
-                # assignment. Raw token/code are delivered, never logged.
-                try:
-                    from notifications import services as notify
+        )
+    selected_ids.difference_update(exclude_ids or [])
+    return Employee.objects.filter(id__in=selected_ids).order_by("name")
 
-                    notify.issue_access_token(enrollment)
-                except Exception as exc:  # never block assignment on delivery
-                    logger.warning("access token issuance failed: %s", exc)
-    return created_total
+
+@transaction.atomic
+def apply_assignment(
+    course_ids,
+    employee_ids=None,
+    position_ids=None,
+    include_ids=None,
+    exclude_ids=None,
+    assigned_by=None,
+):
+    employees = resolve_assignment_employees(
+        employee_ids, position_ids, include_ids, exclude_ids
+    )
+    courses = list(
+        Course.objects.filter(
+            id__in=course_ids, is_archived=False
+        )
+    )
+    created = []
+    for employee in employees:
+        created.extend(
+            assign_courses(
+                employee,
+                courses,
+                source="manual",
+                assigned_by=assigned_by,
+                notify=True,
+            )
+        )
+    return created
+
+
+@transaction.atomic
+def change_enrollment_status(enrollment, action, actor=None):
+    transitions = {
+        "pause": ({"assigned", "in_progress"}, "paused"),
+        "resume": ({"paused"}, "in_progress"),
+        "cancel": ({"assigned", "in_progress", "paused", "complete"}, "cancelled"),
+    }
+    if action not in transitions:
+        raise ValueError("unsupported enrollment action")
+    allowed, target = transitions[action]
+    if enrollment.status not in allowed:
+        raise ValueError(f"cannot {action} enrollment in {enrollment.status}")
+    enrollment.status = target
+    enrollment.paused_at = timezone.now() if target == "paused" else None
+    if target == "cancelled":
+        enrollment.cancelled_at = timezone.now()
+    enrollment.save(update_fields=["status", "paused_at", "cancelled_at"])
+    _audit(enrollment, f"enrollment_{target}", "", "", {"actor_id": getattr(actor, "id", None)})
+    return enrollment
+
+
+@transaction.atomic
+def repeat_enrollment(enrollment, actor=None):
+    if enrollment.status not in {"cancelled", "passed", "failed_exhausted"}:
+        raise ValueError("only terminal enrollments can be repeated")
+    next_cycle = (
+        Enrollment.objects.filter(
+            employee=enrollment.employee, course=enrollment.course
+        ).aggregate(value=Max("cycle"))["value"]
+        or 0
+    ) + 1
+    repeated = Enrollment.objects.create(
+        employee=enrollment.employee,
+        course=enrollment.course,
+        course_version=enrollment.course.active_version or enrollment.course_version,
+        cycle=next_cycle,
+        source="repeat",
+        assigned_by=actor,
+    )
+    _audit(
+        repeated,
+        "enrollment_repeated",
+        "",
+        "",
+        {"previous_enrollment_id": enrollment.id, "cycle": next_cycle},
+    )
+    return repeated
 
 
 # ---------------------------------------------------------------------------
@@ -104,8 +227,40 @@ def min_time_for_section(section, divisor) -> int:
     return max(1, math.ceil(section.section_base / divisor))
 
 
+def enrollment_sections(enrollment):
+    if enrollment.course_version_id:
+        return enrollment.course_version.sections.order_by("order")
+    return enrollment.course.sections.order_by("order")
+
+
+def enrollment_time_divisor(enrollment):
+    if enrollment.course_version_id:
+        return enrollment.course_version.min_time_divisor
+    return enrollment.course.min_time_divisor
+
+
+def section_is_unlocked(enrollment, section):
+    if enrollment.status in ("paused", "cancelled"):
+        return False
+    sections = list(enrollment_sections(enrollment))
+    try:
+        index = next(i for i, item in enumerate(sections) if item.id == section.id)
+    except StopIteration:
+        return False
+    if index == 0:
+        return True
+    previous = sections[index - 1]
+    progress = ReadingProgress.objects.filter(
+        enrollment=enrollment, section=previous
+    ).first()
+    accumulated = progress.accumulated_time if progress else 0
+    return accumulated >= min_time_for_section(
+        previous, enrollment_time_divisor(enrollment)
+    )
+
+
 def _all_sections_complete(enrollment, divisor) -> bool:
-    sections = list(enrollment.course.sections.order_by("order"))
+    sections = list(enrollment_sections(enrollment))
     if not sections:
         return False
     for section in sections:
@@ -132,26 +287,19 @@ def process_heartbeat(enrollment, section_order, delta, visibility, interaction,
     - Cross-device resume is implicit: ReadingProgress is keyed by
       (enrollment, section), so a new device simply continues accumulating.
     """
-    course = enrollment.course
-    divisor = course.min_time_divisor
-    sections = list(course.sections.order_by("order"))
+    if enrollment.status in ("paused", "cancelled"):
+        return {
+            "error": f"enrollment is {enrollment.status}",
+            "status_code": 409,
+        }
+    divisor = enrollment_time_divisor(enrollment)
+    sections = list(enrollment_sections(enrollment))
     section = next((s for s in sections if s.order == section_order), None)
     if section is None:
         return {"error": "section not found", "status_code": 404}
 
     # Sequential unlock gate: previous section must be complete.
-    locked = False
-    if section_order > 1:
-        prev = next((s for s in sections if s.order == section_order - 1), None)
-        if prev is None:
-            locked = True
-        else:
-            prev_progress = ReadingProgress.objects.filter(
-                enrollment=enrollment, section=prev
-            ).first()
-            prev_acc = prev_progress.accumulated_time if prev_progress else 0
-            if prev_acc < min_time_for_section(prev, divisor):
-                locked = True
+    locked = not section_is_unlocked(enrollment, section)
 
     min_time = min_time_for_section(section, divisor)
 
@@ -187,6 +335,10 @@ def process_heartbeat(enrollment, section_order, delta, visibility, interaction,
     if session_id:
         progress.session_id = session_id
     progress.save(update_fields=["accumulated_time", "reached_section", "device_id", "session_id"])
+
+    if credited and enrollment.status == "assigned":
+        enrollment.status = "in_progress"
+        enrollment.save(update_fields=["status"])
 
     now_complete = progress.accumulated_time >= min_time
     if now_complete and not was_complete:
@@ -249,7 +401,10 @@ def get_test_subset(enrollment, attempt_no):
     TEST_SUBSET_SIZE are taken. Different attempts → different seeds → different
     subsets (when the bank is larger than the subset size).
     """
-    questions = list(Question.objects.filter(bank__course=enrollment.course))
+    questions = Question.objects.filter(bank__course=enrollment.course)
+    if enrollment.course_version_id:
+        questions = questions.filter(bank__version=enrollment.course_version)
+    questions = list(questions)
     if not questions:
         return []
     rng = random.Random(_subset_seed(enrollment.id, attempt_no))
@@ -264,6 +419,12 @@ def get_test_questions(enrollment, device_id="", session_id=""):
     `attempt_start` audit event so the audit trail records the attempt view.
     Returns a dict with `status_code` for the caller to translate to HTTP.
     """
+    if enrollment.status != "complete":
+        return {
+            "error": "reading must be completed before the test",
+            "test_unlocked": False,
+            "status_code": 409,
+        }
     if enrollment.attempts_used >= 3:
         return {
             "error": "maximum attempts exhausted",
@@ -314,6 +475,12 @@ def grade_submission(enrollment, answers, device_id="", session_id=""):
                {"reason": "4th attempt blocked", "attempts_used": enrollment.attempts_used})
         return {
             "error": "maximum attempts exceeded",
+            "enrollment_status": enrollment.status,
+            "status_code": 409,
+        }
+    if enrollment.status != "complete":
+        return {
+            "error": "reading must be completed before the test",
             "enrollment_status": enrollment.status,
             "status_code": 409,
         }
