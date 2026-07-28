@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+
 import client from "../../api/client";
-import { Button } from "../ui";
+import { Button, Card } from "../ui";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -11,151 +12,122 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 export interface PdfReaderProps {
   enrollmentId: number;
   sectionId: number;
-  sectionBaseSeconds: number;
-  minTimeDivisor?: number;
-  pdfUrl: string;
+  sectionOrder?: number;
+  title?: string;
+  content?: string;
+  minimumSeconds?: number;
+  sectionBaseSeconds?: number;
+  accumulatedSeconds?: number;
+  complete?: boolean;
+  pdfUrl?: string;
+  canRead?: boolean;
+  onProgress?: (progress: { accumulated: number; complete: boolean; testUnlocked: boolean }) => void;
 }
 
 export default function PdfReader({
   enrollmentId,
-  sectionId,
-  sectionBaseSeconds,
-  minTimeDivisor = 3,
+  sectionOrder = 1,
+  title = "Sección",
+  content = "",
+  minimumSeconds,
+  sectionBaseSeconds = 0,
+  accumulatedSeconds = 0,
+  complete: initialComplete = false,
   pdfUrl,
+  canRead = true,
+  onProgress,
 }: PdfReaderProps) {
-  const [locked, setLocked] = useState(true);
-  const [remaining, setRemaining] = useState(Math.ceil(sectionBaseSeconds / minTimeDivisor));
+  const [accumulated, setAccumulated] = useState(accumulatedSeconds);
+  const [complete, setComplete] = useState(initialComplete);
+  const [locked, setLocked] = useState(false);
   const [error, setError] = useState("");
-  const [numPages, setNumPages] = useState<number>(0);
+  const [numPages, setNumPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const heartbeatRef = useRef<number | null>(null);
+  const lastInteraction = useRef(Date.now());
+  const onProgressRef = useRef(onProgress);
+
+  useEffect(() => { onProgressRef.current = onProgress; }, [onProgress]);
 
   useEffect(() => {
-    const interval = 5000;
-    heartbeatRef.current = window.setInterval(() => {
-      const delta = interval / 1000;
-      client
-        .post("/reading/heartbeat", {
-          enrollment_id: enrollmentId,
-          section_id: sectionId,
-          delta,
-          visible: document.visibilityState === "visible",
-        })
-        .then((r) => {
-          if (r.data.unlocked) {
-            setLocked(false);
-          }
-          const serverRemaining = r.data.remaining_seconds;
-          if (typeof serverRemaining === "number") {
-            setRemaining(Math.ceil(serverRemaining));
-          }
-        })
-        .catch((e) => {
-          setError(e?.response?.data?.error || "Error de conexión con el servidor");
-        });
-    }, interval);
-    return () => {
-      if (heartbeatRef.current) window.clearInterval(heartbeatRef.current);
-    };
-  }, [enrollmentId, sectionId]);
+    setAccumulated(accumulatedSeconds);
+    setComplete(initialComplete);
+    setLocked(false);
+    setError("");
+    setPageNumber(1);
+  }, [sectionOrder, accumulatedSeconds, initialComplete]);
 
-  if (!pdfUrl) {
-    return (
-      <div data-testid="pdf-reader" style={{ padding: "var(--space-lg)", textAlign: "center" }}>
-        <p style={{ color: "var(--color-text-muted)" }}>No hay PDF disponible para este curso.</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const markInteraction = () => { lastInteraction.current = Date.now(); };
+    const events: Array<keyof WindowEventMap> = ["pointerdown", "keydown", "scroll", "touchstart"];
+    events.forEach((event) => window.addEventListener(event, markInteraction, { passive: true }));
+    return () => events.forEach((event) => window.removeEventListener(event, markInteraction));
+  }, []);
+
+  useEffect(() => {
+    if (!canRead || complete) return;
+    const interval = window.setInterval(async () => {
+      try {
+        const response = await client.post("/reading/heartbeat", {
+          enrollment_id: enrollmentId,
+          section_order: sectionOrder,
+          delta: 5,
+          visibility: document.visibilityState === "visible",
+          interaction: Date.now() - lastInteraction.current < 30_000,
+        });
+        setLocked(Boolean(response.data.locked));
+        if (typeof response.data.accumulated === "number") {
+          setAccumulated(response.data.accumulated);
+        }
+        const sectionComplete = Boolean(response.data.section_complete);
+        setComplete(sectionComplete);
+        onProgressRef.current?.({
+          accumulated: response.data.accumulated || 0,
+          complete: sectionComplete,
+          testUnlocked: Boolean(response.data.test_unlocked),
+        });
+      } catch (requestError: any) {
+        setError(requestError?.response?.data?.error || "Error de conexión con el servidor");
+      }
+    }, 5000);
+    return () => window.clearInterval(interval);
+  }, [canRead, complete, enrollmentId, sectionOrder]);
+
+  const requiredSeconds = minimumSeconds ?? Math.ceil(sectionBaseSeconds / 3);
+  const remaining = Math.max(0, requiredSeconds - accumulated);
+  const width = Math.min(760, window.innerWidth - 48);
 
   return (
-    <div data-testid="pdf-reader" style={{ padding: "var(--space-md)" }}>
-      <div data-testid="pdf-viewer">
-        <Document
-          file={pdfUrl}
-          onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          onLoadError={() => setError("Error al cargar el PDF")}
-        >
-          <Page pageNumber={pageNumber} width={800} />
-        </Document>
+    <div data-testid="pdf-reader">
+      <Card>
+        <h2 style={{ marginBottom: "var(--space-sm)" }}>{title}</h2>
+        <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.65 }}>{content}</div>
+      </Card>
+
+      {pdfUrl && (
+        <Card style={{ marginTop: "var(--space-md)", overflowX: "auto" }}>
+          <Document
+            file={{ url: pdfUrl }}
+            options={{ withCredentials: true }}
+            onLoadSuccess={({ numPages: pages }) => setNumPages(pages)}
+            onLoadError={() => setError("Error al cargar el PDF")}
+          >
+            <Page pageNumber={pageNumber} width={width} />
+          </Document>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 8 }}>
+            <Button variant="secondary" size="sm" onClick={() => setPageNumber((page) => Math.max(1, page - 1))} disabled={pageNumber <= 1}>Anterior</Button>
+            <span>Página {pageNumber} de {numPages || "..."}</span>
+            <Button variant="secondary" size="sm" onClick={() => setPageNumber((page) => Math.min(numPages, page + 1))} disabled={pageNumber >= numPages}>Siguiente</Button>
+          </div>
+        </Card>
+      )}
+
+      <div role="status" style={{ marginTop: 12, padding: 12, borderRadius: 6, background: complete ? "var(--color-success-bg)" : "var(--color-warning-bg)" }}>
+        {!canRead && "Curso pausado o cancelado. El contador está detenido."}
+        {canRead && locked && "Completa la sección anterior para continuar."}
+        {canRead && !locked && !complete && `Tiempo activo: ${accumulated}s. Restan ${remaining}s.`}
+        {canRead && complete && `Sección completada. Tiempo activo: ${accumulated}s.`}
       </div>
-      <div
-        style={{
-          marginTop: "var(--space-sm)",
-          display: "flex",
-          gap: "var(--space-sm)",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Button
-          data-testid="section-nav-btn"
-          variant="secondary"
-          size="sm"
-          onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
-          disabled={pageNumber <= 1}
-          aria-label="Página anterior"
-        >
-          Anterior
-        </Button>
-        <span data-testid="reading-timer" aria-live="polite" style={{ fontSize: "var(--font-size-sm)", color: "var(--color-text-secondary)" }}>
-          Página {pageNumber} de {numPages || "..."}
-        </span>
-        <Button
-          data-testid="section-nav-btn"
-          variant="secondary"
-          size="sm"
-          onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
-          disabled={pageNumber >= numPages}
-          aria-label="Página siguiente"
-        >
-          Siguiente
-        </Button>
-      </div>
-      {locked && (
-        <p
-          data-testid="locked-overlay"
-          role="status"
-          aria-live="polite"
-          style={{
-            marginTop: "var(--space-md)",
-            padding: "var(--space-sm) var(--space-md)",
-            background: "var(--color-warning-bg)",
-            color: "var(--color-warning-text)",
-            borderRadius: "var(--radius-sm)",
-            fontSize: "var(--font-size-sm)",
-            textAlign: "center",
-          }}
-        >
-          Sección bloqueada — tiempo restante: {remaining}s
-        </p>
-      )}
-      {!locked && (
-        <p
-          data-testid="unlocked-message"
-          role="status"
-          aria-live="polite"
-          style={{
-            marginTop: "var(--space-md)",
-            padding: "var(--space-sm) var(--space-md)",
-            background: "var(--color-success-bg)",
-            color: "var(--color-success-text)",
-            borderRadius: "var(--radius-sm)",
-            fontSize: "var(--font-size-sm)",
-            textAlign: "center",
-          }}
-        >
-          Sección desbloqueada — puedes acceder al test
-        </p>
-      )}
-      {error && (
-        <p
-          role="alert"
-          aria-live="assertive"
-          style={{ color: "var(--color-danger)", marginTop: "var(--space-sm)", fontSize: "var(--font-size-sm)" }}
-        >
-          {error}
-        </p>
-      )}
+      {error && <p role="alert" style={{ color: "var(--color-danger)", marginTop: 8 }}>{error}</p>}
     </div>
   );
 }
