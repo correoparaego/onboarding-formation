@@ -8,6 +8,7 @@ are NEVER written to ``NotificationLog`` or any audit payload (spec §Delivery L
 """
 import logging
 
+from django.db import transaction
 from django.utils import timezone
 
 from authentication.models import EmployeeAccessToken
@@ -18,21 +19,58 @@ from notifications.transports import get_transport
 logger = logging.getLogger(__name__)
 
 
-def _deliver(template, employee, subject, body):
+def _record_delivery(template, employee, status, detail):
+    try:
+        NotificationLog.objects.create(
+            recipient=employee.email,
+            template=template,
+            status=status,
+            detail=detail or "",
+        )
+    except Exception as exc:
+        logger.warning("notification delivery log failed: %s", exc)
+
+
+def _deliver(template, employee, subject, body, allow_console=True):
     """Best-effort delivery; always records a NotificationLog (no secrets)."""
     if not employee.email:
-        NotificationLog.objects.create(
-            recipient="", template=template, status="skipped", detail="no recipient email"
-        )
-        return False
-    result = get_transport().send(subject, body, employee.email)
-    NotificationLog.objects.create(
-        recipient=employee.email,
-        template=template,
-        status="sent" if result.ok else "failed",
-        detail=result.detail or "",
+        _record_delivery(template, employee, "skipped", "no recipient email")
+        from notifications.transports import EmailResult
+
+        return EmailResult(False, "no recipient email")
+    transport = get_transport()
+    if transport.name == "console" and not allow_console:
+        from notifications.transports import EmailResult
+
+        result = EmailResult(False, "console transport disabled for access secrets")
+    else:
+        result = transport.send(subject, body, employee.email)
+    _record_delivery(
+        template, employee, "sent" if result.ok else "failed", result.detail
     )
-    return result.ok
+    return result
+
+
+@transaction.atomic
+def rotate_employee_access(employee, enrollment=None):
+    """Invalidate active employee access and return a fresh secret exactly once."""
+    from employees.models import Employee
+
+    employee = Employee.objects.select_for_update().get(pk=employee.pk)
+    now = timezone.now()
+    EmployeeAccessToken.objects.filter(
+        employee=employee,
+        consumed_at__isnull=True,
+        expires_at__gt=now,
+    ).update(consumed_at=now)
+    return EmployeeAccessToken.issue(employee, enrollment=enrollment)
+
+
+def deliver_access_code(employee, raw_token, code, allow_console=True):
+    subject, body = access_email(employee, raw_token, code)
+    return _deliver(
+        "access", employee, subject, body, allow_console=allow_console
+    )
 
 
 def issue_access_token(enrollment):
@@ -43,8 +81,7 @@ def issue_access_token(enrollment):
     """
     employee = enrollment.employee
     _, raw_token, code = EmployeeAccessToken.issue(employee, enrollment=enrollment)
-    subject, body = access_email(employee, raw_token, code)
-    _deliver("access", employee, subject, body)
+    deliver_access_code(employee, raw_token, code)
     return raw_token, code
 
 
@@ -57,14 +94,9 @@ def resend_access_token(enrollment):
     than leaving multiple valid links in the wild.
     """
     employee = enrollment.employee
-    now = timezone.now()
-    EmployeeAccessToken.objects.filter(
-        employee=employee,
-        enrollment=enrollment,
-        consumed_at__isnull=True,
-        expires_at__gt=now,
-    ).update(consumed_at=now)
-    return issue_access_token(enrollment)
+    _, raw_token, code = rotate_employee_access(employee, enrollment=enrollment)
+    deliver_access_code(employee, raw_token, code)
+    return raw_token, code
 
 
 def send_reminder(enrollment):

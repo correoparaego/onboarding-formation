@@ -202,6 +202,8 @@ EMPLOYEE_TOKEN_TTL_SECONDS = int(os.environ.get("EMPLOYEE_TOKEN_TTL_SECONDS", 60
 #   "smtp"                      -> Django's configured SMTP backend
 #   "resend"                    -> Resend API (needs the `resend` package + key)
 EMAIL_TRANSPORT = os.environ.get("EMAIL_TRANSPORT", "console")
+if os.environ.get("RENDER") == "true" and EMAIL_TRANSPORT == "console":
+    EMAIL_TRANSPORT = "resend"
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL", "no-reply@formacion.local"
 )

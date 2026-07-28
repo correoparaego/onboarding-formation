@@ -23,6 +23,7 @@ class RateLimiter:
 
 _login_limiter = RateLimiter(max_requests=5, window_seconds=60)
 _redeem_limiter = RateLimiter(max_requests=10, window_seconds=60)
+_access_code_limiter = RateLimiter(max_requests=10, window_seconds=60)
 
 
 def rate_limit(limiter: RateLimiter):
@@ -42,3 +43,4 @@ def rate_limit(limiter: RateLimiter):
 
 login_rate_limit = rate_limit(_login_limiter)
 redeem_rate_limit = rate_limit(_redeem_limiter)
+access_code_rate_limit = rate_limit(_access_code_limiter)
