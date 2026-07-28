@@ -56,6 +56,7 @@ function EnrollmentReader() {
 
   if (error) return <p role="alert" style={{ color: "var(--color-danger)" }}>{error}</p>;
   if (!detail) return <p style={{ color: "var(--color-text-muted)" }}>Cargando curso...</p>;
+  if (!detail.can_read) return <Card>Este curso está pausado o cancelado. El contador y el contenido están bloqueados.</Card>;
   const section = detail.sections[sectionIndex];
   if (!section) return <EmptyState title="Curso sin secciones" description="Contacta con administración." />;
   const apiBase = import.meta.env.VITE_API_BASE_URL || "/api";

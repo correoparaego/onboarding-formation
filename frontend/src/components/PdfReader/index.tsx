@@ -43,7 +43,7 @@ export default function PdfReader({
   const [error, setError] = useState("");
   const [numPages, setNumPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const lastInteraction = useRef(Date.now());
+  const lastInteraction = useRef(0);
   const onProgressRef = useRef(onProgress);
 
   useEffect(() => { onProgressRef.current = onProgress; }, [onProgress]);

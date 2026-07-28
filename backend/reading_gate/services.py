@@ -83,12 +83,20 @@ def assign_courses(employee, courses, source="manual", assigned_by=None, notify=
             },
         )
     if created and notify:
-        try:
-            from notifications import services as notify_services
+        enrollment_id = created[0].id
 
-            notify_services.issue_access_token(created[0])
-        except Exception as exc:
-            logger.warning("access token issuance failed: %s", exc)
+        def deliver_access():
+            try:
+                from notifications import services as notify_services
+
+                enrollment = Enrollment.objects.select_related("employee").get(
+                    pk=enrollment_id
+                )
+                notify_services.issue_access_token(enrollment)
+            except Exception as exc:
+                logger.warning("access token issuance failed: %s", exc)
+
+        transaction.on_commit(deliver_access)
     return created
 
 
@@ -231,6 +239,26 @@ def enrollment_time_divisor(enrollment):
     return enrollment.course.min_time_divisor
 
 
+def section_is_unlocked(enrollment, section):
+    if enrollment.status in ("paused", "cancelled"):
+        return False
+    sections = list(enrollment_sections(enrollment))
+    try:
+        index = next(i for i, item in enumerate(sections) if item.id == section.id)
+    except StopIteration:
+        return False
+    if index == 0:
+        return True
+    previous = sections[index - 1]
+    progress = ReadingProgress.objects.filter(
+        enrollment=enrollment, section=previous
+    ).first()
+    accumulated = progress.accumulated_time if progress else 0
+    return accumulated >= min_time_for_section(
+        previous, enrollment_time_divisor(enrollment)
+    )
+
+
 def _all_sections_complete(enrollment, divisor) -> bool:
     sections = list(enrollment_sections(enrollment))
     if not sections:
@@ -271,18 +299,7 @@ def process_heartbeat(enrollment, section_order, delta, visibility, interaction,
         return {"error": "section not found", "status_code": 404}
 
     # Sequential unlock gate: previous section must be complete.
-    locked = False
-    if section_order > 1:
-        prev = next((s for s in sections if s.order == section_order - 1), None)
-        if prev is None:
-            locked = True
-        else:
-            prev_progress = ReadingProgress.objects.filter(
-                enrollment=enrollment, section=prev
-            ).first()
-            prev_acc = prev_progress.accumulated_time if prev_progress else 0
-            if prev_acc < min_time_for_section(prev, divisor):
-                locked = True
+    locked = not section_is_unlocked(enrollment, section)
 
     min_time = min_time_for_section(section, divisor)
 
