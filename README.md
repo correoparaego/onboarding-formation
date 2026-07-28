@@ -10,6 +10,18 @@ reader, comprehension tests, printable certificates, minimal badges, and a
 - **Database:** PostgreSQL (Django ORM); SQLite auto-fallback for local boot.
 - **Tenancy:** single-tenant MVP (one company).
 
+## Navigation and workflow walkthrough
+
+Follow the interactive guide to manage employee onboarding, course assignments,
+position groups, access codes, and training progress:
+
+[Open the workflow guide in Scribe](https://scribehow.com/shared/Managing_Employee_Onboarding_and_Training_Assignments__FV_5FtqESUS6HNQzhdj3TQ)
+
+<iframe src="https://scribehow.com/embed/Managing_Employee_Onboarding_and_Training_Assignments__FV_5FtqESUS6HNQzhdj3TQ?as=scrollable" width="100%" height="800" allow="fullscreen" style="border: 0; min-height: 640px"></iframe>
+
+> GitHub may not render embedded iframes. Use the direct Scribe link above if
+> the interactive guide is not visible.
+
 > ### ✅ DNI ENCRYPTION — SECURITY FIX APPLIED (W1 RESOLVED)
 >
 > The DNI field is encrypted at rest by `backend/common/crypto.py` using
